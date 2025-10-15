@@ -1426,6 +1426,7 @@
     <div class="container">
         <!-- Professional Header -->
         <header class="header">
+            <button id="muteBtn" onclick="toggleMute()" style="position: fixed; top: 20px; right: 20px; z-index: 10000; width: 60px; height: 60px; border-radius: 50%; border: 2px solid rgba(139, 92, 246, 0.5); background: rgba(30, 41, 59, 0.95); backdrop-filter: blur(15px); color: white; font-size: 1.75rem; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);" onmouseover="this.style.transform='scale(1.1)'; this.style.boxShadow='0 8px 32px rgba(139, 92, 246, 0.6)'" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 16px rgba(0, 0, 0, 0.5)'" title="Mute/Unmute">🔊</button>
             <h1 class="logo">WIZARD</h1>
             <p class="tagline">Tournament Score Tracker</p>
         </header>
@@ -1611,6 +1612,299 @@
     </div>
 
     <script>
+        // Professional Audio System 🎵
+        let audioContext;
+        let masterVolume = 0.7; // 0.0 to 1.0
+        let isMuted = false;
+
+        // Initialize Audio Context (must be after user interaction)
+        function initAudio() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        // Professional Sound Generator
+        function playSound(type, options = {}) {
+            if (isMuted || !audioContext) return;
+
+            initAudio();
+            const now = audioContext.currentTime;
+
+            switch(type) {
+                case 'click':
+                    playClick(now);
+                    break;
+                case 'success':
+                    playSuccess(now);
+                    break;
+                case 'error':
+                    playError(now);
+                    break;
+                case 'victory':
+                    playVictoryFanfare(now);
+                    break;
+                case 'elimination':
+                    playEliminationSound(now);
+                    break;
+                case 'whoosh':
+                    playWhoosh(now);
+                    break;
+                case 'chime':
+                    playChime(now);
+                    break;
+                case 'scoreTick':
+                    playScoreTick(now);
+                    break;
+                case 'roundComplete':
+                    playRoundComplete(now);
+                    break;
+                case 'danger':
+                    playDangerAlert(now);
+                    break;
+            }
+        }
+
+        // UI Click Sound - Sharp, professional
+        function playClick(startTime) {
+            const osc = audioContext.createOscillator();
+            const gain = audioContext.createGain();
+
+            osc.connect(gain);
+            gain.connect(audioContext.destination);
+
+            osc.frequency.setValueAtTime(800, startTime);
+            gain.gain.setValueAtTime(0.15 * masterVolume, startTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, startTime + 0.05);
+
+            osc.start(startTime);
+            osc.stop(startTime + 0.05);
+        }
+
+        // Success Sound - Ascending happy notes
+        function playSuccess(startTime) {
+            const notes = [523.25, 659.25, 783.99]; // C5, E5, G5
+            notes.forEach((freq, i) => {
+                const osc = audioContext.createOscillator();
+                const gain = audioContext.createGain();
+
+                osc.connect(gain);
+                gain.connect(audioContext.destination);
+
+                osc.frequency.setValueAtTime(freq, startTime + i * 0.08);
+                osc.type = 'sine';
+                gain.gain.setValueAtTime(0.2 * masterVolume, startTime + i * 0.08);
+                gain.gain.exponentialRampToValueAtTime(0.01, startTime + i * 0.08 + 0.3);
+
+                osc.start(startTime + i * 0.08);
+                osc.stop(startTime + i * 0.08 + 0.3);
+            });
+        }
+
+        // Error Sound - Descending buzz
+        function playError(startTime) {
+            const osc = audioContext.createOscillator();
+            const gain = audioContext.createGain();
+
+            osc.connect(gain);
+            gain.connect(audioContext.destination);
+
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(300, startTime);
+            osc.frequency.exponentialRampToValueAtTime(150, startTime + 0.2);
+            gain.gain.setValueAtTime(0.2 * masterVolume, startTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, startTime + 0.2);
+
+            osc.start(startTime);
+            osc.stop(startTime + 0.2);
+        }
+
+        // Epic Victory Fanfare - Triumphant melody
+        function playVictoryFanfare(startTime) {
+            const melody = [
+                { freq: 523.25, duration: 0.2 }, // C5
+                { freq: 659.25, duration: 0.2 }, // E5
+                { freq: 783.99, duration: 0.2 }, // G5
+                { freq: 1046.50, duration: 0.4 }, // C6
+                { freq: 783.99, duration: 0.15 }, // G5
+                { freq: 1046.50, duration: 0.6 }  // C6 (hold)
+            ];
+
+            let time = startTime;
+            melody.forEach(note => {
+                const osc = audioContext.createOscillator();
+                const gain = audioContext.createGain();
+
+                osc.connect(gain);
+                gain.connect(audioContext.destination);
+
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(note.freq, time);
+                gain.gain.setValueAtTime(0.3 * masterVolume, time);
+                gain.gain.exponentialRampToValueAtTime(0.01, time + note.duration);
+
+                osc.start(time);
+                osc.stop(time + note.duration);
+
+                time += note.duration;
+            });
+
+            // Add bass drum hits
+            [0, 0.4, 0.7].forEach(offset => {
+                const osc = audioContext.createOscillator();
+                const gain = audioContext.createGain();
+
+                osc.connect(gain);
+                gain.connect(audioContext.destination);
+
+                osc.frequency.setValueAtTime(80, startTime + offset);
+                osc.frequency.exponentialRampToValueAtTime(40, startTime + offset + 0.1);
+                osc.type = 'sine';
+                gain.gain.setValueAtTime(0.4 * masterVolume, startTime + offset);
+                gain.gain.exponentialRampToValueAtTime(0.01, startTime + offset + 0.1);
+
+                osc.start(startTime + offset);
+                osc.stop(startTime + offset + 0.1);
+            });
+        }
+
+        // Elimination Sound - Dramatic descent
+        function playEliminationSound(startTime) {
+            // Dramatic descending tone
+            const osc1 = audioContext.createOscillator();
+            const gain1 = audioContext.createGain();
+
+            osc1.connect(gain1);
+            gain1.connect(audioContext.destination);
+
+            osc1.type = 'sawtooth';
+            osc1.frequency.setValueAtTime(440, startTime);
+            osc1.frequency.exponentialRampToValueAtTime(55, startTime + 0.8);
+            gain1.gain.setValueAtTime(0.25 * masterVolume, startTime);
+            gain1.gain.exponentialRampToValueAtTime(0.01, startTime + 0.8);
+
+            osc1.start(startTime);
+            osc1.stop(startTime + 0.8);
+
+            // Add dramatic hit
+            const osc2 = audioContext.createOscillator();
+            const gain2 = audioContext.createGain();
+
+            osc2.connect(gain2);
+            gain2.connect(audioContext.destination);
+
+            osc2.type = 'sine';
+            osc2.frequency.setValueAtTime(100, startTime + 0.5);
+            osc2.frequency.exponentialRampToValueAtTime(40, startTime + 0.8);
+            gain2.gain.setValueAtTime(0.5 * masterVolume, startTime + 0.5);
+            gain2.gain.exponentialRampToValueAtTime(0.01, startTime + 0.8);
+
+            osc2.start(startTime + 0.5);
+            osc2.stop(startTime + 0.8);
+        }
+
+        // Whoosh Sound - For confetti/particles
+        function playWhoosh(startTime) {
+            const osc = audioContext.createOscillator();
+            const gain = audioContext.createGain();
+
+            osc.connect(gain);
+            gain.connect(audioContext.destination);
+
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(1200, startTime);
+            osc.frequency.exponentialRampToValueAtTime(400, startTime + 0.3);
+            gain.gain.setValueAtTime(0.15 * masterVolume, startTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, startTime + 0.3);
+
+            osc.start(startTime);
+            osc.stop(startTime + 0.3);
+        }
+
+        // Chime Sound - Pleasant notification
+        function playChime(startTime) {
+            [880, 1108.73, 1318.51].forEach((freq, i) => {
+                const osc = audioContext.createOscillator();
+                const gain = audioContext.createGain();
+
+                osc.connect(gain);
+                gain.connect(audioContext.destination);
+
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(freq, startTime);
+                gain.gain.setValueAtTime(0.15 * masterVolume, startTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, startTime + 0.8);
+
+                osc.start(startTime);
+                osc.stop(startTime + 0.8);
+            });
+        }
+
+        // Score Tick - Quick blip for counting
+        function playScoreTick(startTime) {
+            const osc = audioContext.createOscillator();
+            const gain = audioContext.createGain();
+
+            osc.connect(gain);
+            gain.connect(audioContext.destination);
+
+            osc.frequency.setValueAtTime(1200, startTime);
+            gain.gain.setValueAtTime(0.08 * masterVolume, startTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, startTime + 0.03);
+
+            osc.start(startTime);
+            osc.stop(startTime + 0.03);
+        }
+
+        // Round Complete - Satisfying completion
+        function playRoundComplete(startTime) {
+            const notes = [659.25, 783.99, 1046.50]; // E5, G5, C6
+            notes.forEach((freq, i) => {
+                const osc = audioContext.createOscillator();
+                const gain = audioContext.createGain();
+
+                osc.connect(gain);
+                gain.connect(audioContext.destination);
+
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(freq, startTime + i * 0.1);
+                gain.gain.setValueAtTime(0.2 * masterVolume, startTime + i * 0.1);
+                gain.gain.exponentialRampToValueAtTime(0.01, startTime + i * 0.1 + 0.4);
+
+                osc.start(startTime + i * 0.1);
+                osc.stop(startTime + i * 0.1 + 0.4);
+            });
+        }
+
+        // Danger Alert - Warning sound
+        function playDangerAlert(startTime) {
+            [0, 0.2].forEach(offset => {
+                const osc = audioContext.createOscillator();
+                const gain = audioContext.createGain();
+
+                osc.connect(gain);
+                gain.connect(audioContext.destination);
+
+                osc.frequency.setValueAtTime(880, startTime + offset);
+                gain.gain.setValueAtTime(0.15 * masterVolume, startTime + offset);
+                gain.gain.exponentialRampToValueAtTime(0.01, startTime + offset + 0.1);
+
+                osc.start(startTime + offset);
+                osc.stop(startTime + offset + 0.1);
+            });
+        }
+
+        // Toggle Mute
+        function toggleMute() {
+            isMuted = !isMuted;
+            const btn = document.getElementById('muteBtn');
+            if (btn) {
+                btn.textContent = isMuted ? '🔇' : '🔊';
+                btn.title = isMuted ? 'Unmute' : 'Mute';
+            }
+            playSound('click');
+        }
+
         // Game State Management
         let gameState = {
             players: [],
@@ -1726,9 +2020,12 @@
             const newValue = currentValue + delta;
 
             if (newValue >= 2 && newValue <= 9) {
+                playSound('click'); // UI click feedback
                 input.value = newValue;
                 updatePlayerNames();
                 updateSchedulePreview();
+            } else {
+                playSound('error'); // Boundary error
             }
         }
 
@@ -1791,6 +2088,9 @@
         }
 
         function startGame() {
+            initAudio(); // Initialize audio on first user interaction
+            playSound('chime'); // Pleasant game start sound
+
             const numPlayers = parseInt(document.getElementById('numPlayers').value);
 
             const players = [];
@@ -1888,6 +2188,7 @@
         function incrementValue(id) {
             const input = document.getElementById(id);
             if (!input.disabled) {
+                playSound('click'); // Quick click feedback
                 const currentValue = parseInt(input.value) || 0;
                 input.value = currentValue + 1;
             }
@@ -1898,7 +2199,10 @@
             if (!input.disabled) {
                 const currentValue = parseInt(input.value) || 0;
                 if (currentValue > 0) {
+                    playSound('click'); // Quick click feedback
                     input.value = currentValue - 1;
+                } else {
+                    playSound('error'); // Can't go below 0
                 }
             }
         }
@@ -1981,11 +2285,13 @@
             });
 
             if (!valid) {
+                playSound('error'); // Error buzz for invalid input
                 showAlert('Please enter valid bids and actuals for all active players', 'warning');
                 return;
             }
 
-            active.forEach(player => {
+            // Play score ticks as we calculate
+            active.forEach((player, index) => {
                 const idx = gameState.players.indexOf(player);
                 const bid = parseInt(document.getElementById(`bid${idx}`).value);
                 const actual = parseInt(document.getElementById(`actual${idx}`).value);
@@ -1997,11 +2303,17 @@
                 const scoreClass = score > 0 ? 'score-positive' : score < 0 ? 'score-negative' : '';
                 document.getElementById(`roundScore${idx}`).textContent = (score >= 0 ? '+' : '') + score;
                 document.getElementById(`roundScore${idx}`).className = `score ${scoreClass}`;
+
+                // Play tick sound for each score (staggered)
+                setTimeout(() => playSound('scoreTick'), index * 50);
             });
 
             gameState.roundCalculated = true;
             document.getElementById('calculateBtn').disabled = true;
             document.getElementById('nextRoundBtn').disabled = false;
+
+            // Play success sound after calculation
+            setTimeout(() => playSound('roundComplete'), active.length * 50 + 100);
 
             updateStatistics();
             renderTable();
@@ -2025,6 +2337,8 @@
             gameState.currentRound++;
             gameState.cardsDealt++;
             gameState.roundCalculated = false;
+
+            playSound('chime'); // Pleasant chime for new round
 
             document.getElementById('calculateBtn').disabled = false;
             document.getElementById('nextRoundBtn').disabled = true;
@@ -2064,6 +2378,9 @@
         }
 
         function showEliminationAnimation(player) {
+            // 💀 DRAMATIC ELIMINATION SOUND
+            playSound('elimination');
+
             // Set elimination details
             document.getElementById('eliminatedName').textContent = player.name;
             document.getElementById('eliminatedRound').textContent = player.eliminatedOnRound;
@@ -2142,6 +2459,9 @@
             const active = gameState.players.filter(p => !p.eliminated);
             const winner = active.sort((a, b) => b.totalScore - a.totalScore)[0];
 
+            // 🎺 EPIC VICTORY FANFARE!!!
+            playSound('victory');
+
             document.getElementById('nextRoundBtn').disabled = true;
             document.getElementById('calculateBtn').disabled = true;
 
@@ -2156,8 +2476,9 @@
             // Show modal
             document.getElementById('winnerModal').classList.add('active');
 
-            // Launch confetti
+            // Launch confetti with whoosh sound
             launchConfetti();
+            playSound('whoosh');
 
             updateStatistics();
             renderTable();
