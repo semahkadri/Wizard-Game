@@ -1081,8 +1081,8 @@
         .rules-tab {
             font-family: 'Inter', sans-serif;
             font-weight: 600;
-            font-size: 0.9rem;
-            padding: 0.75rem 1.5rem;
+            font-size: 0.85rem;
+            padding: 0.75rem 1rem;
             border: none;
             background: transparent;
             color: var(--text-secondary);
@@ -1138,6 +1138,17 @@
 
         .rules-section table {
             margin-top: 0.75rem;
+        }
+
+        /* RTL support for Tunisian Arabic tab */
+        #tunisianRules .rules-section {
+            border-left: none;
+            border-right: 3px solid var(--primary);
+        }
+
+        #tunisianRules ul, #tunisianRules ol {
+            padding-left: 0;
+            padding-right: 1.5rem;
         }
 
         .rules-section table th {
@@ -2765,7 +2776,7 @@
             </h2>
 
             <!-- Tabs -->
-            <div style="display: flex; gap: 0.5rem; margin-bottom: 2rem; border-bottom: 2px solid rgba(139, 92, 246, 0.3);">
+            <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 2rem; border-bottom: 2px solid rgba(139, 92, 246, 0.3);">
                 <button class="rules-tab active" onclick="switchRulesTab('quick')" id="quickTab">
                     ⚡ Quick Start
                 </button>
@@ -2774,6 +2785,9 @@
                 </button>
                 <button class="rules-tab" onclick="switchRulesTab('advanced')" id="advancedTab">
                     🎯 Pro Tips
+                </button>
+                <button class="rules-tab" onclick="switchRulesTab('tunisian')" id="tunisianTab" style="font-weight: 700;">
+                    🇹🇳 بالتونسي
                 </button>
             </div>
 
@@ -2988,6 +3002,160 @@
                         <li>✅ Control tempo - decide when to take tricks</li>
                         <li>✅ Remember: Everyone can't make their bid - use this!</li>
                     </ul>
+                </div>
+            </div>
+
+            <!-- Tunisian Arabic Tab -->
+            <div id="tunisianRules" class="rules-content" dir="rtl" style="text-align: right; font-family: 'Inter', 'Segoe UI', Tahoma, sans-serif; line-height: 2;">
+                <h3 style="color: var(--wizard-gold); margin-bottom: 1.5rem; font-size: 1.6rem;">🇹🇳 كيفاش تلعب Wizard بالتونسي</h3>
+
+                <div class="rules-section" style="border-right: 3px solid var(--wizard-gold); border-left: none; padding-right: 1rem; padding-left: 0;">
+                    <h4 style="color: var(--secondary);">🎯 الهدف متاع اللعبة</h4>
+                    <p style="font-size: 1.05rem;">
+                        الفكرة بسيطة برشا: <strong style="color: var(--wizard-gold);">توقّع قدّاش من "تريك" (main/pli) باش تربح</strong> في كل جولة.
+                        <br>كي تقول "باش نربح 3" و تربح بالضبط 3 ← تاخو نقاط. كي تغلط ← تخسر نقاط.
+                        <br><strong>اللي يجمّع أكثر نقاط في الآخر هو الرابح!</strong>
+                    </p>
+                </div>
+
+                <div class="rules-section" style="border-right: 3px solid var(--primary); border-left: none; padding-right: 1rem; padding-left: 0;">
+                    <h4 style="color: var(--secondary);">🎴 الكوارط (60 كارطة)</h4>
+                    <p>الجو فيه 60 كارطة، مش 52 كيما العادي:</p>
+                    <ul style="list-style: none; padding: 0;">
+                        <li>🪨 <strong>القزم (Dwarf)</strong> - كحلي، 13 كارطة (1 لـ 13)</li>
+                        <li>🌿 <strong>الإلف (Elf)</strong> - أخضر، 13 كارطة (1 لـ 13)</li>
+                        <li>⚔️ <strong>العملاق (Giant)</strong> - أحمر، 13 كارطة (1 لـ 13)</li>
+                        <li>💧 <strong>الإنسان (Human)</strong> - أزرق، 13 كارطة (1 لـ 13)</li>
+                        <li>⭐ <strong>الساحر (Wizard)</strong> - 4 كوارط - <span style="color: var(--wizard-gold);">ديما تربح!</span></li>
+                        <li>🃏 <strong>المهرّج (Jester)</strong> - 4 كوارط - <span style="color: var(--danger);">ديما تخسر!</span></li>
+                    </ul>
+                </div>
+
+                <div class="rules-section" style="border-right: 3px solid var(--success); border-left: none; padding-right: 1rem; padding-left: 0;">
+                    <h4 style="color: var(--secondary);">🎮 كيفاش تمشي اللعبة - خطوة بخطوة</h4>
+                    <ol style="padding-right: 1.2rem; padding-left: 0;">
+                        <li style="margin-bottom: 0.8rem;">
+                            <strong style="color: var(--primary-light);">التوزيع 🃏</strong><br>
+                            الجولة 1 = كارطة وحدة لكل واحد<br>
+                            الجولة 2 = كارطتين لكل واحد<br>
+                            الجولة 3 = 3 كوارط... وهكّا لحد الجولة 20
+                        </li>
+                        <li style="margin-bottom: 0.8rem;">
+                            <strong style="color: var(--primary-light);">الأتو (Trump) 🎺</strong><br>
+                            بعد التوزيع، نقلبو كارطة من الباقي:
+                            <ul style="margin-top: 0.3rem; padding-right: 1.2rem;">
+                                <li>كارطة عادية ← اللون هذاك هو الأتو</li>
+                                <li>⭐ ساحر ← اللي يوزّع يختار الأتو</li>
+                                <li>🃏 مهرّج ← ما فمّاش أتو هالجولة</li>
+                                <li>الجولة 20 ← ما يبقاش كوارط، ما فمّاش أتو</li>
+                            </ul>
+                        </li>
+                        <li style="margin-bottom: 0.8rem;">
+                            <strong style="color: var(--primary-light);">المزايدة (Bidding) 📢</strong><br>
+                            كل واحد يقول قدّاش من تريك باش يربح.<br>
+                            <strong>اللي يوزّع يبدا الأول</strong>، وبعد يمشي عكس عقارب الساعة.
+                            <br><em style="color: var(--text-tertiary);">مثلا: عندك ساحر + As أتو ← قول 2</em>
+                        </li>
+                        <li style="margin-bottom: 0.8rem;">
+                            <strong style="color: var(--primary-light);">اللعب 🎴</strong><br>
+                            <strong>اللي على يسار الموزّع يبدا</strong> يحط أول كارطة.<br>
+                            لازم تتبّع نفس اللون (suit) كان عندك. كان ما عندكش ← حط أي حاجة.<br>
+                            ⭐ الساحر و 🃏 المهرّج تنجّم تلعبهم وقتاش ما تحب.
+                        </li>
+                        <li style="margin-bottom: 0.8rem;">
+                            <strong style="color: var(--primary-light);">شكون يربح التريك؟ 🏆</strong><br>
+                            <table style="width: 100%; border-collapse: collapse; direction: rtl; text-align: right;">
+                                <tr style="border-bottom: 1px solid rgba(139, 92, 246, 0.3);">
+                                    <td style="padding: 0.4rem; color: var(--wizard-gold);"><strong>1. ⭐ الساحر</strong></td>
+                                    <td style="padding: 0.4rem;">ديما يربح! (كان زوز ساحر ← الأول يربح)</td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid rgba(139, 92, 246, 0.3);">
+                                    <td style="padding: 0.4rem; color: var(--warning);"><strong>2. 🎺 الأتو</strong></td>
+                                    <td style="padding: 0.4rem;">يغلب كل شي ماعدا الساحر</td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid rgba(139, 92, 246, 0.3);">
+                                    <td style="padding: 0.4rem; color: var(--primary-light);"><strong>3. 🎴 لون البداية</strong></td>
+                                    <td style="padding: 0.4rem;">الأكبر في نفس اللون يربح</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 0.4rem; color: var(--danger);"><strong>4. 🃏 المهرّج</strong></td>
+                                    <td style="padding: 0.4rem;">ديما يخسر</td>
+                                </tr>
+                            </table>
+                        </li>
+                    </ol>
+                </div>
+
+                <div class="rules-section" style="border-right: 3px solid var(--warning); border-left: none; padding-right: 1rem; padding-left: 0;">
+                    <h4 style="color: var(--secondary);">💰 حساب النقاط</h4>
+                    <div style="background: rgba(16, 185, 129, 0.15); padding: 1rem; border-radius: 12px; margin-bottom: 0.8rem;">
+                        <strong style="color: var(--success); font-size: 1.1rem;">✅ كي تصيب التوقّع بالضبط:</strong><br>
+                        <span style="font-size: 1.3rem; color: var(--wizard-gold);">20 + (10 × عدد التريكات)</span><br>
+                        <em style="color: var(--text-tertiary);">مثال: قلت 3 و ربحت 3 ← 20 + 30 = <strong style="color: var(--success);">+50 نقطة</strong></em><br>
+                        <em style="color: var(--text-tertiary);">مثال: قلت 0 و ربحت 0 ← <strong style="color: var(--success);">+20 نقطة</strong> (إيه، حتى الصفر تربح عليه!)</em>
+                    </div>
+                    <div style="background: rgba(239, 68, 68, 0.15); padding: 1rem; border-radius: 12px;">
+                        <strong style="color: var(--danger); font-size: 1.1rem;">❌ كي تغلط في التوقّع:</strong><br>
+                        <span style="font-size: 1.3rem; color: var(--danger);">-10 × الفرق</span><br>
+                        <em style="color: var(--text-tertiary);">مثال: قلت 2 و ربحت 5 ← فرق 3 ← <strong style="color: var(--danger);">-30 نقطة</strong></em><br>
+                        <em style="color: var(--text-tertiary);">مثال: قلت 4 و ربحت 1 ← فرق 3 ← <strong style="color: var(--danger);">-30 نقطة</strong></em>
+                    </div>
+                </div>
+
+                <div class="rules-section" style="border-right: 3px solid var(--danger); border-left: none; padding-right: 1rem; padding-left: 0;">
+                    <h4 style="color: var(--secondary);">💀 نظام الإقصاء (Elimination)</h4>
+                    <p>اللعبة فيها إقصاء! اللي عنده أقل نقاط يطيح:</p>
+                    <table style="width: 100%; border-collapse: collapse; direction: rtl; text-align: right;">
+                        <tr style="border-bottom: 1px solid rgba(239, 68, 68, 0.3);">
+                            <th style="padding: 0.5rem;">عدد اللعّابة</th>
+                            <th style="padding: 0.5rem;">الإقصاء في الجولة</th>
+                        </tr>
+                        <tr>
+                            <td style="padding: 0.5rem;">6 لعّابة</td>
+                            <td style="padding: 0.5rem;">الجولة 10، 12، 15</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 0.5rem;">5 لعّابة</td>
+                            <td style="padding: 0.5rem;">الجولة 12، 15</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 0.5rem;">4 لعّابة</td>
+                            <td style="padding: 0.5rem;">الجولة 15</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 0.5rem;">3 لعّابة</td>
+                            <td style="padding: 0.5rem;">ما فمّاش إقصاء</td>
+                        </tr>
+                    </table>
+                    <p style="margin-top: 0.5rem; color: var(--text-tertiary);">في الآخر يبقاو 3 لعّابة يتنافسو على البطولة!</p>
+                </div>
+
+                <div class="rules-section" style="border-right: 3px solid var(--accent); border-left: none; padding-right: 1rem; padding-left: 0;">
+                    <h4 style="color: var(--secondary);">🧠 نصائح باش تربح</h4>
+                    <ul style="list-style: none; padding: 0;">
+                        <li style="margin-bottom: 0.5rem;">💡 <strong>الساحر = تريك مضمون</strong> - ديما حسبو!</li>
+                        <li style="margin-bottom: 0.5rem;">💡 <strong>الAs في الأتو = ربح شبه مضمون</strong></li>
+                        <li style="margin-bottom: 0.5rem;">💡 <strong>ما عندكش لون معيّن؟</strong> ← تنجّم تضرب بالأتو!</li>
+                        <li style="margin-bottom: 0.5rem;">💡 <strong>كان مش متأكد، قول 0</strong> ← +20 نقطة سهلة</li>
+                        <li style="margin-bottom: 0.5rem;">💡 <strong>المهرّج</strong> ← استعملو كي ما تحبش تربح التريك</li>
+                        <li style="margin-bottom: 0.5rem;">💡 <strong>راقب المزايدة</strong> ← شوف شكون حاب يربح وشكون لا</li>
+                        <li style="margin-bottom: 0.5rem;">💡 <strong>خبّي الساحر</strong> للوقت الحساس، ما تلعبوش من الأول!</li>
+                        <li style="margin-bottom: 0.5rem;">💡 <strong>الدقة أهم من الطمع!</strong> أحسنلك تقول 1 و تصيب (+30) خير ما تقول 4 و تغلط (-30)</li>
+                    </ul>
+                </div>
+
+                <div class="rules-section" style="border-right: 3px solid var(--secondary); border-left: none; padding-right: 1rem; padding-left: 0; background: rgba(139, 92, 246, 0.1); border-radius: 12px; padding: 1.2rem;">
+                    <h4 style="color: var(--wizard-gold);">⚡ ملخّص سريع للي يحب يبدا تو</h4>
+                    <ol style="padding-right: 1.2rem; padding-left: 0; font-size: 1.05rem;">
+                        <li>تتوزّع الكوارط (جولة 1 = كارطة، جولة 2 = 2...)</li>
+                        <li>نشوفو الأتو (اللون اللي يغلب)</li>
+                        <li>كل واحد يقول قدّاش باش يربح</li>
+                        <li>نلعبو الكوارط - لازم تتبّع اللون</li>
+                        <li>⭐ الساحر يغلب الكل، 🃏 المهرّج يخسر ديما</li>
+                        <li>كي تصيب التوقّع ← تربح نقاط 🎉</li>
+                        <li>كي تغلط ← تخسر نقاط 😅</li>
+                        <li>أكثر نقاط = الرابح! 🏆</li>
+                    </ol>
                 </div>
             </div>
 
