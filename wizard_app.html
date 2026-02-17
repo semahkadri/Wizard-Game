@@ -711,6 +711,30 @@
             border-radius: var(--radius-lg);
             background: rgba(15, 23, 42, 0.5);
             border: 1px solid rgba(139, 92, 246, 0.2);
+            scrollbar-width: thin;
+            scrollbar-color: rgba(139, 92, 246, 0.5) rgba(15, 23, 42, 0.3);
+        }
+
+        .table-container::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .table-container::-webkit-scrollbar-track {
+            background: linear-gradient(90deg, rgba(15, 23, 42, 0.4), rgba(30, 41, 59, 0.4));
+            border-radius: 4px;
+            margin: 0 8px;
+        }
+
+        .table-container::-webkit-scrollbar-thumb {
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 4px;
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            transition: background 0.3s;
+        }
+
+        .table-container::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(90deg, var(--primary-light), var(--secondary-light));
+            box-shadow: 0 0 8px rgba(139, 92, 246, 0.5);
         }
 
         table {
@@ -2008,7 +2032,7 @@
     <div class="container">
         <!-- Professional Header -->
         <header class="header">
-            <button id="muteBtn" onclick="toggleMute()" style="position: fixed; top: 20px; right: 20px; z-index: 10000; width: 60px; height: 60px; border-radius: 50%; border: 2px solid rgba(139, 92, 246, 0.5); background: rgba(30, 41, 59, 0.95); backdrop-filter: blur(15px); color: white; font-size: 1.75rem; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);" onmouseover="this.style.transform='scale(1.1)'; this.style.boxShadow='0 8px 32px rgba(139, 92, 246, 0.6)'" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 16px rgba(0, 0, 0, 0.5)'" title="Mute/Unmute">🔊</button>
+            <button id="muteBtn" onclick="toggleMute()" style="position: fixed; top: 20px; right: 20px; z-index: 10000; width: 60px; height: 60px; border-radius: 50%; border: 2px solid rgba(139, 92, 246, 0.5); background: rgba(30, 41, 59, 0.95); backdrop-filter: blur(15px); color: white; font-size: 1.75rem; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);" onmouseover="this.style.transform='scale(1.1)'; this.style.boxShadow='0 8px 32px rgba(139, 92, 246, 0.6)'" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 16px rgba(0, 0, 0, 0.5)'" title="Mute/Unmute"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/></svg></button>
             <h1 class="logo">WIZARD</h1>
             <p class="tagline">Tournament Score Tracker</p>
         </header>
@@ -2030,7 +2054,7 @@
                 </div>
 
                 <div class="schedule-box" id="schedulePreview">
-                    <h3 class="schedule-title">Elimination Schedule</h3>
+                    <h3 class="schedule-title"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -3px; margin-right: 6px;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Elimination Schedule</h3>
                     <p id="scheduleDesc" style="color: var(--text-secondary); margin-bottom: var(--space-sm); font-weight: 500;"></p>
                     <div class="schedule-items" id="scheduleItems"></div>
                     <div style="margin-top: var(--space-sm); display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; justify-content: center;">
@@ -2096,7 +2120,7 @@
             </div>
 
             <div class="schedule-box" id="gameScheduleBox">
-                <h3 class="schedule-title">Tournament Status</h3>
+                <h3 class="schedule-title"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -3px; margin-right: 6px;"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>Tournament Status</h3>
                 <p id="gameScheduleDesc" style="color: var(--text-secondary); margin-bottom: var(--space-sm); font-weight: 500;"></p>
                 <div class="next-elimination" id="nextElimination"></div>
             </div>
@@ -2343,7 +2367,7 @@
         <!-- Custom Confirmation Modal -->
         <div class="modal-overlay" id="confirmModal">
             <div class="modal">
-                <div class="modal-icon modal-icon-warning">⚠</div>
+                <div class="modal-icon modal-icon-warning"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
                 <h3 class="modal-title">Start New Tournament?</h3>
                 <p class="modal-text">All current progress will be permanently lost. This action cannot be undone.</p>
                 <div class="modal-buttons">
@@ -2357,7 +2381,7 @@
         <div class="modal-overlay" id="winnerModal">
             <div class="modal">
                 <div class="modal-icon modal-icon-success">
-                    <span class="trophy-icon">🏆</span>
+                    <span class="trophy-icon"><svg width="56" height="56" viewBox="0 0 24 24" fill="#FFD700" stroke="#FFD700" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 010-5H6"/><path d="M18 9h1.5a2.5 2.5 0 000-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20 17 22"/><path d="M18 2H6v7a6 6 0 1012 0V2z"/></svg></span>
                 </div>
                 <h3 class="modal-title" id="winnerTitle">VICTORY!</h3>
                 <div style="display: flex; flex-direction: column; align-items: center; gap: var(--space-md); margin: var(--space-lg) 0;">
@@ -2379,7 +2403,7 @@
         <div class="modal-overlay" id="eliminationModal">
             <div class="modal">
                 <div class="modal-icon modal-icon-eliminated">
-                    💀
+                    <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 15h8"/><circle cx="9" cy="9" r="1.2" fill="#EF4444"/><circle cx="15" cy="9" r="1.2" fill="#EF4444"/><path d="M9 15v2"/><path d="M12 15v2"/><path d="M15 15v2"/></svg>
                 </div>
                 <h3 class="elimination-title">ELIMINATED!</h3>
                 <div style="display: flex; flex-direction: column; align-items: center; gap: var(--space-md); margin: var(--space-lg) 0;">
@@ -2822,7 +2846,7 @@
             isMuted = !isMuted;
             const btn = document.getElementById('muteBtn');
             if (btn) {
-                btn.textContent = isMuted ? '🔇' : '🔊';
+                btn.innerHTML = isMuted ? '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>' : '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/></svg>';
                 btn.title = isMuted ? 'Unmute' : 'Mute';
             }
             playSound('click');
@@ -3113,17 +3137,17 @@
 
             if (next) {
                 const rounds = next - gameState.currentRound + 1;
-                el.textContent = `⚠️ Next Elimination: Round ${next} (in ${rounds} ${rounds === 1 ? 'round' : 'rounds'}) • Lowest scorer will be eliminated`;
+                el.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Next Elimination: Round ${next} (in ${rounds} ${rounds === 1 ? 'round' : 'rounds'}) · Lowest scorer will be eliminated`;
                 el.style.borderColor = 'var(--danger)';
                 el.style.color = 'var(--danger)';
                 el.style.background = 'rgba(239, 68, 68, 0.1)';
             } else if (activePlayers === 3) {
-                el.innerHTML = '<span style="color: #FFD700;">&#9733;</span> Final 3 Players — Play to Round 20!';
+                el.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="#FFD700" stroke="#FFD700" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;"><path d="M6 9H4.5a2.5 2.5 0 010-5H6"/><path d="M18 9h1.5a2.5 2.5 0 000-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20 17 22"/><path d="M18 2H6v7a6 6 0 1012 0V2z"/></svg>Final 3 Players — Play to Round 20!';
                 el.style.borderColor = 'var(--success)';
                 el.style.color = 'var(--success)';
                 el.style.background = 'rgba(16, 185, 129, 0.1)';
             } else {
-                el.textContent = `✓ No more eliminations • ${activePlayers} players continue to round 20`;
+                el.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>No more eliminations · ${activePlayers} players continue to round 20`;
                 el.style.borderColor = 'var(--secondary)';
                 el.style.color = 'var(--secondary)';
                 el.style.background = 'rgba(6, 182, 212, 0.1)';
@@ -3212,7 +3236,7 @@
                 else if (isWinner(player)) row.classList.add('winner');
                 else if (isElimNext && player.totalScore === lowest && active.length > 3) row.classList.add('danger-zone');
 
-                let rank = player.eliminated ? '✗' : isWinner(player) ? '★' : (displayIdx + 1);
+                let rank = player.eliminated ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>' : isWinner(player) ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="#FFD700" stroke="#FFD700" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>' : (displayIdx + 1);
 
                 let badge = '';
                 if (player.eliminated) {
@@ -3963,7 +3987,7 @@
             if (!installButton && !window.matchMedia('(display-mode: standalone)').matches) {
                 installButton = document.createElement('button');
                 installButton.className = 'btn btn-primary';
-                installButton.innerHTML = '📱 Install';
+                installButton.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Install';
                 installButton.style.cssText = 'position: fixed; bottom: 20px; right: 20px; z-index: 10000; box-shadow: 0 8px 32px rgba(139, 92, 246, 0.6); animation: pulse 2s ease-in-out infinite;';
                 installButton.onclick = async () => {
                     if (deferredPrompt) {
