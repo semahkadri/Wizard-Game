@@ -1735,7 +1735,7 @@
             position: fixed;
             bottom: 24px;
             left: 24px;
-            z-index: 9999;
+            z-index: 99998;
             display: flex;
             align-items: center;
             gap: 0.5rem;
@@ -1804,10 +1804,19 @@
             width: 100%;
             max-height: 88vh;
             overflow-y: auto;
+            overflow-x: hidden;
+            direction: ltr;
             padding: 2.5rem 2rem;
             position: relative;
             box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7), 0 0 80px rgba(139, 92, 246, 0.15);
             animation: modalPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 206, 49, 0.5) rgba(30, 41, 59, 0.3);
+        }
+
+        .rules-modal-content {
+            direction: rtl;
+            text-align: right;
         }
 
         @keyframes modalPop {
@@ -1816,16 +1825,22 @@
         }
 
         .rules-modal-box::-webkit-scrollbar {
-            width: 6px;
+            width: 8px;
         }
 
         .rules-modal-box::-webkit-scrollbar-track {
-            background: transparent;
+            background: rgba(30, 41, 59, 0.3);
+            border-radius: 4px;
         }
 
         .rules-modal-box::-webkit-scrollbar-thumb {
-            background: rgba(139, 92, 246, 0.4);
-            border-radius: 3px;
+            background: linear-gradient(180deg, #FFD700, #FF8C00);
+            border-radius: 4px;
+            border: 1px solid rgba(255, 206, 49, 0.3);
+        }
+
+        .rules-modal-box::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, #FFE44D, #FFD700);
         }
 
         .rules-close {
@@ -2117,8 +2132,9 @@
 
         <!-- Tunisian Rules Modal -->
         <div class="rules-modal-overlay" id="tunisianRulesModal">
-            <div class="rules-modal-box" dir="rtl" style="text-align: right;">
-                <button class="rules-close" onclick="closeTunisianRules()">✕</button>
+            <div class="rules-modal-box">
+              <div class="rules-modal-content">
+                <button class="rules-close" onclick="closeTunisianRules()" style="float: left;">✕</button>
 
                 <div class="rules-modal-header">
                     <h2>🇹🇳 كيفاش تلعب Wizard</h2>
@@ -2262,6 +2278,7 @@
                 <button class="tn-got-it" onclick="closeTunisianRules()">
                     ✅ فهمت، يلّا نلعبو!
                 </button>
+              </div>
             </div>
         </div>
 
