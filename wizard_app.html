@@ -2906,33 +2906,26 @@
 
         // Professional Duel Messages
         const duelStorylines = [
-            "Multiple players tied | Card draw determines elimination",
-            "Tie-breaker required | Draw to determine survivor",
-            "Equal scores detected | Highest card wins",
-            "Tournament rule invoked | Card draw elimination",
-            "Tie must be broken | Draw for survival"
+            "تعادل! لازم نسحبو كوارط باش نعرفو شكون يطيح",
+            "نفس النقاط... الكوارط تقرّر شكون يروّح",
+            "سحب كوارط باش نفكّو التعادل",
+            "حظ الكوارط يحكم... أقل كارطة تطيح"
         ];
 
         const duelMessages = {
             instruction: [
-                "Highest card survives | Lowest card eliminated",
-                "Draw determines fate | High survives, low eliminated",
-                "Card values decide | Highest stays, lowest goes",
-                "Elimination by draw | Highest card wins"
+                "أقل كارطة تطيح... يلّا نشوفو",
+                "اللي يجيب أقل كارطة يروّح",
+                "الكوارط تحكم... أقل وحدة = إقصاء",
+                "أضعف كارطة = باي باي"
             ],
-            survivor: [
-                "SURVIVED | Card value sufficient",
-                "CONTINUES | Draw successful",
-                "REMAINS | Higher card drawn",
-                "SAVED | Superior draw",
-                "ADVANCES | Winning card"
-            ],
+            survivor: [],
             eliminated: [
-                "ELIMINATED | Lowest card drawn",
-                "REMOVED | Insufficient card value",
-                "OUT | Draw unsuccessful",
-                "DISCONNECTED | Lowest value",
-                "ELIMINATED | Card too low"
+                "طاح... الكارطة خانتو 💀",
+                "أقل كارطة = أقل حظ = باي باي 👋",
+                "الكوارط قالت كلمتها 🖤",
+                "ما كانش عندو حظ حتى في السحب 😂",
+                "حتى الكوارط ما حبّتوش 💀",
             ]
         };
 
@@ -3567,12 +3560,12 @@
 
                 // Show tie message
                 const resultDiv = document.getElementById('duelResults');
-                let tieHTML = '<div style="font-size: 1rem; color: var(--warning); margin-bottom: 0.5rem; text-align: center; font-weight: 700;">TIE DETECTED - REDRAWING</div>';
+                let tieHTML = '<div style="font-size: 1rem; color: var(--warning); margin-bottom: 0.5rem; text-align: center; font-weight: 700;">تعادل! لازم نعاودو السحب 🔄</div>';
 
                 tiedForLowest.forEach(tied => {
                     tieHTML += `
                         <div class="duel-result-item" style="border-color: var(--warning); color: var(--warning); background: rgba(245, 158, 11, 0.15);">
-                            ${tied.player.name} drew ${tied.card.display} (Value: ${tied.cardValue}) | TIED - Draw again
+                            ${tied.player.name} سحب ${tied.card.display} (${tied.cardValue}) | تعادل — نعاودو
                         </div>
                     `;
                 });
@@ -3600,27 +3593,15 @@
                 const loserDiv = document.getElementById(`duel-player-${loser.index}`);
                 loserDiv.classList.add('eliminated');
 
-                // Show ALL players' results sorted by card value
+                // Show ONLY the loser
                 const resultDiv = document.getElementById('duelResults');
-                const survivorMsg = duelMessages.survivor[Math.floor(Math.random() * duelMessages.survivor.length)];
                 const eliminatedMsg = duelMessages.eliminated[Math.floor(Math.random() * duelMessages.eliminated.length)];
 
-                let resultsHTML = '<div style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 0.5rem; text-align: center;">CARD DRAW RESULTS (Highest to Lowest)</div>';
-
-                results.forEach((result, position) => {
-                    const isWinner = result.index === winner.index;
-                    const isLoser = result.index === loser.index;
-                    const statusClass = isWinner ? 'survivor' : (isLoser ? 'eliminated' : '');
-                    const statusMsg = isWinner ? survivorMsg : (isLoser ? eliminatedMsg : 'NEUTRAL | Middle value');
-
-                    resultsHTML += `
-                        <div class="duel-result-item ${statusClass}" style="${!statusClass ? 'border-color: var(--text-muted); color: var(--text-primary); background: rgba(100, 116, 139, 0.1);' : ''}">
-                            ${result.player.name} drew ${result.card.display} (Value: ${result.cardValue}) | ${statusMsg}
-                        </div>
-                    `;
-                });
-
-                resultDiv.innerHTML = resultsHTML;
+                resultDiv.innerHTML = `
+                    <div class="duel-result-item eliminated" style="font-size: 1.05rem; padding: 1rem;">
+                        <strong>${loser.player.name}</strong> drew ${loser.card.display} (Value: ${loser.cardValue}) | ${eliminatedMsg}
+                    </div>
+                `;
                 resultDiv.style.display = 'flex';
 
                 // Update button - Professional text
