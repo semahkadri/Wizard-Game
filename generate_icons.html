@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Wizard Game Icon Generator</title>
+<style>
+body { background: #0f172a; color: white; font-family: Arial; text-align: center; padding: 20px; }
+h1 { color: #fbbf24; }
+.preview { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; margin: 20px 0; }
+.preview canvas { border: 1px solid #334155; border-radius: 12px; }
+.preview .label { color: #94a3b8; font-size: 12px; margin-top: 4px; }
+button { background: linear-gradient(135deg, #8B5CF6, #06B6D4); color: white; border: none; padding: 15px 40px; font-size: 18px; border-radius: 12px; cursor: pointer; margin: 10px; }
+button:hover { transform: scale(1.05); }
+.info { color: #94a3b8; margin: 10px 0; }
+</style>
+</head>
+<body>
+<h1>🧙‍♂️ Wizard Game - Professional Icon Generator</h1>
+<p class="info">Click "Generate & Download All" to create all PWA icons</p>
+<div class="preview" id="preview"></div>
+<button onclick="downloadAll()">⬇️ Generate & Download All Icons</button>
+
+<script>
+function drawIcon(canvas, size) {
+    const ctx = canvas.getContext('2d');
+    canvas.width = size;
+    canvas.height = size;
+    const s = size; // shorthand
+
+    // === BACKGROUND: Deep dark gradient ===
+    const bgGrad = ctx.createRadialGradient(s*0.5, s*0.3, 0, s*0.5, s*0.5, s*0.7);
+    bgGrad.addColorStop(0, '#1a1040');
+    bgGrad.addColorStop(0.5, '#0d0b1a');
+    bgGrad.addColorStop(1, '#050510');
+    ctx.fillStyle = bgGrad;
+    ctx.beginPath();
+    ctx.arc(s/2, s/2, s/2, 0, Math.PI * 2);
+    ctx.fill();
+
+    // === OUTER RING: Gold border ===
+    ctx.strokeStyle = '#fbbf24';
+    ctx.lineWidth = s * 0.025;
+    ctx.beginPath();
+    ctx.arc(s/2, s/2, s/2 - s*0.02, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // Inner decorative ring
+    const ringGrad = ctx.createLinearGradient(0, 0, s, s);
+    ringGrad.addColorStop(0, '#fbbf24');
+    ringGrad.addColorStop(0.5, '#f59e0b');
+    ringGrad.addColorStop(1, '#d97706');
+    ctx.strokeStyle = ringGrad;
+    ctx.lineWidth = s * 0.008;
+    ctx.beginPath();
+    ctx.arc(s/2, s/2, s/2 - s*0.055, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // === MAGICAL PARTICLES / STARS in background ===
+    ctx.save();
+    for (let i = 0; i < 25; i++) {
+        const angle = (i / 25) * Math.PI * 2 + 0.3;
+        const dist = s * 0.15 + Math.random() * s * 0.28;
+        const px = s/2 + Math.cos(angle) * dist;
+        const py = s/2 + Math.sin(angle) * dist;
+        const starSize = s * 0.004 + Math.random() * s * 0.008;
+        const alpha = 0.3 + Math.random() * 0.5;
+
+        const starGrad = ctx.createRadialGradient(px, py, 0, px, py, starSize * 3);
+        starGrad.addColorStop(0, `rgba(251, 191, 36, ${alpha})`);
+        starGrad.addColorStop(0.5, `rgba(168, 130, 255, ${alpha * 0.5})`);
+        starGrad.addColorStop(1, 'rgba(168, 130, 255, 0)');
+        ctx.fillStyle = starGrad;
+        ctx.beginPath();
+        ctx.arc(px, py, starSize * 3, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
+        ctx.beginPath();
+        ctx.arc(px, py, starSize, 0, Math.PI * 2);
+        ctx.fill();
+    }
+    ctx.restore();
+
+    // === WIZARD HAT ===
+    const hatCenterX = s * 0.5;
+    const hatTopY = s * 0.08;
+    const hatBaseY = s * 0.42;
+    const hatWidth = s * 0.42;
+
+    // Hat shadow/glow
+    ctx.save();
+    ctx.shadowColor = 'rgba(139, 92, 246, 0.6)';
+    ctx.shadowBlur = s * 0.06;
+
+    // Hat body (triangle with slight curve)
+    const hatGrad = ctx.createLinearGradient(hatCenterX - hatWidth/2, hatBaseY, hatCenterX, hatTopY);
+    hatGrad.addColorStop(0, '#2d1b69');
+    hatGrad.addColorStop(0.3, '#4c1d95');
+    hatGrad.addColorStop(0.6, '#6d28d9');
+    hatGrad.addColorStop(1, '#7c3aed');
+
+    ctx.fillStyle = hatGrad;
+    ctx.beginPath();
+    ctx.moveTo(hatCenterX, hatTopY);
+    // Left side with curve
+    ctx.quadraticCurveTo(hatCenterX - hatWidth * 0.15, hatBaseY * 0.5, hatCenterX - hatWidth/2, hatBaseY);
+    // Bottom of hat
+    ctx.lineTo(hatCenterX + hatWidth/2, hatBaseY);
+    // Right side with curve
+    ctx.quadraticCurveTo(hatCenterX + hatWidth * 0.15, hatBaseY * 0.5, hatCenterX, hatTopY);
+    ctx.fill();
+    ctx.restore();
+
+    // Hat tip - slight bend with star
+    ctx.save();
+    // Star at hat tip
+    drawStar(ctx, hatCenterX + s*0.02, hatTopY + s*0.01, 5, s*0.025, s*0.012);
+    ctx.fillStyle = '#fbbf24';
+    ctx.fill();
+    // Star glow
+    const tipGlow = ctx.createRadialGradient(hatCenterX + s*0.02, hatTopY + s*0.01, 0, hatCenterX + s*0.02, hatTopY + s*0.01, s*0.05);
+    tipGlow.addColorStop(0, 'rgba(251, 191, 36, 0.6)');
+    tipGlow.addColorStop(1, 'rgba(251, 191, 36, 0)');
+    ctx.fillStyle = tipGlow;
+    ctx.beginPath();
+    ctx.arc(hatCenterX + s*0.02, hatTopY + s*0.01, s*0.05, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+
+    // Hat band (gold belt)
+    const bandY = hatBaseY - s * 0.04;
+    const bandGrad = ctx.createLinearGradient(0, bandY, 0, bandY + s * 0.04);
+    bandGrad.addColorStop(0, '#fbbf24');
+    bandGrad.addColorStop(0.5, '#f59e0b');
+    bandGrad.addColorStop(1, '#d97706');
+    ctx.fillStyle = bandGrad;
+    ctx.beginPath();
+    // Curved band following hat shape
+    const bandLeft = hatCenterX - hatWidth * 0.38;
+    const bandRight = hatCenterX + hatWidth * 0.38;
+    ctx.moveTo(bandLeft, bandY + s*0.015);
+    ctx.quadraticCurveTo(hatCenterX, bandY - s*0.005, bandRight, bandY + s*0.015);
+    ctx.lineTo(bandRight, bandY + s*0.04);
+    ctx.quadraticCurveTo(hatCenterX, bandY + s*0.02, bandLeft, bandY + s*0.04);
+    ctx.closePath();
+    ctx.fill();
+
+    // Buckle on hat band
+    const buckleX = hatCenterX;
+    const buckleY = bandY + s*0.025;
+    const buckleW = s * 0.04;
+    const buckleH = s * 0.03;
+    ctx.strokeStyle = '#fef3c7';
+    ctx.lineWidth = s * 0.005;
+    ctx.strokeRect(buckleX - buckleW/2, buckleY - buckleH/2, buckleW, buckleH);
+
+    // Hat brim
+    const brimGrad = ctx.createLinearGradient(0, hatBaseY, 0, hatBaseY + s*0.035);
+    brimGrad.addColorStop(0, '#4c1d95');
+    brimGrad.addColorStop(1, '#2d1b69');
+    ctx.fillStyle = brimGrad;
+    ctx.beginPath();
+    ctx.ellipse(hatCenterX, hatBaseY + s*0.01, hatWidth * 0.65, s*0.035, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Brim highlight
+    ctx.strokeStyle = 'rgba(139, 92, 246, 0.5)';
+    ctx.lineWidth = s * 0.004;
+    ctx.beginPath();
+    ctx.ellipse(hatCenterX, hatBaseY + s*0.005, hatWidth * 0.6, s*0.02, 0, Math.PI, Math.PI * 2);
+    ctx.stroke();
+
+    // === PLAYING CARD (behind/below hat) ===
+    const cardW = s * 0.28;
+    const cardH = s * 0.38;
+    const cardX = s * 0.5 - cardW/2;
+    const cardY = s * 0.40;
+
+    // Card shadow
+    ctx.save();
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+    ctx.shadowBlur = s * 0.03;
+    ctx.shadowOffsetY = s * 0.01;
+
+    // Card body
+    const cardGrad = ctx.createLinearGradient(cardX, cardY, cardX + cardW, cardY + cardH);
+    cardGrad.addColorStop(0, '#1e1b4b');
+    cardGrad.addColorStop(0.5, '#1e1040');
+    cardGrad.addColorStop(1, '#0f0a2a');
+    ctx.fillStyle = cardGrad;
+    roundRect(ctx, cardX, cardY, cardW, cardH, s*0.02);
+    ctx.fill();
+    ctx.restore();
+
+    // Card border (gold)
+    ctx.strokeStyle = '#d97706';
+    ctx.lineWidth = s * 0.006;
+    roundRect(ctx, cardX, cardY, cardW, cardH, s*0.02);
+    ctx.stroke();
+
+    // Inner card border
+    const inset = s * 0.015;
+    ctx.strokeStyle = 'rgba(217, 119, 6, 0.3)';
+    ctx.lineWidth = s * 0.003;
+    roundRect(ctx, cardX + inset, cardY + inset, cardW - inset*2, cardH - inset*2, s*0.012);
+    ctx.stroke();
+
+    // === "W" LETTER ON CARD ===
+    ctx.save();
+    const fontSize = s * 0.22;
+    ctx.font = `900 ${fontSize}px Arial, sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+
+    const wX = s * 0.5;
+    const wY = cardY + cardH * 0.45;
+
+    // W glow
+    ctx.shadowColor = 'rgba(139, 92, 246, 0.8)';
+    ctx.shadowBlur = s * 0.04;
+
+    // W gradient fill
+    const wGrad = ctx.createLinearGradient(wX - s*0.1, wY - s*0.1, wX + s*0.1, wY + s*0.1);
+    wGrad.addColorStop(0, '#c4b5fd');
+    wGrad.addColorStop(0.3, '#ffffff');
+    wGrad.addColorStop(0.7, '#e9d5ff');
+    wGrad.addColorStop(1, '#a78bfa');
+    ctx.fillStyle = wGrad;
+    ctx.fillText('W', wX, wY);
+
+    // W outline for depth
+    ctx.shadowBlur = 0;
+    ctx.strokeStyle = 'rgba(139, 92, 246, 0.4)';
+    ctx.lineWidth = s * 0.003;
+    ctx.strokeText('W', wX, wY);
+    ctx.restore();
+
+    // === SUIT SYMBOLS on card corners ===
+    const suitSize = s * 0.035;
+    ctx.font = `${suitSize}px Arial`;
+    ctx.textAlign = 'center';
+
+    // Top-left: spade
+    ctx.fillStyle = '#a78bfa';
+    ctx.fillText('♠', cardX + s*0.03, cardY + s*0.04);
+
+    // Top-right: heart
+    ctx.fillStyle = '#f87171';
+    ctx.fillText('♥', cardX + cardW - s*0.03, cardY + s*0.04);
+
+    // Bottom-left: diamond
+    ctx.fillStyle = '#fbbf24';
+    ctx.fillText('♦', cardX + s*0.03, cardY + cardH - s*0.02);
+
+    // Bottom-right: club
+    ctx.fillStyle = '#34d399';
+    ctx.fillText('♣', cardX + cardW - s*0.03, cardY + cardH - s*0.02);
+
+    // === SPARKLE EFFECTS around card ===
+    // Left sparkle
+    drawSparkle(ctx, cardX - s*0.04, cardY + cardH*0.3, s*0.02, '#fbbf24');
+    // Right sparkle
+    drawSparkle(ctx, cardX + cardW + s*0.04, cardY + cardH*0.5, s*0.015, '#a78bfa');
+    // Top sparkle
+    drawSparkle(ctx, cardX + cardW*0.8, cardY - s*0.02, s*0.012, '#fbbf24');
+
+    // === "WIZARD" TEXT at bottom ===
+    ctx.save();
+    const titleSize = s * 0.075;
+    ctx.font = `900 ${titleSize}px Arial, sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.letterSpacing = `${s * 0.01}px`;
+
+    const titleY = cardY + cardH + s * 0.075;
+
+    // Title glow
+    ctx.shadowColor = 'rgba(251, 191, 36, 0.6)';
+    ctx.shadowBlur = s * 0.03;
+
+    // Title gradient
+    const titleGrad = ctx.createLinearGradient(s*0.25, titleY, s*0.75, titleY);
+    titleGrad.addColorStop(0, '#fbbf24');
+    titleGrad.addColorStop(0.3, '#fef3c7');
+    titleGrad.addColorStop(0.5, '#fbbf24');
+    titleGrad.addColorStop(0.7, '#fef3c7');
+    titleGrad.addColorStop(1, '#f59e0b');
+    ctx.fillStyle = titleGrad;
+    ctx.fillText('WIZARD', s/2, titleY);
+
+    // Title outline
+    ctx.shadowBlur = 0;
+    ctx.strokeStyle = 'rgba(180, 120, 0, 0.5)';
+    ctx.lineWidth = s * 0.002;
+    ctx.strokeText('WIZARD', s/2, titleY);
+    ctx.restore();
+
+    // === MAGICAL AURA around everything ===
+    // Top aura
+    const auraGrad = ctx.createRadialGradient(s/2, s*0.35, s*0.05, s/2, s*0.35, s*0.45);
+    auraGrad.addColorStop(0, 'rgba(139, 92, 246, 0.08)');
+    auraGrad.addColorStop(0.5, 'rgba(139, 92, 246, 0.03)');
+    auraGrad.addColorStop(1, 'rgba(139, 92, 246, 0)');
+    ctx.fillStyle = auraGrad;
+    ctx.beginPath();
+    ctx.arc(s/2, s*0.35, s*0.45, 0, Math.PI * 2);
+    ctx.fill();
+}
+
+function drawStar(ctx, cx, cy, spikes, outerR, innerR) {
+    let rot = Math.PI / 2 * 3;
+    let step = Math.PI / spikes;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy - outerR);
+    for (let i = 0; i < spikes; i++) {
+        ctx.lineTo(cx + Math.cos(rot) * outerR, cy + Math.sin(rot) * outerR);
+        rot += step;
+        ctx.lineTo(cx + Math.cos(rot) * innerR, cy + Math.sin(rot) * innerR);
+        rot += step;
+    }
+    ctx.lineTo(cx, cy - outerR);
+    ctx.closePath();
+}
+
+function drawSparkle(ctx, x, y, size, color) {
+    ctx.save();
+    ctx.fillStyle = color;
+    ctx.globalAlpha = 0.8;
+    // Vertical line
+    ctx.fillRect(x - size*0.12, y - size, size*0.24, size*2);
+    // Horizontal line
+    ctx.fillRect(x - size, y - size*0.12, size*2, size*0.24);
+    // Center glow
+    const glow = ctx.createRadialGradient(x, y, 0, x, y, size*1.5);
+    glow.addColorStop(0, color);
+    glow.addColorStop(1, 'transparent');
+    ctx.fillStyle = glow;
+    ctx.globalAlpha = 0.4;
+    ctx.beginPath();
+    ctx.arc(x, y, size*1.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+}
+
+function roundRect(ctx, x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.lineTo(x + w - r, y);
+    ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+    ctx.lineTo(x + w, y + h - r);
+    ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+    ctx.lineTo(x + r, y + h);
+    ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+    ctx.lineTo(x, y + r);
+    ctx.quadraticCurveTo(x, y, x + r, y);
+    ctx.closePath();
+}
+
+// Generate all sizes
+const sizes = {
+    standard: [512, 384, 192, 144, 152, 128, 96, 72],
+    ios: [180, 167, 152, 120],
+    favicon: [32, 16]
+};
+
+function generatePreview() {
+    const preview = document.getElementById('preview');
+    preview.innerHTML = '';
+
+    // Show large preview
+    [512, 192, 96].forEach(size => {
+        const div = document.createElement('div');
+        const canvas = document.createElement('canvas');
+        const displaySize = Math.min(size, 300);
+        canvas.style.width = displaySize + 'px';
+        canvas.style.height = displaySize + 'px';
+        drawIcon(canvas, size);
+        div.appendChild(canvas);
+        const label = document.createElement('div');
+        label.className = 'label';
+        label.textContent = `${size}x${size}`;
+        div.appendChild(label);
+        preview.appendChild(div);
+    });
+}
+
+function downloadAll() {
+    // Standard PWA icons
+    sizes.standard.forEach(size => {
+        downloadIcon(size, `icon-${size}x${size}.png`);
+    });
+
+    // iOS icons
+    sizes.ios.forEach(size => {
+        downloadIcon(size, `apple-touch-icon-${size}x${size}.png`);
+    });
+
+    // Favicons
+    sizes.favicon.forEach(size => {
+        downloadIcon(size, `favicon-${size}x${size}.png`);
+    });
+
+    alert('All icons downloaded! Move them to your icons/ folder.');
+}
+
+function downloadIcon(size, filename) {
+    const canvas = document.createElement('canvas');
+    drawIcon(canvas, size);
+
+    const link = document.createElement('a');
+    link.download = filename;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+}
+
+// Generate preview on load
+generatePreview();
+</script>
+</body>
+</html>
