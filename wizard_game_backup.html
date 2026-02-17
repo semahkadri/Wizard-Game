@@ -1,0 +1,1999 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#8B5CF6">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>Wizard • Complete Card Game</title>
+    <link rel="manifest" href="./manifest.json">
+    <link rel="apple-touch-icon" href="./icons/icon-192x192.png">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;900&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            /* Primary Colors */
+            --primary: #8B5CF6;
+            --primary-light: #A78BFA;
+            --primary-dark: #7C3AED;
+            --secondary: #06B6D4;
+            --secondary-light: #22D3EE;
+            --accent: #EC4899;
+            --success: #10B981;
+            --danger: #EF4444;
+            --warning: #F59E0B;
+
+            /* Suit Colors */
+            --dwarf: #8B4513;
+            --dwarf-light: #CD853F;
+            --elf: #228B22;
+            --elf-light: #90EE90;
+            --giant: #DC143C;
+            --giant-light: #FF6347;
+            --human: #1E90FF;
+            --human-light: #87CEEB;
+            --wizard: #9400D3;
+            --wizard-gold: #FFD700;
+            --jester: #FF1493;
+            --jester-light: #FFB6C1;
+
+            /* Backgrounds */
+            --bg-primary: #0F172A;
+            --bg-secondary: #1E293B;
+            --bg-tertiary: #334155;
+            --bg-card: rgba(30, 41, 59, 0.9);
+            --bg-glass: rgba(139, 92, 246, 0.1);
+
+            /* Text */
+            --text-primary: #F1F5F9;
+            --text-secondary: #CBD5E1;
+            --text-tertiary: #94A3B8;
+
+            /* Game Table */
+            --table-felt: #1B4332;
+            --table-border: #2D6A4F;
+
+            /* Shadows */
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
+            --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.5);
+            --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.6);
+            --glow-primary: 0 0 30px rgba(139, 92, 246, 0.6);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #0F172A 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        /* ===== SETUP SCREEN ===== */
+        #setupScreen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 2rem;
+            position: relative;
+            overflow-y: auto;
+        }
+
+        .setup-container {
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 3rem;
+            max-width: 600px;
+            width: 100%;
+            border: 2px solid rgba(139, 92, 246, 0.3);
+            box-shadow: var(--shadow-lg), var(--glow-primary);
+        }
+
+        .setup-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 3rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .setup-subtitle {
+            text-align: center;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+        }
+
+        .player-count-selector {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .player-count-btn {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.5rem;
+            font-weight: 700;
+            padding: 1.5rem;
+            border: 3px solid rgba(139, 92, 246, 0.3);
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .player-count-btn:hover {
+            border-color: var(--primary);
+            transform: translateY(-5px);
+            box-shadow: var(--glow-primary);
+        }
+
+        .player-count-btn.selected {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            border-color: var(--primary);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .player-names {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .player-input-group {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .player-number {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.5rem;
+            font-weight: 900;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            border-radius: 12px;
+            flex-shrink: 0;
+        }
+
+        .player-name-input {
+            flex: 1;
+            font-family: 'Inter', sans-serif;
+            font-size: 1.1rem;
+            padding: 1rem 1.5rem;
+            background: var(--bg-secondary);
+            border: 2px solid rgba(139, 92, 246, 0.3);
+            border-radius: 12px;
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+
+        .player-name-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: var(--glow-primary);
+        }
+
+        .btn {
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            font-size: 1.2rem;
+            padding: 1.2rem 2.5rem;
+            border: none;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-start {
+            width: 100%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            color: white;
+            box-shadow: var(--shadow-md), var(--glow-primary);
+        }
+
+        .btn-start:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg), 0 0 40px rgba(139, 92, 246, 0.8);
+        }
+
+        .btn-start:active {
+            transform: translateY(0);
+        }
+
+        /* ===== GAME TABLE ===== */
+        #gameScreen {
+            display: none;
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .game-table {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            background:
+                radial-gradient(circle at 50% 50%, rgba(27, 67, 50, 0.4) 0%, transparent 70%),
+                linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+        }
+
+        /* Game Header */
+        .game-header {
+            position: absolute;
+            top: 1rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            padding: 1rem 2rem;
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+            border: 2px solid rgba(139, 92, 246, 0.3);
+            box-shadow: var(--shadow-md);
+            z-index: 100;
+        }
+
+        .trump-card-display {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.5rem 1rem;
+            background: rgba(139, 92, 246, 0.2);
+            border-radius: 12px;
+            border: 2px solid var(--primary);
+        }
+
+        .trump-label {
+            font-weight: 700;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            font-size: 0.875rem;
+        }
+
+        .trump-suit {
+            font-size: 2rem;
+        }
+
+        .round-display {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        /* Center Trick Area */
+        .trick-area {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 500px;
+            height: 500px;
+            background:
+                radial-gradient(circle, rgba(27, 67, 50, 0.8) 0%, rgba(27, 67, 50, 0.6) 100%);
+            border-radius: 50%;
+            border: 8px solid var(--table-border);
+            box-shadow:
+                inset 0 4px 20px rgba(0, 0, 0, 0.6),
+                0 10px 40px rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+
+        .trick-cards-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Player Areas (4 positions around table) */
+        .player-area {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            z-index: 50;
+        }
+
+        /* Bottom Player (Main Player) */
+        .player-area.bottom {
+            bottom: 1rem;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        /* Top Player */
+        .player-area.top {
+            top: 5rem;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        /* Left Player */
+        .player-area.left {
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        /* Right Player */
+        .player-area.right {
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .player-info {
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            border: 2px solid rgba(139, 92, 246, 0.3);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            min-width: 200px;
+        }
+
+        .player-info.active {
+            border-color: var(--primary);
+            box-shadow: var(--glow-primary);
+            animation: pulseGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: var(--glow-primary); }
+            50% { box-shadow: 0 0 50px rgba(139, 92, 246, 1); }
+        }
+
+        .player-name {
+            font-family: 'Orbitron', monospace;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--text-primary);
+        }
+
+        .player-stats {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .player-hand {
+            display: flex;
+            gap: -30px;
+            justify-content: center;
+            perspective: 1000px;
+        }
+
+        .player-area.bottom .player-hand {
+            gap: 0.5rem;
+        }
+
+        /* ===== CARD STYLES ===== */
+        .card {
+            width: 90px;
+            height: 126px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform-style: preserve-3d;
+        }
+
+        .card:hover {
+            transform: translateY(-20px) scale(1.1);
+            z-index: 1000;
+        }
+
+        .card.selected {
+            transform: translateY(-30px) scale(1.15);
+        }
+
+        .card.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .card.playing {
+            animation: playCard 0.8s ease;
+        }
+
+        @keyframes playCard {
+            0% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-100px) scale(1.2) rotate(5deg); }
+            100% { transform: translate(var(--target-x), var(--target-y)) scale(0.9); }
+        }
+
+        .card-face {
+            width: 100%;
+            height: 100%;
+            border-radius: 8px;
+            background: white;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            border: 3px solid;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-back {
+            width: 100%;
+            height: 100%;
+            border-radius: 8px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+
+        .card-back::before {
+            content: '';
+            position: absolute;
+            inset: 10px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 6px;
+        }
+
+        .card-corner {
+            padding: 0.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.15rem;
+        }
+
+        .card-corner.top-left {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .card-corner.bottom-right {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            transform: rotate(180deg);
+        }
+
+        .card-value {
+            font-family: 'Orbitron', monospace;
+            font-weight: 900;
+            font-size: 1.3rem;
+            line-height: 1;
+        }
+
+        .card-symbol-small {
+            font-size: 1.2rem;
+            line-height: 1;
+        }
+
+        .card-center {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.3rem;
+        }
+
+        .card-symbol-large {
+            font-size: 3rem;
+            line-height: 1;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+        }
+
+        .card-suit-name {
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* Special card styles */
+        .card-face.wizard {
+            background: linear-gradient(135deg, #1a0033 0%, #330066 50%, #1a0033 100%);
+            border-color: var(--wizard-gold);
+        }
+
+        .card-face.wizard .card-value,
+        .card-face.wizard .card-suit-name {
+            color: var(--wizard-gold);
+        }
+
+        .card-face.wizard .card-center {
+            position: relative;
+        }
+
+        .card-face.wizard .card-symbol-large {
+            animation: wizardGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes wizardGlow {
+            0%, 100% { filter: drop-shadow(0 0 10px gold); }
+            50% { filter: drop-shadow(0 0 20px gold); }
+        }
+
+        .card-face.jester {
+            background: linear-gradient(135deg, #ff69b4 0%, #ff1493 50%, #ff69b4 100%);
+            border-color: var(--jester);
+        }
+
+        /* ===== BIDDING MODAL ===== */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--bg-secondary);
+            border-radius: 24px;
+            padding: 2.5rem;
+            max-width: 500px;
+            width: 90%;
+            border: 2px solid rgba(139, 92, 246, 0.3);
+            box-shadow: var(--shadow-lg), var(--glow-primary);
+            animation: scaleIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes scaleIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--primary);
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-text {
+            text-align: center;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+        }
+
+        .bid-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .bid-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            border: none;
+            color: white;
+            font-size: 2rem;
+            font-weight: 900;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .bid-btn:hover {
+            transform: scale(1.1);
+            box-shadow: var(--glow-primary);
+        }
+
+        .bid-btn:active {
+            transform: scale(0.95);
+        }
+
+        .bid-value {
+            font-family: 'Orbitron', monospace;
+            font-size: 4rem;
+            font-weight: 900;
+            color: var(--primary);
+            min-width: 120px;
+            text-align: center;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .card {
+                width: 60px;
+                height: 84px;
+            }
+
+            .card-value {
+                font-size: 0.9rem;
+            }
+
+            .card-symbol-small {
+                font-size: 0.8rem;
+            }
+
+            .card-symbol-large {
+                font-size: 2rem;
+            }
+
+            .card-suit-name {
+                font-size: 0.5rem;
+            }
+
+            .trick-area {
+                width: 350px;
+                height: 350px;
+            }
+
+            .player-info {
+                min-width: 150px;
+                padding: 0.5rem 1rem;
+            }
+
+            .player-name {
+                font-size: 0.9rem;
+            }
+
+            .player-stats {
+                font-size: 0.75rem;
+            }
+        }
+
+        /* ===== PARTICLE SYSTEM ===== */
+        .particle {
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            animation: fall linear forwards;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(5px);
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .loading.active {
+            display: flex;
+        }
+
+        .spinner {
+            width: 80px;
+            height: 80px;
+            border: 6px solid rgba(139, 92, 246, 0.3);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ===== CONFETTI & CELEBRATIONS ===== */
+        .confetti {
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            border-radius: 50%;
+        }
+
+        @keyframes confettiFall {
+            0% {
+                transform: translateY(0) rotateZ(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotateZ(720deg);
+                opacity: 0;
+            }
+        }
+
+        .elimination-particle {
+            position: fixed;
+            font-size: 2rem;
+            pointer-events: none;
+            z-index: 9999;
+            animation: eliminationExplode 1s ease-out forwards;
+        }
+
+        @keyframes eliminationExplode {
+            0% {
+                transform: translate(-50%, -50%) scale(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(1);
+                opacity: 0;
+            }
+        }
+
+        @keyframes sparkleExplode {
+            0% {
+                transform: translate(-50%, -50%) scale(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(1);
+                opacity: 0;
+            }
+        }
+
+        /* Statistics Dashboard */
+        .stats-dashboard {
+            position: fixed;
+            top: 6rem;
+            right: 1rem;
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            padding: 1.5rem;
+            border-radius: 16px;
+            border: 2px solid rgba(139, 92, 246, 0.3);
+            min-width: 250px;
+            z-index: 90;
+        }
+
+        .stats-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+        }
+
+        .stat-item:last-child {
+            border-bottom: none;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .stat-value {
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        /* Elimination Modal */
+        #eliminationModal .modal {
+            border: 3px solid var(--danger);
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, var(--bg-secondary) 100%);
+        }
+
+        .eliminated-avatar {
+            filter: grayscale(1) opacity(0.5);
+            animation: skull-bounce 0.5s ease-in-out;
+        }
+
+        @keyframes skull-bounce {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            25% { transform: translateY(-20px) rotate(-10deg); }
+            75% { transform: translateY(-10px) rotate(10deg); }
+        }
+
+        /* Winner Modal Enhancement */
+        #winnerModal .modal {
+            border: 3px solid var(--wizard-gold);
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, var(--bg-secondary) 100%);
+            animation: winner-glow 2s ease-in-out infinite;
+        }
+
+        @keyframes winner-glow {
+            0%, 100% { box-shadow: 0 0 30px rgba(255, 215, 0, 0.5); }
+            50% { box-shadow: 0 0 60px rgba(255, 215, 0, 0.8); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Setup Screen -->
+    <div id="setupScreen">
+        <div class="setup-container">
+            <h1 class="setup-title">WIZARD</h1>
+            <p class="setup-subtitle">The Ultimate Card Game Tournament</p>
+
+            <h3 style="margin-bottom: 1rem; color: var(--text-secondary); font-size: 1rem; text-transform: uppercase; letter-spacing: 0.1em;">Select Number of Players</h3>
+            <div class="player-count-selector">
+                <button class="player-count-btn" onclick="selectPlayerCount(3)">3</button>
+                <button class="player-count-btn selected" onclick="selectPlayerCount(4)">4</button>
+                <button class="player-count-btn" onclick="selectPlayerCount(5)">5</button>
+                <button class="player-count-btn" onclick="selectPlayerCount(6)">6</button>
+            </div>
+
+            <h3 style="margin-bottom: 1rem; color: var(--text-secondary); font-size: 1rem; text-transform: uppercase; letter-spacing: 0.1em;">Enter Player Names</h3>
+            <div class="player-names" id="playerNamesContainer">
+                <!-- Dynamic player inputs -->
+            </div>
+
+            <button class="btn btn-start" onclick="startGame()">
+                🎮 START GAME
+            </button>
+        </div>
+    </div>
+
+    <!-- Game Screen -->
+    <div id="gameScreen">
+        <div class="game-table">
+            <!-- Game Header -->
+            <div class="game-header">
+                <div class="trump-card-display">
+                    <span class="trump-label">Trump:</span>
+                    <span class="trump-suit" id="trumpDisplay">—</span>
+                </div>
+                <div class="round-display" id="roundDisplay">Round 1/20</div>
+                <div style="color: var(--text-secondary);">
+                    <span id="phaseDisplay">Bidding...</span>
+                </div>
+            </div>
+
+            <!-- Center Trick Area -->
+            <div class="trick-area">
+                <div class="trick-cards-container" id="trickArea">
+                    <!-- Cards played appear here -->
+                </div>
+            </div>
+
+            <!-- Player Areas (dynamically positioned) -->
+            <div id="playerAreasContainer"></div>
+        </div>
+    </div>
+
+    <!-- Bidding Modal -->
+    <div class="modal-overlay" id="biddingModal">
+        <div class="modal">
+            <h2 class="modal-title">Place Your Bid</h2>
+            <p class="modal-text">
+                <span id="biddingPlayerName">Player</span>, how many tricks will you win?
+            </p>
+            <div class="bid-controls">
+                <button class="bid-btn" onclick="adjustBid(-1)">−</button>
+                <div class="bid-value" id="bidValue">0</div>
+                <button class="bid-btn" onclick="adjustBid(1)">+</button>
+            </div>
+            <button class="btn btn-start" onclick="confirmBid()">
+                ✓ CONFIRM BID
+            </button>
+        </div>
+    </div>
+
+    <!-- Statistics Dashboard -->
+    <div class="stats-dashboard" id="statsDashboard" style="display: none;">
+        <div class="stats-title">📊 STATISTICS</div>
+        <div class="stat-item">
+            <span class="stat-label">Active Players</span>
+            <span class="stat-value" id="statActivePlayers">—</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label">Leader</span>
+            <span class="stat-value" id="statLeader">—</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label">Avg Score</span>
+            <span class="stat-value" id="statAvgScore">—</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label">Highest Score</span>
+            <span class="stat-value" id="statHighScore">—</span>
+        </div>
+    </div>
+
+    <!-- Elimination Modal -->
+    <div class="modal-overlay" id="eliminationModal">
+        <div class="modal">
+            <h2 class="modal-title" style="color: var(--danger);">💀 ELIMINATED!</h2>
+            <div style="text-align: center; margin: 2rem 0;">
+                <div id="eliminatedAvatar" style="margin-bottom: 1rem;"></div>
+                <h3 style="font-size: 1.5rem; margin-bottom: 0.5rem;" id="eliminatedName"></h3>
+                <p style="color: var(--text-secondary);">
+                    Eliminated in Round <strong id="eliminatedRound"></strong>
+                </p>
+                <p style="color: var(--text-secondary); margin-top: 0.5rem;">
+                    Final Score: <strong id="eliminatedScore"></strong>
+                </p>
+            </div>
+            <p class="modal-text" id="eliminationMessage" style="font-style: italic; color: var(--danger);"></p>
+            <button class="btn btn-start" onclick="closeEliminationModal()">
+                Continue
+            </button>
+        </div>
+    </div>
+
+    <!-- Winner Modal -->
+    <div class="modal-overlay" id="winnerModal">
+        <div class="modal">
+            <h2 class="modal-title" style="color: var(--wizard-gold); font-size: 2.5rem;">
+                🏆 CHAMPION!
+            </h2>
+            <div style="text-align: center; margin: 2rem 0;">
+                <div id="winnerAvatar" style="margin-bottom: 1rem;"></div>
+                <h3 style="font-size: 2rem; margin-bottom: 0.5rem;" id="winnerName"></h3>
+                <p style="color: var(--wizard-gold); font-size: 1.5rem; font-weight: 700;">
+                    <span id="winnerScore"></span> Points
+                </p>
+            </div>
+            <p class="modal-text" id="winnerMessage" style="font-size: 1.2rem; font-weight: 600;"></p>
+            <button class="btn btn-start" onclick="location.reload()">
+                🎮 NEW GAME
+            </button>
+        </div>
+    </div>
+
+    <!-- Loading Screen -->
+    <div class="loading" id="loadingScreen">
+        <div class="spinner"></div>
+    </div>
+
+    <script>
+        // ===== GAME CONSTANTS =====
+
+        const SUITS = {
+            dwarf: {
+                name: 'DWARF',
+                symbol: '🪨',
+                color: '#8B4513',
+                lightColor: '#CD853F',
+                gradient: 'linear-gradient(180deg, white 0%, #CD853F15 100%)'
+            },
+            elf: {
+                name: 'ELF',
+                symbol: '🌿',
+                color: '#228B22',
+                lightColor: '#90EE90',
+                gradient: 'linear-gradient(180deg, white 0%, #90EE9015 100%)'
+            },
+            giant: {
+                name: 'GIANT',
+                symbol: '⚔️',
+                color: '#DC143C',
+                lightColor: '#FF6347',
+                gradient: 'linear-gradient(180deg, white 0%, #FF634715 100%)'
+            },
+            human: {
+                name: 'HUMAN',
+                symbol: '💧',
+                color: '#1E90FF',
+                lightColor: '#87CEEB',
+                gradient: 'linear-gradient(180deg, white 0%, #87CEEB15 100%)'
+            },
+            wizard: {
+                name: 'WIZARD',
+                symbol: '⭐',
+                color: '#9400D3',
+                goldColor: '#FFD700',
+                special: true
+            },
+            jester: {
+                name: 'JESTER',
+                symbol: '🃏',
+                color: '#FF1493',
+                lightColor: '#FFB6C1',
+                special: true
+            }
+        };
+
+        const PLAYER_POSITIONS = {
+            3: ['bottom', 'top-left', 'top-right'],
+            4: ['bottom', 'left', 'top', 'right'],
+            5: ['bottom', 'left', 'top-left', 'top-right', 'right'],
+            6: ['bottom', 'left', 'top-left', 'top', 'top-right', 'right']
+        };
+
+        // ===== GAME STATE =====
+
+        let gameState = {
+            // Setup
+            playerCount: 4,
+            playerNames: [],
+            players: [],
+
+            // Deck
+            deck: [],
+
+            // Round
+            currentRound: 1,
+            maxRounds: 20,
+            trumpCard: null,
+            trumpSuit: null,
+
+            // Gameplay
+            phase: 'setup', // setup|bidding|playing|scoring
+            currentPlayerIndex: 0,
+            dealerIndex: 0,
+            leadPlayerIndex: 0,
+
+            // Trick
+            currentTrick: [],
+            leadSuit: null,
+
+            // Data
+            playerHands: {},
+            bids: {},
+            tricksWon: {},
+            scores: {},
+
+            // Bidding
+            currentBiddingPlayerIndex: 0,
+            currentBid: 0
+        };
+
+        // ===== SETUP FUNCTIONS =====
+
+        let selectedPlayerCount = 4;
+
+        function selectPlayerCount(count) {
+            selectedPlayerCount = count;
+            gameState.playerCount = count;
+
+            // Update UI
+            document.querySelectorAll('.player-count-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            event.target.classList.add('selected');
+
+            // Generate player name inputs
+            generatePlayerInputs();
+        }
+
+        function generatePlayerInputs() {
+            const container = document.getElementById('playerNamesContainer');
+            container.innerHTML = '';
+
+            for (let i = 0; i < selectedPlayerCount; i++) {
+                const defaultName = i === 0 ? 'You' : `Player ${i + 1}`;
+                container.innerHTML += `
+                    <div class="player-input-group">
+                        <div class="player-number">${i + 1}</div>
+                        <input
+                            type="text"
+                            class="player-name-input"
+                            id="playerName${i}"
+                            placeholder="${defaultName}"
+                            value="${defaultName}"
+                        >
+                    </div>
+                `;
+            }
+        }
+
+        function startGame() {
+            // Collect player names
+            gameState.playerNames = [];
+            for (let i = 0; i < selectedPlayerCount; i++) {
+                const input = document.getElementById(`playerName${i}`);
+                const name = input.value.trim() || (i === 0 ? 'You' : `Player ${i + 1}`);
+                gameState.playerNames.push(name);
+            }
+
+            gameState.players = gameState.playerNames;
+
+            // Initialize player data
+            gameState.players.forEach(player => {
+                gameState.playerHands[player] = [];
+                gameState.bids[player] = null;
+                gameState.tricksWon[player] = 0;
+                gameState.scores[player] = 0;
+            });
+
+            // Calculate max rounds
+            const cardsPerPlayer = Math.floor(60 / selectedPlayerCount);
+            gameState.maxRounds = cardsPerPlayer;
+
+            // Show loading
+            showLoading();
+
+            // Transition to game
+            setTimeout(() => {
+                document.getElementById('setupScreen').style.display = 'none';
+                document.getElementById('gameScreen').style.display = 'block';
+                hideLoading();
+
+                // Setup game table
+                setupGameTable();
+
+                // Start first round
+                startRound();
+            }, 1000);
+        }
+
+        function setupGameTable() {
+            const positions = PLAYER_POSITIONS[gameState.playerCount];
+            const container = document.getElementById('playerAreasContainer');
+            container.innerHTML = '';
+
+            gameState.players.forEach((player, index) => {
+                const position = positions[index];
+                const positionClass = position.replace('-', ' ');
+
+                container.innerHTML += `
+                    <div class="player-area ${positionClass}" id="playerArea${index}">
+                        <div class="player-info" id="playerInfo${index}">
+                            <div class="player-name">${player}</div>
+                            <div class="player-stats">
+                                <span>Bid: <strong id="playerBid${index}">—</strong></span>
+                                <span>Tricks: <strong id="playerTricks${index}">0</strong></span>
+                                <span>Score: <strong id="playerScore${index}">0</strong></span>
+                            </div>
+                        </div>
+                        <div class="player-hand" id="playerHand${index}">
+                            <!-- Cards rendered here -->
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // ===== CARD SYSTEM =====
+
+        function createDeck() {
+            const deck = [];
+
+            // Regular suits (13 cards each)
+            ['dwarf', 'elf', 'giant', 'human'].forEach(suit => {
+                for (let value = 1; value <= 13; value++) {
+                    deck.push({
+                        id: `${suit}_${value}`,
+                        suit: suit,
+                        value: value,
+                        ...SUITS[suit]
+                    });
+                }
+            });
+
+            // Wizards (4 cards)
+            for (let i = 1; i <= 4; i++) {
+                deck.push({
+                    id: `wizard_${i}`,
+                    suit: 'wizard',
+                    value: 100,
+                    ...SUITS.wizard
+                });
+            }
+
+            // Jesters (4 cards)
+            for (let i = 1; i <= 4; i++) {
+                deck.push({
+                    id: `jester_${i}`,
+                    suit: 'jester',
+                    value: 0,
+                    ...SUITS.jester
+                });
+            }
+
+            return deck;
+        }
+
+        function shuffleDeck(deck) {
+            const shuffled = [...deck];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        function renderCard(card, faceDown = false) {
+            if (faceDown) {
+                return `
+                    <div class="card" data-card-id="${card.id}">
+                        <div class="card-back">
+                            <span style="font-size: 2.5rem;">⭐</span>
+                        </div>
+                    </div>
+                `;
+            }
+
+            const isSpecial = card.suit === 'wizard' || card.suit === 'jester';
+            const displayValue = isSpecial ? '' : card.value;
+            const cardClass = isSpecial ? card.suit : '';
+
+            if (card.suit === 'wizard') {
+                return `
+                    <div class="card" data-card-id="${card.id}">
+                        <div class="card-face wizard">
+                            <div class="card-corner top-left">
+                                <div class="card-symbol-small">${card.symbol}</div>
+                            </div>
+                            <div class="card-center">
+                                <div class="card-symbol-large">${card.symbol}</div>
+                                <div class="card-suit-name">${card.name}</div>
+                            </div>
+                            <div class="card-corner bottom-right">
+                                <div class="card-symbol-small">${card.symbol}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            if (card.suit === 'jester') {
+                return `
+                    <div class="card" data-card-id="${card.id}">
+                        <div class="card-face jester" style="border-color: ${card.color};">
+                            <div class="card-corner top-left">
+                                <div class="card-symbol-small">${card.symbol}</div>
+                            </div>
+                            <div class="card-center">
+                                <div class="card-symbol-large">${card.symbol}</div>
+                                <div class="card-suit-name" style="color: white;">${card.name}</div>
+                            </div>
+                            <div class="card-corner bottom-right">
+                                <div class="card-symbol-small">${card.symbol}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            return `
+                <div class="card" data-card-id="${card.id}">
+                    <div class="card-face" style="border-color: ${card.color}; background: ${card.gradient};">
+                        <div class="card-corner top-left">
+                            <div class="card-value" style="color: ${card.color};">${displayValue}</div>
+                            <div class="card-symbol-small">${card.symbol}</div>
+                        </div>
+                        <div class="card-center">
+                            <div class="card-symbol-large">${card.symbol}</div>
+                            <div class="card-suit-name" style="color: ${card.color};">${card.name}</div>
+                        </div>
+                        <div class="card-corner bottom-right">
+                            <div class="card-value" style="color: ${card.color};">${displayValue}</div>
+                            <div class="card-symbol-small">${card.symbol}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // ===== ROUND MANAGEMENT =====
+
+        function startRound() {
+            console.log(`🎲 Starting Round ${gameState.currentRound}`);
+
+            gameState.phase = 'dealing';
+            updatePhaseDisplay();
+
+            // Create and shuffle deck
+            gameState.deck = shuffleDeck(createDeck());
+
+            // Reset trick data
+            gameState.currentTrick = [];
+            gameState.leadSuit = null;
+            gameState.players.forEach(player => {
+                gameState.tricksWon[player] = 0;
+                gameState.bids[player] = null;
+            });
+
+            // Deal cards
+            const cardsPerPlayer = gameState.currentRound;
+            gameState.players.forEach((player, index) => {
+                gameState.playerHands[player] = gameState.deck.splice(0, cardsPerPlayer);
+            });
+
+            // Reveal trump card
+            if (gameState.deck.length > 0) {
+                gameState.trumpCard = gameState.deck[0];
+                determineTrumpSuit();
+            } else {
+                gameState.trumpCard = null;
+                gameState.trumpSuit = null;
+            }
+
+            updateUI();
+
+            // Animate card dealing
+            setTimeout(() => {
+                startBidding();
+            }, 1500);
+        }
+
+        function determineTrumpSuit() {
+            if (gameState.trumpCard.suit === 'jester') {
+                gameState.trumpSuit = null;
+            } else if (gameState.trumpCard.suit === 'wizard') {
+                // Dealer chooses (for now, random)
+                const regularSuits = ['dwarf', 'elf', 'giant', 'human'];
+                gameState.trumpSuit = regularSuits[Math.floor(Math.random() * regularSuits.length)];
+            } else {
+                gameState.trumpSuit = gameState.trumpCard.suit;
+            }
+        }
+
+        function startBidding() {
+            gameState.phase = 'bidding';
+            gameState.currentBiddingPlayerIndex = (gameState.dealerIndex + 1) % gameState.players.length;
+            updatePhaseDisplay();
+            showBiddingForPlayer(gameState.currentBiddingPlayerIndex);
+        }
+
+        function showBiddingForPlayer(playerIndex) {
+            const playerName = gameState.players[playerIndex];
+            document.getElementById('biddingPlayerName').textContent = playerName;
+            gameState.currentBid = 0;
+            document.getElementById('bidValue').textContent = '0';
+            document.getElementById('biddingModal').classList.add('active');
+
+            // Highlight active player
+            updateActivePlayer(playerIndex);
+        }
+
+        function adjustBid(delta) {
+            const maxBid = gameState.currentRound;
+            gameState.currentBid = Math.max(0, Math.min(maxBid, gameState.currentBid + delta));
+            document.getElementById('bidValue').textContent = gameState.currentBid;
+        }
+
+        function confirmBid() {
+            const playerIndex = gameState.currentBiddingPlayerIndex;
+            const playerName = gameState.players[playerIndex];
+            gameState.bids[playerName] = gameState.currentBid;
+
+            document.getElementById('biddingModal').classList.remove('active');
+            updateUI();
+
+            // Next player bids
+            gameState.currentBiddingPlayerIndex = (gameState.currentBiddingPlayerIndex + 1) % gameState.players.length;
+
+            if (gameState.currentBiddingPlayerIndex === (gameState.dealerIndex + 1) % gameState.players.length) {
+                // All players have bid
+                startPlaying();
+            } else {
+                setTimeout(() => {
+                    showBiddingForPlayer(gameState.currentBiddingPlayerIndex);
+                }, 500);
+            }
+        }
+
+        function startPlaying() {
+            gameState.phase = 'playing';
+            gameState.leadPlayerIndex = (gameState.dealerIndex + 1) % gameState.players.length;
+            gameState.currentPlayerIndex = gameState.leadPlayerIndex;
+            updatePhaseDisplay();
+            updateUI();
+            updateActivePlayer(gameState.currentPlayerIndex);
+
+            console.log(`🎮 Playing phase started. Lead player: ${gameState.players[gameState.currentPlayerIndex]}`);
+
+            // If AI starts, trigger them to play
+            if (gameState.currentPlayerIndex !== 0) {
+                setTimeout(() => playAICard(gameState.currentPlayerIndex), 1500);
+            }
+        }
+
+        // ===== UI UPDATE =====
+
+        function updateUI() {
+            // Update round display
+            document.getElementById('roundDisplay').textContent = `Round ${gameState.currentRound}/${gameState.maxRounds}`;
+
+            // Update trump display
+            if (gameState.trumpSuit) {
+                const trump = SUITS[gameState.trumpSuit];
+                document.getElementById('trumpDisplay').textContent = trump.symbol + ' ' + trump.name;
+            } else {
+                document.getElementById('trumpDisplay').textContent = '—';
+            }
+
+            // Update player info and hands
+            gameState.players.forEach((player, index) => {
+                document.getElementById(`playerBid${index}`).textContent = gameState.bids[player] !== null ? gameState.bids[player] : '—';
+                document.getElementById(`playerTricks${index}`).textContent = gameState.tricksWon[player];
+                document.getElementById(`playerScore${index}`).textContent = gameState.scores[player];
+
+                // Render hand (only show face-up for main player - index 0)
+                const handEl = document.getElementById(`playerHand${index}`);
+                const cards = gameState.playerHands[player];
+
+                if (index === 0) {
+                    // Main player - show all cards face-up
+                    handEl.innerHTML = cards.map(card => renderCard(card)).join('');
+
+                    // Add click handlers
+                    handEl.querySelectorAll('.card').forEach(cardEl => {
+                        cardEl.addEventListener('click', () => {
+                            console.log(`🎯 Card clicked: ${cardEl.dataset.cardId}, Phase: ${gameState.phase}, CurrentPlayer: ${gameState.currentPlayerIndex}`);
+
+                            if (gameState.phase === 'playing' && gameState.currentPlayerIndex === 0) {
+                                playCard(0, cardEl.dataset.cardId);
+                            } else if (gameState.phase !== 'playing') {
+                                console.log('⚠️ Not in playing phase yet!');
+                            } else if (gameState.currentPlayerIndex !== 0) {
+                                console.log('⚠️ Not your turn!');
+                            }
+                        });
+                    });
+                } else {
+                    // Other players - show cards face-down
+                    handEl.innerHTML = cards.map(card => renderCard(card, true)).join('');
+                }
+            });
+
+            // Update trick area
+            updateTrickArea();
+
+            // Update statistics dashboard
+            updateStatistics();
+        }
+
+        function updateTrickArea() {
+            const trickEl = document.getElementById('trickArea');
+
+            if (gameState.currentTrick.length === 0) {
+                trickEl.innerHTML = '<p style="color: var(--text-tertiary); font-size: 1.2rem;">Waiting for cards...</p>';
+            } else {
+                trickEl.innerHTML = gameState.currentTrick.map(play => `
+                    <div style="position: absolute; text-align: center; animation: fadeIn 0.5s ease;">
+                        ${renderCard(play.card)}
+                        <div style="margin-top: 0.5rem; font-weight: 700; color: var(--text-secondary);">
+                            ${play.playerName}
+                        </div>
+                    </div>
+                `).join('');
+
+                // Position cards in circle
+                const cards = trickEl.querySelectorAll('& > div');
+                cards.forEach((cardEl, index) => {
+                    const angle = (index / gameState.currentTrick.length) * Math.PI * 2 - Math.PI / 2;
+                    const radius = 150;
+                    const x = Math.cos(angle) * radius;
+                    const y = Math.sin(angle) * radius;
+                    cardEl.style.transform = `translate(${x}px, ${y}px)`;
+                });
+            }
+        }
+
+        function updateActivePlayer(playerIndex) {
+            gameState.players.forEach((player, index) => {
+                const infoEl = document.getElementById(`playerInfo${index}`);
+                if (index === playerIndex) {
+                    infoEl.classList.add('active');
+                } else {
+                    infoEl.classList.remove('active');
+                }
+            });
+        }
+
+        function updatePhaseDisplay() {
+            const phases = {
+                'dealing': 'Dealing cards...',
+                'bidding': 'Bidding phase',
+                'playing': 'Playing tricks',
+                'scoring': 'Calculating scores...'
+            };
+            document.getElementById('phaseDisplay').textContent = phases[gameState.phase] || '';
+        }
+
+        // ===== GAME LOGIC =====
+
+        function playCard(playerIndex, cardId) {
+            const player = gameState.players[playerIndex];
+            const card = gameState.playerHands[player].find(c => c.id === cardId);
+
+            if (!card) {
+                console.log(`❌ Card not found: ${cardId}`);
+                return;
+            }
+
+            console.log(`🃏 ${player} plays ${card.suit} ${card.value}`);
+
+            // Validate play
+            if (!isValidPlay(player, card)) {
+                alert('Invalid play! You must follow suit if possible.');
+                console.log(`❌ Invalid play: must follow suit ${gameState.leadSuit}`);
+                return;
+            }
+
+            // Remove from hand
+            gameState.playerHands[player] = gameState.playerHands[player].filter(c => c.id !== cardId);
+
+            // Add to trick
+            gameState.currentTrick.push({
+                playerIndex: playerIndex,
+                playerName: player,
+                card: card
+            });
+
+            // Set lead suit
+            if (gameState.currentTrick.length === 1 && card.suit !== 'jester' && card.suit !== 'wizard') {
+                gameState.leadSuit = card.suit;
+                console.log(`🎯 Lead suit set to: ${gameState.leadSuit}`);
+            }
+
+            updateUI();
+
+            // Next player
+            gameState.currentPlayerIndex = (gameState.currentPlayerIndex + 1) % gameState.players.length;
+            updateActivePlayer(gameState.currentPlayerIndex);
+
+            console.log(`📍 Trick: ${gameState.currentTrick.length}/${gameState.players.length} cards`);
+
+            // Check if trick complete
+            if (gameState.currentTrick.length === gameState.players.length) {
+                console.log('🏁 Trick complete! Resolving...');
+                setTimeout(resolveTrick, 1500);
+            } else if (gameState.currentPlayerIndex !== 0) {
+                // AI plays
+                console.log(`🤖 AI turn: ${gameState.players[gameState.currentPlayerIndex]}`);
+                setTimeout(() => playAICard(gameState.currentPlayerIndex), 1000);
+            }
+        }
+
+        function playAICard(playerIndex) {
+            const player = gameState.players[playerIndex];
+            const hand = gameState.playerHands[player];
+
+            if (hand.length === 0) return;
+
+            // Simple AI: play first valid card
+            let cardToPlay = hand[0];
+
+            // Try to follow suit
+            if (gameState.leadSuit) {
+                const suitCard = hand.find(c => c.suit === gameState.leadSuit);
+                if (suitCard) cardToPlay = suitCard;
+            }
+
+            playCard(playerIndex, cardToPlay.id);
+        }
+
+        function isValidPlay(player, card) {
+            if (gameState.currentTrick.length === 0) return true; // Leading
+            if (card.suit === 'wizard' || card.suit === 'jester') return true; // Special cards
+
+            const hand = gameState.playerHands[player];
+            const hasLeadSuit = hand.some(c => c.suit === gameState.leadSuit);
+
+            if (!hasLeadSuit) return true; // Can't follow suit
+            return card.suit === gameState.leadSuit; // Must follow suit
+        }
+
+        function resolveTrick() {
+            const winnerIndex = determineTrickWinner();
+            const winner = gameState.players[winnerIndex];
+
+            gameState.tricksWon[winner]++;
+
+            console.log(`🏆 ${winner} wins the trick!`);
+
+            // Animate cards flying to winner
+            createParticles(50, ['✨', '⭐', '💫']);
+
+            // Reset trick
+            gameState.currentTrick = [];
+            gameState.leadSuit = null;
+            gameState.leadPlayerIndex = winnerIndex;
+            gameState.currentPlayerIndex = winnerIndex;
+
+            updateUI();
+            updateActivePlayer(winnerIndex);
+
+            // Check if round complete
+            if (gameState.playerHands[gameState.players[0]].length === 0) {
+                setTimeout(endRound, 2000);
+            } else if (winnerIndex !== 0) {
+                // AI leads next trick
+                setTimeout(() => playAICard(winnerIndex), 1500);
+            }
+        }
+
+        function determineTrickWinner() {
+            let winningPlayIndex = 0;
+            let winningPlay = gameState.currentTrick[0];
+
+            for (let i = 1; i < gameState.currentTrick.length; i++) {
+                const currentPlay = gameState.currentTrick[i];
+
+                // Wizard wins
+                if (currentPlay.card.suit === 'wizard') {
+                    if (winningPlay.card.suit !== 'wizard') {
+                        winningPlayIndex = i;
+                        winningPlay = currentPlay;
+                    }
+                    continue;
+                }
+
+                // Jester loses
+                if (currentPlay.card.suit === 'jester') continue;
+                if (winningPlay.card.suit === 'jester') {
+                    winningPlayIndex = i;
+                    winningPlay = currentPlay;
+                    continue;
+                }
+
+                // Trump beats non-trump
+                if (gameState.trumpSuit) {
+                    const currentIsTrump = currentPlay.card.suit === gameState.trumpSuit;
+                    const winningIsTrump = winningPlay.card.suit === gameState.trumpSuit;
+
+                    if (currentIsTrump && !winningIsTrump) {
+                        winningPlayIndex = i;
+                        winningPlay = currentPlay;
+                        continue;
+                    }
+
+                    if (currentIsTrump && winningIsTrump) {
+                        if (currentPlay.card.value > winningPlay.card.value) {
+                            winningPlayIndex = i;
+                            winningPlay = currentPlay;
+                        }
+                        continue;
+                    }
+                }
+
+                // Lead suit
+                if (currentPlay.card.suit === gameState.leadSuit && winningPlay.card.suit === gameState.leadSuit) {
+                    if (currentPlay.card.value > winningPlay.card.value) {
+                        winningPlayIndex = i;
+                        winningPlay = currentPlay;
+                    }
+                }
+            }
+
+            return winningPlay.playerIndex;
+        }
+
+        function endRound() {
+            gameState.phase = 'scoring';
+            updatePhaseDisplay();
+
+            // Calculate scores
+            gameState.players.forEach(player => {
+                const bid = gameState.bids[player];
+                const actual = gameState.tricksWon[player];
+
+                if (bid === actual) {
+                    gameState.scores[player] += 20 + (10 * actual);
+                } else {
+                    gameState.scores[player] -= 10 * Math.abs(bid - actual);
+                }
+            });
+
+            updateUI();
+
+            // Show score summary
+            showScoreSummary();
+
+            // Next round
+            gameState.currentRound++;
+            gameState.dealerIndex = (gameState.dealerIndex + 1) % gameState.players.length;
+
+            if (gameState.currentRound <= gameState.maxRounds) {
+                setTimeout(startRound, 3000);
+            } else {
+                setTimeout(endGame, 3000);
+            }
+        }
+
+        function showScoreSummary() {
+            // TODO: Show elegant score summary modal
+            console.log('📊 Round Complete');
+            gameState.players.forEach(player => {
+                console.log(`${player}: ${gameState.scores[player]} points`);
+            });
+        }
+
+        function endGame() {
+            const winner = gameState.players.reduce((a, b) =>
+                gameState.scores[a] > gameState.scores[b] ? a : b
+            );
+
+            // Launch epic confetti celebration
+            launchConfetti();
+
+            // Show winner modal
+            document.getElementById('winnerName').textContent = winner;
+            document.getElementById('winnerScore').textContent = gameState.scores[winner];
+
+            const randomMessage = winnerMessages[Math.floor(Math.random() * winnerMessages.length)];
+            document.getElementById('winnerMessage').textContent = randomMessage;
+
+            // Create winner avatar (simple emoji for now)
+            const winnerIndex = gameState.players.indexOf(winner);
+            const winnerEmoji = ['👑', '🏆', '⭐', '💫'][winnerIndex % 4];
+            document.getElementById('winnerAvatar').innerHTML = `<div style="font-size: 5rem;">${winnerEmoji}</div>`;
+
+            document.getElementById('winnerModal').classList.add('active');
+
+            console.log('🏆 GAME COMPLETE!');
+            console.log(`Winner: ${winner} with ${gameState.scores[winner]} points`);
+        }
+
+        // ===== UTILITY FUNCTIONS =====
+
+        function showLoading() {
+            document.getElementById('loadingScreen').classList.add('active');
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingScreen').classList.remove('active');
+        }
+
+        function createParticles(count, emojis) {
+            for (let i = 0; i < count; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                particle.style.left = Math.random() * 100 + 'vw';
+                particle.style.fontSize = (Math.random() * 2 + 1) + 'rem';
+                particle.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                particle.style.animationDelay = (Math.random() * 0.5) + 's';
+                document.body.appendChild(particle);
+
+                setTimeout(() => particle.remove(), 5000);
+            }
+        }
+
+        // ===== CONFETTI CELEBRATION SYSTEM =====
+
+        function launchConfetti() {
+            const colors = ['#8B5CF6', '#06B6D4', '#EC4899', '#F59E0B', '#10B981', '#EF4444', '#FBBF24', '#A78BFA'];
+            const emojis = ['🎉', '⭐', '✨', '🏆', '👑', '🎊', '💎', '🌟'];
+
+            // Launch 200 colorful confetti pieces
+            for (let i = 0; i < 200; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + 'vw';
+                    confetti.style.top = '-20px';
+                    confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.animation = `confettiFall ${Math.random() * 2 + 3}s ease-out forwards`;
+                    confetti.style.width = (Math.random() * 10 + 5) + 'px';
+                    confetti.style.height = (Math.random() * 10 + 5) + 'px';
+
+                    // Random shapes
+                    if (Math.random() > 0.5) {
+                        confetti.style.borderRadius = '0'; // Square
+                    }
+
+                    document.body.appendChild(confetti);
+                    setTimeout(() => confetti.remove(), 5000);
+                }, i * 15);
+            }
+
+            // Launch 50 emoji celebration particles
+            for (let i = 0; i < 50; i++) {
+                setTimeout(() => {
+                    const emoji = document.createElement('div');
+                    emoji.style.position = 'fixed';
+                    emoji.style.left = Math.random() * 100 + 'vw';
+                    emoji.style.top = '-20px';
+                    emoji.style.fontSize = (Math.random() * 20 + 20) + 'px';
+                    emoji.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                    emoji.style.pointerEvents = 'none';
+                    emoji.style.zIndex = '9999';
+                    emoji.style.animation = `confettiFall ${Math.random() * 2 + 3}s ease-out forwards`;
+
+                    document.body.appendChild(emoji);
+                    setTimeout(() => emoji.remove(), 5000);
+                }, i * 40);
+            }
+
+            // Launch sparkle explosion from center
+            for (let i = 0; i < 30; i++) {
+                setTimeout(() => {
+                    const sparkle = document.createElement('div');
+                    sparkle.textContent = '✨';
+                    sparkle.style.position = 'fixed';
+                    sparkle.style.left = '50%';
+                    sparkle.style.top = '50%';
+                    sparkle.style.fontSize = '2rem';
+                    sparkle.style.pointerEvents = 'none';
+                    sparkle.style.zIndex = '9999';
+
+                    const angle = (Math.PI * 2 * i) / 30;
+                    const distance = 150 + Math.random() * 200;
+                    const tx = Math.cos(angle) * distance;
+                    const ty = Math.sin(angle) * distance;
+
+                    sparkle.style.animation = `sparkleExplode 1.5s ease-out forwards`;
+                    sparkle.style.setProperty('--tx', tx + 'px');
+                    sparkle.style.setProperty('--ty', ty + 'px');
+
+                    document.body.appendChild(sparkle);
+                    setTimeout(() => sparkle.remove(), 1500);
+                }, i * 20);
+            }
+        }
+
+        // ===== ELIMINATION SYSTEM =====
+
+        const eliminationMessages = [
+            "Mission failed. Better luck next time! 🎯",
+            "Your wizard has left the building 🚪",
+            "The cards have spoken... farewell! 🃏",
+            "Disconnected from the tournament matrix 🔌",
+            "Your journey ends here, brave wizard ⚔️",
+            "The tournament gods have decided 🌩️",
+            "You've been outplayed... literally! 👋",
+            "Time to hang up your wizard hat 🎩",
+            "Not today, champion. Not today. ❌",
+            "The elimination train has no brakes! 🚂"
+        ];
+
+        const winnerMessages = [
+            "Absolute mastery! Your wizard skills are legendary!",
+            "Flawless victory! You've conquered the tournament!",
+            "The prophecy has been fulfilled! Hail the champion!",
+            "Unbelievable! You're the ultimate wizard master!",
+            "Legendary performance! The cards bow to you!",
+            "Supreme excellence! You are the chosen one!"
+        ];
+
+        function generateEliminationSchedule(numPlayers) {
+            // Generate elimination schedule to end with 3 players
+            if (numPlayers <= 3) return [];
+
+            const eliminations = numPlayers - 3;
+            const schedule = [];
+
+            // Spread eliminations across middle rounds
+            const startRound = Math.floor(gameState.maxRounds * 0.5);
+            const endRound = gameState.maxRounds - 2;
+            const interval = Math.floor((endRound - startRound) / eliminations);
+
+            for (let i = 0; i < eliminations; i++) {
+                schedule.push(startRound + (i * interval));
+            }
+
+            return schedule;
+        }
+
+        function launchEliminationParticles() {
+            const emojis = ['💀', '⚡', '💥', '🔥', '☠️', '❌'];
+
+            for (let i = 0; i < 20; i++) {
+                setTimeout(() => {
+                    const particle = document.createElement('div');
+                    particle.className = 'elimination-particle';
+                    particle.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                    particle.style.left = '50%';
+                    particle.style.top = '50%';
+
+                    const angle = (Math.PI * 2 * i) / 20;
+                    const distance = 200 + Math.random() * 200;
+                    const tx = Math.cos(angle) * distance;
+                    const ty = Math.sin(angle) * distance;
+
+                    particle.style.setProperty('--tx', tx + 'px');
+                    particle.style.setProperty('--ty', ty + 'px');
+
+                    document.body.appendChild(particle);
+                    setTimeout(() => particle.remove(), 1000);
+                }, i * 50);
+            }
+        }
+
+        function closeEliminationModal() {
+            document.getElementById('eliminationModal').classList.remove('active');
+        }
+
+        // ===== STATISTICS DASHBOARD =====
+
+        function updateStatistics() {
+            const dashboard = document.getElementById('statsDashboard');
+
+            if (gameState.phase === 'setup' || gameState.phase === 'dealing') {
+                dashboard.style.display = 'none';
+                return;
+            }
+
+            dashboard.style.display = 'block';
+
+            // Active players
+            const activePlayers = gameState.players.filter((_, idx) =>
+                !gameState.eliminated || !gameState.eliminated[idx]
+            ).length;
+            document.getElementById('statActivePlayers').textContent = activePlayers;
+
+            // Leader
+            let maxScore = -Infinity;
+            let leader = '—';
+            gameState.players.forEach(player => {
+                if (gameState.scores[player] > maxScore) {
+                    maxScore = gameState.scores[player];
+                    leader = player;
+                }
+            });
+            document.getElementById('statLeader').textContent = leader;
+
+            // Average score
+            const totalScore = gameState.players.reduce((sum, player) =>
+                sum + gameState.scores[player], 0
+            );
+            const avgScore = Math.round(totalScore / gameState.players.length);
+            document.getElementById('statAvgScore').textContent = avgScore;
+
+            // Highest score
+            document.getElementById('statHighScore').textContent = maxScore;
+        }
+
+        // ===== INITIALIZATION =====
+
+        window.onload = function() {
+            generatePlayerInputs();
+            console.log('🎴 Wizard Complete Game Loaded!');
+        };
+    </script>
+</body>
+</html>
