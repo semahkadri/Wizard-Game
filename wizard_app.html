@@ -471,6 +471,52 @@
             box-shadow: var(--shadow-lg), var(--glow-danger);
         }
 
+        .btn-secondary {
+            background: linear-gradient(135deg, var(--secondary) 0%, #0891B2 100%);
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg), 0 0 25px rgba(6, 182, 212, 0.6);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-warning:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg), 0 0 25px rgba(245, 158, 11, 0.6);
+        }
+
+        .player-select-card {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            padding: var(--space-md);
+            background: rgba(30, 41, 59, 0.6);
+            border: 2px solid rgba(139, 92, 246, 0.2);
+            border-radius: var(--radius-lg);
+            cursor: pointer;
+            transition: all var(--transition-base);
+        }
+
+        .player-select-card:hover {
+            border-color: rgba(239, 68, 68, 0.5);
+            background: rgba(239, 68, 68, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .player-select-card.selected {
+            border-color: var(--danger);
+            background: rgba(239, 68, 68, 0.15);
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.3);
+        }
+
         .btn:disabled {
             opacity: 0.4;
             cursor: not-allowed;
@@ -2180,6 +2226,17 @@
                     New Game
                 </button>
             </div>
+
+            <div class="btn-group" style="margin-top: var(--space-sm);">
+                <button class="btn btn-secondary" onclick="showAddPlayerModal()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4-4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+                    Add Player
+                </button>
+                <button class="btn btn-warning" onclick="showRemovePlayerModal()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4-4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+                    Remove Player
+                </button>
+            </div>
         </section>
 
         <!-- Tunisian Rules Floating Button -->
@@ -2452,6 +2509,80 @@
 
                 <div class="modal-buttons" id="duelButtons">
                     <button class="modal-btn modal-btn-primary" onclick="startDuelDraw()">DRAW CARDS</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Player Modal -->
+        <div class="modal-overlay" id="addPlayerModal">
+            <div class="modal">
+                <div class="modal-icon" style="background: rgba(6, 182, 212, 0.15); border-color: rgba(6, 182, 212, 0.3);">
+                    <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#06B6D4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4-4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+                </div>
+                <h3 class="modal-title" style="background: linear-gradient(135deg, var(--secondary) 0%, #0891B2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">ADD PLAYER</h3>
+
+                <!-- Step 1: Enter name -->
+                <div id="addPlayerStep1">
+                    <div style="margin: var(--space-lg) 0;">
+                        <input type="text" id="newPlayerName" placeholder="Enter player name..." maxlength="20" style="width: 100%; padding: var(--space-sm) var(--space-md); background: rgba(30, 41, 59, 0.8); border: 2px solid rgba(6, 182, 212, 0.3); border-radius: var(--radius-md); color: var(--text-primary); font-size: 1rem; font-family: 'Inter', sans-serif; outline: none; transition: border-color 0.3s;" onfocus="this.style.borderColor='rgba(6, 182, 212, 0.8)'" onblur="this.style.borderColor='rgba(6, 182, 212, 0.3)'">
+                        <p id="addPlayerInfo" style="color: var(--text-secondary); font-size: 0.85rem; margin-top: var(--space-sm);"></p>
+                    </div>
+                    <div class="modal-buttons">
+                        <button class="modal-btn modal-btn-cancel" onclick="closeAddPlayerModal()">Cancel</button>
+                        <button class="modal-btn modal-btn-primary" onclick="showAddPlayerConfirm()" style="background: linear-gradient(135deg, var(--secondary) 0%, #0891B2 100%);">Continue</button>
+                    </div>
+                </div>
+
+                <!-- Step 2: Confirm -->
+                <div id="addPlayerStep2" style="display: none;">
+                    <div style="display: flex; flex-direction: column; align-items: center; gap: var(--space-md); margin: var(--space-lg) 0; padding: var(--space-md); background: rgba(6, 182, 212, 0.08); border: 1px solid rgba(6, 182, 212, 0.2); border-radius: var(--radius-lg);">
+                        <div id="addPlayerPreviewAvatar"></div>
+                        <div style="text-align: center;">
+                            <p id="addPlayerPreviewName" style="font-family: 'Orbitron', monospace; font-size: 1.25rem; font-weight: 700; color: var(--text-primary);"></p>
+                            <p id="addPlayerPreviewScore" style="font-size: 0.9rem; color: var(--secondary); margin-top: var(--space-xs);"></p>
+                        </div>
+                    </div>
+                    <p style="color: var(--text-secondary); font-size: 0.85rem; text-align: center; margin-bottom: var(--space-md);">This player will join the current round and be eligible for elimination in future rounds.</p>
+                    <div class="modal-buttons">
+                        <button class="modal-btn modal-btn-cancel" onclick="backToAddStep1()">Back</button>
+                        <button class="modal-btn modal-btn-primary" onclick="confirmAddPlayer()" style="background: linear-gradient(135deg, var(--secondary) 0%, #0891B2 100%);">Confirm Add Player</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Remove Player Modal -->
+        <div class="modal-overlay" id="removePlayerModal">
+            <div class="modal" style="max-width: 500px;">
+                <div class="modal-icon" style="background: rgba(245, 158, 11, 0.15); border-color: rgba(245, 158, 11, 0.3);">
+                    <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4-4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+                </div>
+                <h3 class="modal-title" id="removeModalTitle" style="background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">REMOVE PLAYER</h3>
+
+                <!-- Step 1: Select player -->
+                <div id="removePlayerStep1">
+                    <p class="modal-text" style="margin-bottom: var(--space-md);">Select a player to eliminate from the game</p>
+                    <div id="removePlayerList" style="display: flex; flex-direction: column; gap: var(--space-sm); max-height: 300px; overflow-y: auto; margin-bottom: var(--space-lg);"></div>
+                    <div class="modal-buttons">
+                        <button class="modal-btn modal-btn-cancel" onclick="closeRemovePlayerModal()">Cancel</button>
+                        <button class="modal-btn modal-btn-primary" id="confirmRemoveBtn" onclick="showRemovePlayerConfirm()" style="background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%); opacity: 0.4; pointer-events: none;">Continue</button>
+                    </div>
+                </div>
+
+                <!-- Step 2: Confirm -->
+                <div id="removePlayerStep2" style="display: none;">
+                    <div style="display: flex; flex-direction: column; align-items: center; gap: var(--space-md); margin: var(--space-lg) 0; padding: var(--space-md); background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: var(--radius-lg);">
+                        <div id="removePlayerPreviewAvatar"></div>
+                        <div style="text-align: center;">
+                            <p id="removePlayerPreviewName" style="font-family: 'Orbitron', monospace; font-size: 1.25rem; font-weight: 700; color: var(--danger);"></p>
+                            <p id="removePlayerPreviewScore" style="font-size: 0.9rem; color: var(--text-secondary); margin-top: var(--space-xs);"></p>
+                        </div>
+                    </div>
+                    <p style="color: var(--danger); font-size: 0.9rem; text-align: center; font-weight: 600; margin-bottom: var(--space-md);">Are you sure? This player will be permanently eliminated from the tournament.</p>
+                    <div class="modal-buttons">
+                        <button class="modal-btn modal-btn-cancel" onclick="backToRemoveStep1()">Back</button>
+                        <button class="modal-btn modal-btn-confirm" onclick="confirmRemovePlayer()">Confirm Eliminate</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -2937,6 +3068,9 @@
             inProgress: false
         };
 
+        // Mid-game player management state
+        let selectedPlayerToRemove = null;
+
         // FIXED Round Elimination Schedule (Tournament Style)
         // ALL players play all 20 rounds
         // Eliminate by SCORE at fixed rounds
@@ -2969,6 +3103,48 @@
             }
 
             return schedule;
+        }
+
+        function recalculateEliminationSchedule() {
+            const activeCount = gameState.players.filter(p => !p.eliminated).length;
+            const eliminationsNeeded = Math.max(0, activeCount - 3);
+
+            if (eliminationsNeeded === 0) {
+                gameState.eliminationSchedule = [];
+                return;
+            }
+
+            // Try the standard schedule, keep only strictly future rounds
+            // (r > currentRound so no double-elimination in the same round as add/remove)
+            const standardSchedule = generateEliminationSchedule(activeCount);
+            const futureRounds = standardSchedule.filter(r => r > gameState.currentRound);
+
+            if (futureRounds.length >= eliminationsNeeded) {
+                gameState.eliminationSchedule = futureRounds;
+                return;
+            }
+
+            // Fallback: standard schedule doesn't have enough future rounds
+            // (e.g. player added late in the game after round 15)
+            // Evenly distribute eliminations across remaining rounds
+            const schedule = [];
+            const firstEligible = gameState.currentRound + 1;
+            const lastRound = 20;
+            const availableRounds = lastRound - firstEligible + 1;
+
+            if (availableRounds <= 0) {
+                gameState.eliminationSchedule = [];
+                return;
+            }
+
+            const toSchedule = Math.min(eliminationsNeeded, availableRounds);
+            const gap = availableRounds / toSchedule;
+
+            for (let i = 0; i < toSchedule; i++) {
+                schedule.push(Math.round(firstEligible + gap * i));
+            }
+
+            gameState.eliminationSchedule = schedule;
         }
 
         // All games play 20 rounds (standard Wizard)
@@ -3740,6 +3916,226 @@
             document.getElementById('eliminationModal').classList.remove('active');
         }
 
+        // ===== ADD PLAYER MID-GAME =====
+        function showAddPlayerModal() {
+            if (duelState.inProgress) {
+                showAlert('Cannot add players during a duel', 'warning');
+                return;
+            }
+            if (gameState.roundCalculated) {
+                showAlert('Click "Next Round" first before adding players', 'warning');
+                return;
+            }
+            if (gameState.players.length >= 9) {
+                showAlert('Maximum 9 players allowed', 'warning');
+                return;
+            }
+            const active = gameState.players.filter(p => !p.eliminated);
+            if (active.length <= 1) {
+                showAlert('Game is already over', 'warning');
+                return;
+            }
+
+            const lowestScore = Math.min(...active.map(p => p.totalScore));
+            document.getElementById('newPlayerName').value = '';
+            document.getElementById('addPlayerInfo').textContent = `New player will start with ${lowestScore} points (lowest active score)`;
+            // Reset to step 1
+            document.getElementById('addPlayerStep1').style.display = '';
+            document.getElementById('addPlayerStep2').style.display = 'none';
+            document.getElementById('addPlayerModal').classList.add('active');
+            setTimeout(() => document.getElementById('newPlayerName').focus(), 100);
+        }
+
+        function closeAddPlayerModal() {
+            document.getElementById('addPlayerModal').classList.remove('active');
+        }
+
+        function backToAddStep1() {
+            document.getElementById('addPlayerStep2').style.display = 'none';
+            document.getElementById('addPlayerStep1').style.display = '';
+            setTimeout(() => document.getElementById('newPlayerName').focus(), 100);
+        }
+
+        function showAddPlayerConfirm() {
+            const nameInput = document.getElementById('newPlayerName');
+            const name = nameInput.value.trim();
+
+            if (!name) {
+                playSound('error');
+                nameInput.style.borderColor = 'var(--danger)';
+                return;
+            }
+
+            const duplicate = gameState.players.some(p => p.name.toLowerCase() === name.toLowerCase());
+            if (duplicate) {
+                playSound('error');
+                showAlert('A player with that name already exists', 'warning');
+                return;
+            }
+
+            // Show confirmation step with preview
+            const active = gameState.players.filter(p => !p.eliminated);
+            const lowestScore = Math.min(...active.map(p => p.totalScore));
+            const playerIndex = gameState.players.length;
+            const avatar = generateAvatar(name, playerIndex);
+
+            document.getElementById('addPlayerPreviewAvatar').innerHTML = createAvatarHTML(avatar, 'avatar-large');
+            document.getElementById('addPlayerPreviewName').textContent = name;
+            document.getElementById('addPlayerPreviewScore').textContent = `Starting score: ${lowestScore} points`;
+
+            playSound('click');
+            document.getElementById('addPlayerStep1').style.display = 'none';
+            document.getElementById('addPlayerStep2').style.display = '';
+        }
+
+        function confirmAddPlayer() {
+            const name = document.getElementById('newPlayerName').value.trim();
+            const active = gameState.players.filter(p => !p.eliminated);
+            const lowestScore = Math.min(...active.map(p => p.totalScore));
+            const playerIndex = gameState.players.length;
+
+            // Build round history to stay consistent with totalScore
+            const rounds = [];
+            const pastRounds = gameState.currentRound - 1;
+            for (let i = 0; i < pastRounds; i++) {
+                if (i === pastRounds - 1) {
+                    // Last past round carries the score adjustment
+                    rounds.push({ bid: 0, actual: 0, score: lowestScore });
+                } else {
+                    rounds.push({ bid: 0, actual: 0, score: 0 });
+                }
+            }
+
+            const newPlayer = {
+                name,
+                avatar: generateAvatar(name, playerIndex),
+                totalScore: lowestScore,
+                eliminated: false,
+                eliminatedOnRound: null,
+                rounds
+            };
+
+            gameState.players.push(newPlayer);
+            recalculateEliminationSchedule();
+
+            closeAddPlayerModal();
+            playSound('success');
+
+            renderTable();
+            updateStatistics();
+            updateNextElimination();
+            updateRoundTotals();
+            document.getElementById('gameScheduleDesc').textContent = getScheduleDescription(active.length + 1);
+            showAlert(`${name} joined the game with ${lowestScore} points!`, 'success');
+        }
+
+        // ===== REMOVE PLAYER MID-GAME =====
+        function showRemovePlayerModal() {
+            if (duelState.inProgress) {
+                showAlert('Cannot remove players during a duel', 'warning');
+                return;
+            }
+            if (gameState.roundCalculated) {
+                showAlert('Click "Next Round" first before removing players', 'warning');
+                return;
+            }
+            const active = gameState.players.filter(p => !p.eliminated);
+            if (active.length <= 2) {
+                showAlert('Need at least 2 active players to continue', 'warning');
+                return;
+            }
+
+            selectedPlayerToRemove = null;
+            const list = document.getElementById('removePlayerList');
+            list.innerHTML = '';
+
+            active.forEach(player => {
+                const idx = gameState.players.indexOf(player);
+                const card = document.createElement('div');
+                card.className = 'player-select-card';
+                card.setAttribute('data-player-idx', idx);
+                card.innerHTML = `
+                    ${createAvatarHTML(player.avatar)}
+                    <div style="flex: 1;">
+                        <div style="font-weight: 700; color: var(--text-primary);">${player.name}</div>
+                        <div style="font-size: 0.8rem; color: var(--text-secondary);">Score: ${player.totalScore}</div>
+                    </div>
+                `;
+                card.onclick = function() {
+                    document.querySelectorAll('.player-select-card').forEach(c => c.classList.remove('selected'));
+                    card.classList.add('selected');
+                    selectedPlayerToRemove = idx;
+                    const btn = document.getElementById('confirmRemoveBtn');
+                    btn.style.opacity = '1';
+                    btn.style.pointerEvents = 'auto';
+                    playSound('click');
+                };
+                list.appendChild(card);
+            });
+
+            const btn = document.getElementById('confirmRemoveBtn');
+            btn.style.opacity = '0.4';
+            btn.style.pointerEvents = 'none';
+
+            // Reset to step 1
+            document.getElementById('removePlayerStep1').style.display = '';
+            document.getElementById('removePlayerStep2').style.display = 'none';
+            document.getElementById('removePlayerModal').classList.add('active');
+        }
+
+        function closeRemovePlayerModal() {
+            document.getElementById('removePlayerModal').classList.remove('active');
+            selectedPlayerToRemove = null;
+        }
+
+        function backToRemoveStep1() {
+            document.getElementById('removePlayerStep2').style.display = 'none';
+            document.getElementById('removePlayerStep1').style.display = '';
+        }
+
+        function showRemovePlayerConfirm() {
+            if (selectedPlayerToRemove === null) return;
+
+            const player = gameState.players[selectedPlayerToRemove];
+
+            document.getElementById('removePlayerPreviewAvatar').innerHTML = createAvatarHTML(player.avatar, 'avatar-large');
+            document.getElementById('removePlayerPreviewName').textContent = player.name;
+            document.getElementById('removePlayerPreviewScore').textContent = `Score: ${player.totalScore} points · Round ${gameState.currentRound}`;
+
+            playSound('click');
+            document.getElementById('removePlayerStep1').style.display = 'none';
+            document.getElementById('removePlayerStep2').style.display = '';
+        }
+
+        function confirmRemovePlayer() {
+            if (selectedPlayerToRemove === null) return;
+
+            const player = gameState.players[selectedPlayerToRemove];
+            player.eliminated = true;
+            player.eliminatedOnRound = gameState.currentRound;
+
+            recalculateEliminationSchedule();
+            closeRemovePlayerModal();
+
+            // Reuse existing elimination animation
+            showEliminationAnimation(player);
+
+            renderTable();
+            updateStatistics();
+            updateNextElimination();
+            updateRoundTotals();
+
+            const active = gameState.players.filter(p => !p.eliminated);
+            document.getElementById('gameScheduleDesc').textContent = getScheduleDescription(active.length);
+
+            if (active.length === 1) {
+                setTimeout(() => {
+                    closeEliminationModal();
+                    showWinnerCelebration();
+                }, 2000);
+            }
+        }
+
         function isWinner(player) {
             const active = gameState.players.filter(p => !p.eliminated);
             if (active.length === 1 && active[0] === player) return true;
@@ -3928,6 +4324,8 @@
                 closeModal();
                 closeWinnerModal();
                 closeEliminationModal();
+                closeAddPlayerModal();
+                closeRemovePlayerModal();
             }
         });
 
