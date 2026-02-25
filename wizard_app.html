@@ -1065,6 +1065,8 @@
             backdrop-filter: blur(8px);
             z-index: 1000;
             animation: fadeIn 0.3s ease;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
         }
 
         .modal-overlay.active {
@@ -1072,6 +1074,12 @@
             align-items: center;
             justify-content: center;
             padding: var(--space-md);
+        }
+
+        body.modal-open {
+            overflow: hidden;
+            position: fixed;
+            width: 100%;
         }
 
         @keyframes fadeIn {
@@ -1090,7 +1098,8 @@
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), var(--glow-primary);
             animation: modalSlideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
             position: relative;
-            overflow: hidden;
+            overflow-y: auto;
+            max-height: 90vh;
         }
 
         @keyframes modalSlideIn {
@@ -1854,6 +1863,8 @@
             align-items: center;
             justify-content: center;
             padding: 1rem;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
         }
 
         .rules-modal-overlay.active {
@@ -3331,7 +3342,7 @@
                 div.className = 'input-group';
                 div.innerHTML = `
                     <label class="input-label">Player ${i + 1}</label>
-                    <input type="text" id="player${i}" class="input-field" placeholder="Player ${i + 1}" value="Player ${i + 1}">
+                    <input type="text" id="player${i}" class="input-field" placeholder="Player ${i + 1}">
                 `;
                 container.appendChild(div);
             }
@@ -4425,6 +4436,27 @@
             document.getElementById('setupSection').classList.remove('hidden');
             document.getElementById('gameSection').classList.add('hidden');
         }
+
+        // Lock body scroll when any modal is open (fixes landscape scroll-through)
+        let _savedScrollY = 0;
+        function updateBodyScrollLock() {
+            const anyOpen = document.querySelector('.modal-overlay.active, .rules-modal-overlay.active');
+            if (anyOpen) {
+                _savedScrollY = window.scrollY;
+                document.body.classList.add('modal-open');
+                document.body.style.top = `-${_savedScrollY}px`;
+            } else {
+                document.body.classList.remove('modal-open');
+                document.body.style.top = '';
+                window.scrollTo(0, _savedScrollY);
+            }
+        }
+
+        // Watch all modal overlays for class changes
+        const modalObserver = new MutationObserver(updateBodyScrollLock);
+        document.querySelectorAll('.modal-overlay, .rules-modal-overlay').forEach(el => {
+            modalObserver.observe(el, { attributes: true, attributeFilter: ['class'] });
+        });
 
         // Close modal on overlay click
         document.addEventListener('click', function(e) {
