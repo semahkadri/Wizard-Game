@@ -2424,6 +2424,22 @@
             </div>
         </footer>
 
+        <!-- Resume Game Modal -->
+        <div class="modal-overlay" id="resumeModal">
+            <div class="modal">
+                <div class="modal-icon" style="background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.3);">
+                    <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 11-6.22-8.56"/><polyline points="21 3 21 9 15 9"/><polygon points="10 8 16 12 10 16 10 8" fill="#10B981" stroke="none"/></svg>
+                </div>
+                <h3 class="modal-title" style="background: linear-gradient(135deg, var(--success) 0%, #059669 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">GAME IN PROGRESS</h3>
+                <p class="modal-text">A saved game was found. Would you like to continue where you left off?</p>
+                <div id="resumeGameInfo" style="display: flex; flex-direction: column; gap: var(--space-xs); padding: var(--space-md); background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: var(--radius-lg); margin: var(--space-md) 0;"></div>
+                <div class="modal-buttons">
+                    <button class="modal-btn modal-btn-cancel" onclick="dismissResume()">New Game</button>
+                    <button class="modal-btn modal-btn-primary" onclick="acceptResume()" style="background: linear-gradient(135deg, var(--success) 0%, #059669 100%);">Resume Game</button>
+                </div>
+            </div>
+        </div>
+
         <!-- Custom Confirmation Modal -->
         <div class="modal-overlay" id="confirmModal">
             <div class="modal">
@@ -2996,6 +3012,85 @@
             roundCalculated: false
         };
 
+        // ===== GAME STATE PERSISTENCE (localStorage) =====
+        const SAVE_KEY = 'wizardGameState';
+
+        function saveGameState() {
+            try {
+                const data = JSON.stringify({
+                    gameState,
+                    timestamp: Date.now(),
+                    version: 1
+                });
+                localStorage.setItem(SAVE_KEY, data);
+            } catch (e) {
+                console.warn('[Save] Failed to save game state:', e);
+            }
+        }
+
+        function clearSavedGame() {
+            try {
+                localStorage.removeItem(SAVE_KEY);
+            } catch (e) {
+                console.warn('[Save] Failed to clear saved game:', e);
+            }
+        }
+
+        function loadSavedGame() {
+            try {
+                const raw = localStorage.getItem(SAVE_KEY);
+                if (!raw) return null;
+                const data = JSON.parse(raw);
+                if (!data || !data.gameState || !data.gameState.players || data.gameState.players.length === 0) {
+                    return null;
+                }
+                return data;
+            } catch (e) {
+                console.warn('[Save] Failed to load saved game:', e);
+                return null;
+            }
+        }
+
+        function restoreGame(saved) {
+            gameState = saved.gameState;
+
+            // Rebuild avatar objects (not serialized with style function)
+            gameState.players.forEach((player, i) => {
+                player.avatar = generateAvatar(player.name, i);
+            });
+
+            // Show game section, hide setup
+            document.getElementById('setupSection').classList.add('hidden');
+            document.getElementById('gameSection').classList.remove('hidden');
+            document.getElementById('maxRounds').textContent = 20;
+
+            const activeCount = gameState.players.filter(p => !p.eliminated).length;
+            document.getElementById('gameScheduleDesc').textContent = getScheduleDescription(activeCount);
+
+            // Restore button states
+            document.getElementById('calculateBtn').disabled = gameState.roundCalculated;
+            document.getElementById('nextRoundBtn').disabled = !gameState.roundCalculated;
+
+            updateStatistics();
+            updateNextElimination();
+            renderTable();
+            updateRoundTotals();
+        }
+
+        // Auto-save when user leaves / locks phone / switches app
+        document.addEventListener('visibilitychange', function() {
+            if (document.visibilityState === 'hidden' && gameState.players.length > 0) {
+                saveGameState();
+            }
+        });
+
+        // Also save on pagehide (iOS Safari fires this more reliably than visibilitychange)
+        window.addEventListener('pagehide', function() {
+            if (gameState.players.length > 0) {
+                saveGameState();
+            }
+        });
+
         // Avatar Color Palettes
         const avatarGradients = [
             ['#8B5CF6', '#EC4899'],  // Purple to Pink
@@ -3283,6 +3378,7 @@
             updateNextElimination();
             renderTable();
             updateRoundTotals();
+            saveGameState();
         }
 
         function updateStatistics() {
@@ -3498,6 +3594,7 @@
             updateStatistics();
             renderTable();
             updateRoundTotals();
+            saveGameState();
             showAlert('Round calculated successfully', 'success');
         }
 
@@ -3527,6 +3624,7 @@
             updateNextElimination();
             renderTable();
             updateRoundTotals();
+            saveGameState();
             showAlert(`Round ${gameState.currentRound} - ${gameState.cardsDealt} cards dealt`, 'info');
         }
 
@@ -3813,6 +3911,7 @@
 
             // Clear tied players
             duelState.tiedPlayers = [];
+            saveGameState();
 
             // Show standard elimination modal
             setTimeout(() => {
@@ -3843,6 +3942,7 @@
             const eliminated = toEliminate[0];
             eliminated.eliminated = true;
             eliminated.eliminatedOnRound = gameState.currentRound;
+            saveGameState();
 
             // Show elimination modal with animations
             showEliminationAnimation(eliminated);
@@ -4025,6 +4125,7 @@
             updateStatistics();
             updateNextElimination();
             updateRoundTotals();
+            saveGameState();
             document.getElementById('gameScheduleDesc').textContent = getScheduleDescription(active.length + 1);
             showAlert(`${name} joined the game with ${lowestScore} points!`, 'success');
         }
@@ -4116,6 +4217,7 @@
 
             recalculateEliminationSchedule();
             closeRemovePlayerModal();
+            saveGameState();
 
             // Reuse existing elimination animation
             showEliminationAnimation(player);
@@ -4150,6 +4252,9 @@
         function showWinnerCelebration() {
             const active = gameState.players.filter(p => !p.eliminated);
             const winner = active.sort((a, b) => b.totalScore - a.totalScore)[0];
+
+            // Game is over - clear saved state
+            clearSavedGame();
 
             // 🎺 EPIC VICTORY FANFARE!!!
             playSound('victory');
@@ -4313,6 +4418,9 @@
                 roundCalculated: false
             };
 
+            // Clear saved game from storage
+            clearSavedGame();
+
             // Show setup section, hide game section
             document.getElementById('setupSection').classList.remove('hidden');
             document.getElementById('gameSection').classList.add('hidden');
@@ -4329,10 +4437,66 @@
             }
         });
 
+        // Temporary variable to hold saved data for resume flow
+        let _pendingResume = null;
+
+        function showResumePrompt(saved) {
+            _pendingResume = saved;
+
+            const gs = saved.gameState;
+            const active = gs.players.filter(p => !p.eliminated);
+            const elapsed = Date.now() - saved.timestamp;
+            const minutesAgo = Math.floor(elapsed / 60000);
+            let timeText = minutesAgo < 1 ? 'Just now' : minutesAgo < 60 ? `${minutesAgo}m ago` : `${Math.floor(minutesAgo / 60)}h ago`;
+
+            const info = document.getElementById('resumeGameInfo');
+            info.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="color: var(--text-secondary); font-size: 0.85rem;">Round</span>
+                    <span style="font-family: 'Orbitron', monospace; font-weight: 700; color: var(--text-primary);">${gs.currentRound} / 20</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="color: var(--text-secondary); font-size: 0.85rem;">Active</span>
+                    <span style="font-family: 'Orbitron', monospace; font-weight: 700; color: var(--text-primary);">${active.length} / ${gs.players.length} players</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="color: var(--text-secondary); font-size: 0.85rem;">Names</span>
+                    <span style="color: var(--text-primary); font-weight: 600;">${active.map(p => p.name).join(', ')}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="color: var(--text-secondary); font-size: 0.85rem;">Saved</span>
+                    <span style="color: var(--text-muted); font-size: 0.85rem;">${timeText}</span>
+                </div>
+            `;
+
+            document.getElementById('resumeModal').classList.add('active');
+        }
+
+        function acceptResume() {
+            document.getElementById('resumeModal').classList.remove('active');
+            if (_pendingResume) {
+                restoreGame(_pendingResume);
+                _pendingResume = null;
+                showAlert('Game restored successfully!', 'success');
+            }
+        }
+
+        function dismissResume() {
+            document.getElementById('resumeModal').classList.remove('active');
+            _pendingResume = null;
+            clearSavedGame();
+        }
+
         window.onload = function() {
             updatePlayerNames();
             updateSchedulePreview();
             createInstallButton();  // Show permanent install button
+
+            // Check for saved game to resume
+            const saved = loadSavedGame();
+            if (saved) {
+                showResumePrompt(saved);
+            }
         };
 
         // PWA Service Worker Registration
