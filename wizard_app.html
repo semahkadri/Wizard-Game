@@ -104,7 +104,7 @@
             position: relative;
         }
 
-        /* Casino Felt Background */
+        /* Casino Felt Background with card suit watermarks */
         body::before {
             content: '';
             position: fixed;
@@ -113,9 +113,10 @@
             width: 100%;
             height: 100%;
             background:
-                radial-gradient(ellipse at 50% 0%, rgba(27, 107, 58, 0.25) 0%, transparent 60%),
-                radial-gradient(ellipse at 50% 100%, rgba(201, 168, 50, 0.08) 0%, transparent 50%),
-                linear-gradient(180deg, #0A1A10 0%, #0F261A 40%, #0D2117 100%);
+                radial-gradient(ellipse at 30% 20%, rgba(27, 107, 58, 0.2) 0%, transparent 50%),
+                radial-gradient(ellipse at 70% 80%, rgba(201, 168, 50, 0.06) 0%, transparent 40%),
+                radial-gradient(ellipse at 50% 50%, rgba(15, 38, 26, 0.9) 0%, transparent 80%),
+                linear-gradient(180deg, #081610 0%, #0D2117 30%, #0A1A10 100%);
             z-index: -2;
         }
 
@@ -126,9 +127,11 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background:
-                repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(27, 107, 58, 0.03) 2px, rgba(27, 107, 58, 0.03) 4px),
-                repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(27, 107, 58, 0.03) 2px, rgba(27, 107, 58, 0.03) 4px);
+            background-image:
+                radial-gradient(circle at 15% 15%, rgba(201, 168, 50, 0.03) 0%, transparent 3%),
+                radial-gradient(circle at 85% 25%, rgba(201, 168, 50, 0.02) 0%, transparent 3%),
+                radial-gradient(circle at 45% 75%, rgba(201, 168, 50, 0.03) 0%, transparent 3%),
+                radial-gradient(circle at 75% 65%, rgba(201, 168, 50, 0.02) 0%, transparent 3%);
             z-index: -1;
             pointer-events: none;
         }
@@ -145,8 +148,8 @@
         /* Professional Header */
         .header {
             text-align: center;
-            padding: var(--space-lg) 0;
-            margin-bottom: var(--space-lg);
+            padding: var(--space-sm) 0;
+            margin-bottom: var(--space-sm);
             position: relative;
         }
 
@@ -189,11 +192,11 @@
         }
 
         .tagline {
-            font-size: clamp(0.875rem, 2vw, 1.125rem);
-            color: var(--text-secondary);
-            margin-top: var(--space-sm);
+            font-size: clamp(0.7rem, 1.8vw, 0.95rem);
+            color: var(--text-tertiary);
+            margin-top: 0.35rem;
             font-weight: 600;
-            letter-spacing: 4px;
+            letter-spacing: 3px;
             text-transform: uppercase;
         }
 
@@ -528,9 +531,10 @@
         .stat-card {
             background: rgba(15, 38, 26, 0.7);
             backdrop-filter: blur(15px);
-            border: 1px solid rgba(201, 168, 50, 0.15);
-            border-radius: var(--radius-lg);
-            padding: var(--space-md);
+            border: 1px solid rgba(201, 168, 50, 0.12);
+            border-top: 2px solid rgba(201, 168, 50, 0.3);
+            border-radius: var(--radius-md);
+            padding: 0.75rem 0.5rem;
             text-align: center;
             transition: all var(--transition-base);
             position: relative;
@@ -837,13 +841,14 @@
         .badge {
             display: inline-flex;
             align-items: center;
-            gap: 0.375rem;
-            padding: 0.5rem 1rem;
+            gap: 0.25rem;
+            padding: 0.3rem 0.6rem;
             border-radius: var(--radius-full);
-            font-size: 0.75rem;
+            font-size: 0.65rem;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
         }
 
         .badge-active {
@@ -880,7 +885,7 @@
         /* Score Display */
         .score {
             font-family: 'Orbitron', monospace;
-            font-size: 1.125rem;
+            font-size: 0.95rem;
             font-weight: 700;
         }
 
@@ -897,8 +902,9 @@
         /* Rank Display */
         .rank-display {
             font-family: 'Orbitron', monospace;
-            font-size: 1.25rem;
+            font-size: 1rem;
             font-weight: 700;
+            text-align: center;
         }
 
         /* Alert System */
@@ -1423,10 +1429,9 @@
             }
 
             .btn {
-                width: 100%;
-                padding: 0.875rem 1rem;
-                font-size: 0.75rem;
-                letter-spacing: 1px;
+                padding: 0.75rem 0.75rem;
+                font-size: 0.7rem;
+                letter-spacing: 0.8px;
             }
 
             .game-info {
@@ -1606,13 +1611,20 @@
         }
 
         /* Extra small screens (360px and below) */
-        @media (max-width: 400px) {
+        @media (max-width: 420px) {
             .player-name-with-avatar span {
-                max-width: 55px;
+                max-width: 50px;
+                font-size: 0.7rem !important;
+            }
+
+            .player-avatar {
+                width: 26px;
+                height: 26px;
+                font-size: 0.6rem;
             }
 
             .number-spinner {
-                max-width: 78px;
+                max-width: 74px;
             }
 
             .spinner-btn {
@@ -1622,26 +1634,38 @@
             }
 
             .spinner-input {
-                min-width: 20px;
+                min-width: 18px;
                 font-size: 0.75rem;
             }
 
             th {
-                padding: 0.5rem 0.25rem;
-                font-size: 0.55rem;
+                padding: 0.4rem 0.2rem;
+                font-size: 0.5rem;
             }
 
             td {
-                padding: 0.4rem 0.25rem;
+                padding: 0.35rem 0.2rem;
             }
 
             .badge {
-                padding: 0.15rem 0.35rem;
-                font-size: 0.5rem;
+                padding: 0.15rem 0.3rem;
+                font-size: 0.45rem;
+            }
+
+            .score {
+                font-size: 0.75rem;
+            }
+
+            .rank-display {
+                font-size: 0.8rem;
             }
 
             .stats-grid {
                 grid-template-columns: repeat(2, 1fr);
+            }
+
+            .stat-value {
+                font-size: 1.1rem;
             }
         }
 
@@ -1663,7 +1687,15 @@
         .player-name-with-avatar {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
+            gap: 0.5rem;
+            min-width: 0;
+        }
+
+        .player-name-with-avatar span {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            max-width: 100px;
         }
 
         .winner-score-display {
@@ -2410,34 +2442,29 @@
                 </div>
             </div>
 
-            <div class="btn-group" style="margin-top: var(--space-lg);">
-                <button class="btn btn-success" id="calculateBtn" onclick="calculateRound()">
-                    Calculate Round
+            <!-- Primary Actions -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-top: var(--space-md);">
+                <button class="btn btn-success" id="calculateBtn" onclick="calculateRound()" style="width: 100%; padding: 1rem;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -3px; margin-right: 4px;"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                    Calculate
                 </button>
-                <button class="btn btn-primary" id="nextRoundBtn" onclick="nextRound()" disabled>
+                <button class="btn btn-primary" id="nextRoundBtn" onclick="nextRound()" disabled style="width: 100%; padding: 1rem;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -3px; margin-right: 4px;"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>
                     Next Round
                 </button>
-                <button class="btn" id="undoBtn" onclick="undoLastAction()" disabled style="background: linear-gradient(135deg, #64748B 0%, #475569 100%); color: white; box-shadow: var(--shadow-md);">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
+            </div>
+            <!-- Secondary Actions -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.4rem; margin-top: 0.4rem;">
+                <button class="btn" id="undoBtn" onclick="undoLastAction()" disabled style="width: 100%; background: linear-gradient(135deg, #3D5A45 0%, #2A4233 100%); color: var(--text-secondary); box-shadow: var(--shadow-sm); padding: 0.7rem 0.5rem; font-size: 0.65rem;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 3px;"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
                     Undo
                 </button>
-                <button class="btn btn-danger" onclick="resetGame()">
+                <button class="btn" onclick="showPlayerManageModal()" style="width: 100%; background: linear-gradient(135deg, var(--secondary) 0%, #166534 100%); color: white; box-shadow: var(--shadow-sm); padding: 0.7rem 0.5rem; font-size: 0.65rem;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 3px;"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4-4v2"/><circle cx="8.5" cy="7" r="4"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+                    Players
+                </button>
+                <button class="btn btn-danger" onclick="resetGame()" style="width: 100%; padding: 0.7rem 0.5rem; font-size: 0.65rem;">
                     New Game
-                </button>
-            </div>
-
-            <div class="btn-group" style="margin-top: var(--space-sm);">
-                <button class="btn btn-secondary" onclick="showAddPlayerModal()">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4-4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
-                    Add Player
-                </button>
-                <button class="btn btn-warning" onclick="showRemovePlayerModal()">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4-4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
-                    Remove Player
-                </button>
-                <button class="btn btn-primary" onclick="showRenamePlayerModal()">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;"><path d="M17 3a2.828 2.828 0 114 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
-                    Rename
                 </button>
             </div>
         </section>
@@ -2836,6 +2863,35 @@
                         <button class="modal-btn modal-btn-cancel" onclick="backToRenameStep1()">Back</button>
                         <button class="modal-btn modal-btn-primary" onclick="confirmRenamePlayer()">Confirm Rename</button>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Player Management Modal -->
+        <div class="modal-overlay" id="playerManageModal">
+            <div class="modal" style="max-width: 420px;">
+                <div class="modal-icon" style="background: rgba(27, 107, 58, 0.15); border: 2px solid rgba(27, 107, 58, 0.3);">
+                    <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#22D36B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4-4v2"/><circle cx="8.5" cy="7" r="4"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+                </div>
+                <h3 class="modal-title" style="background: linear-gradient(135deg, #22D36B 0%, #1B6B3A 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-size: 1.5rem;">MANAGE PLAYERS</h3>
+
+                <div style="display: flex; flex-direction: column; gap: 0.6rem; margin: var(--space-md) 0;">
+                    <button onclick="closePlayerManageModal(); showAddPlayerModal();" style="display: flex; align-items: center; gap: 0.75rem; width: 100%; padding: 0.9rem 1rem; background: rgba(27, 107, 58, 0.12); border: 2px solid rgba(27, 107, 58, 0.25); border-radius: var(--radius-md); color: var(--text-primary); font-family: 'Inter', sans-serif; font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='rgba(27, 107, 58, 0.5)'; this.style.background='rgba(27, 107, 58, 0.2)'" onmouseout="this.style.borderColor='rgba(27, 107, 58, 0.25)'; this.style.background='rgba(27, 107, 58, 0.12)'">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#22D36B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4-4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+                        <div style="text-align: left;"><div>Add Player</div><div style="font-size: 0.75rem; color: var(--text-tertiary); font-weight: 400;">Add a new player to the game</div></div>
+                    </button>
+                    <button onclick="closePlayerManageModal(); showRemovePlayerModal();" style="display: flex; align-items: center; gap: 0.75rem; width: 100%; padding: 0.9rem 1rem; background: rgba(220, 38, 38, 0.08); border: 2px solid rgba(220, 38, 38, 0.2); border-radius: var(--radius-md); color: var(--text-primary); font-family: 'Inter', sans-serif; font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='rgba(220, 38, 38, 0.4)'; this.style.background='rgba(220, 38, 38, 0.15)'" onmouseout="this.style.borderColor='rgba(220, 38, 38, 0.2)'; this.style.background='rgba(220, 38, 38, 0.08)'">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#DC2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4-4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+                        <div style="text-align: left;"><div>Remove Player</div><div style="font-size: 0.75rem; color: var(--text-tertiary); font-weight: 400;">Eliminate a player from the game</div></div>
+                    </button>
+                    <button onclick="closePlayerManageModal(); showRenamePlayerModal();" style="display: flex; align-items: center; gap: 0.75rem; width: 100%; padding: 0.9rem 1rem; background: rgba(201, 168, 50, 0.08); border: 2px solid rgba(201, 168, 50, 0.2); border-radius: var(--radius-md); color: var(--text-primary); font-family: 'Inter', sans-serif; font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='rgba(201, 168, 50, 0.4)'; this.style.background='rgba(201, 168, 50, 0.15)'" onmouseout="this.style.borderColor='rgba(201, 168, 50, 0.2)'; this.style.background='rgba(201, 168, 50, 0.08)'">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#E2C547" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 114 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+                        <div style="text-align: left;"><div>Rename Player</div><div style="font-size: 0.75rem; color: var(--text-tertiary); font-weight: 400;">Change a player's display name</div></div>
+                    </button>
+                </div>
+
+                <div class="modal-buttons">
+                    <button class="modal-btn modal-btn-cancel" onclick="closePlayerManageModal()" style="flex: none; width: 100%;">Close</button>
                 </div>
             </div>
         </div>
@@ -4578,6 +4634,19 @@
             selectedPlayerToRename = null;
         }
 
+        // ===== PLAYER MANAGEMENT HUB =====
+        function showPlayerManageModal() {
+            if (duelState.inProgress) {
+                showAlert('Cannot manage players during a duel', 'warning');
+                return;
+            }
+            document.getElementById('playerManageModal').classList.add('active');
+        }
+
+        function closePlayerManageModal() {
+            document.getElementById('playerManageModal').classList.remove('active');
+        }
+
         function backToRenameStep1() {
             document.getElementById('renamePlayerStep2').style.display = 'none';
             document.getElementById('renamePlayerStep1').style.display = '';
@@ -4943,6 +5012,7 @@
                 closeAddPlayerModal();
                 closeRemovePlayerModal();
                 closeRenamePlayerModal();
+                closePlayerManageModal();
             }
         });
 
