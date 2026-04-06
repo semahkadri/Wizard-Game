@@ -3127,30 +3127,10 @@
                 </div>
                 <h3 class="modal-title" id="removeModalTitle" style="background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">REMOVE PLAYER</h3>
 
-                <!-- Step 1: Select player -->
-                <div id="removePlayerStep1">
-                    <p class="modal-text" style="margin-bottom: var(--space-md);">Select a player to eliminate from the game</p>
-                    <div id="removePlayerList" style="display: flex; flex-direction: column; gap: var(--space-sm); max-height: 300px; overflow-y: auto; margin-bottom: var(--space-lg);"></div>
-                    <div class="modal-buttons">
-                        <button class="modal-btn modal-btn-cancel" onclick="closeRemovePlayerModal()">Cancel</button>
-                        <button class="modal-btn modal-btn-primary" id="confirmRemoveBtn" onclick="showRemovePlayerConfirm()" style="background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%); opacity: 0.4; pointer-events: none;">Continue</button>
-                    </div>
-                </div>
-
-                <!-- Step 2: Confirm -->
-                <div id="removePlayerStep2" style="display: none;">
-                    <div style="display: flex; flex-direction: column; align-items: center; gap: var(--space-md); margin: var(--space-lg) 0; padding: var(--space-md); background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: var(--radius-lg);">
-                        <div id="removePlayerPreviewAvatar"></div>
-                        <div style="text-align: center;">
-                            <p id="removePlayerPreviewName" style="font-family: 'Orbitron', monospace; font-size: 1.25rem; font-weight: 700; color: var(--danger);"></p>
-                            <p id="removePlayerPreviewScore" style="font-size: 0.9rem; color: var(--text-secondary); margin-top: var(--space-xs);"></p>
-                        </div>
-                    </div>
-                    <p style="color: var(--text-tertiary); font-size: 0.85rem; text-align: center; font-weight: 500; margin-bottom: var(--space-md);">This player will be removed from the tournament.</p>
-                    <div class="modal-buttons">
-                        <button class="modal-btn modal-btn-cancel" onclick="backToRemoveStep1()">Back</button>
-                        <button class="modal-btn modal-btn-confirm" onclick="confirmRemovePlayer()">Remove Player</button>
-                    </div>
+                <p class="modal-text" style="margin-bottom: var(--space-sm); font-size: 0.85rem;">Tap a player to remove them</p>
+                <div id="removePlayerList" style="display: flex; flex-direction: column; gap: var(--space-sm); max-height: 320px; overflow-y: auto; margin-bottom: var(--space-md);"></div>
+                <div class="modal-buttons">
+                    <button class="modal-btn modal-btn-cancel" onclick="closeRemovePlayerModal()" style="flex: none; width: 100%;">Cancel</button>
                 </div>
             </div>
         </div>
@@ -3162,29 +3142,23 @@
                 </div>
                 <h3 class="modal-title" style="background: linear-gradient(135deg, #C9A832 0%, #A68B1B 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">RENAME PLAYER</h3>
 
-                <!-- Step 1: Select player -->
-                <div id="renamePlayerStep1">
-                    <p class="modal-text" style="margin-bottom: var(--space-md);">Select a player to rename</p>
-                    <div id="renamePlayerList" style="display: flex; flex-direction: column; gap: var(--space-sm); max-height: 300px; overflow-y: auto; margin-bottom: var(--space-lg);"></div>
-                    <div class="modal-buttons">
-                        <button class="modal-btn modal-btn-cancel" onclick="closeRenamePlayerModal()">Cancel</button>
-                        <button class="modal-btn modal-btn-primary" id="confirmRenameSelectBtn" onclick="showRenameStep2()" style="opacity: 0.4; pointer-events: none;">Continue</button>
+                <p class="modal-text" style="margin-bottom: var(--space-sm); font-size: 0.85rem;">Tap a player to rename</p>
+                <div id="renamePlayerList" style="display: flex; flex-direction: column; gap: var(--space-sm); max-height: 240px; overflow-y: auto; margin-bottom: var(--space-sm);"></div>
+
+                <!-- Inline rename input (hidden until player tapped) -->
+                <div id="renameInlineEdit" style="display: none; padding: 0.6rem; background: rgba(201, 168, 50, 0.06); border: 1px solid rgba(201, 168, 50, 0.2); border-radius: var(--radius-md); margin-bottom: var(--space-sm);">
+                    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                        <div id="renamePlayerPreviewAvatar" style="flex-shrink: 0;"></div>
+                        <p id="renamePlayerOldName" style="font-size: 0.85rem; color: var(--text-tertiary); flex: 1;"></p>
+                    </div>
+                    <div style="display: flex; gap: 0.4rem;">
+                        <input type="text" id="renamePlayerNewName" placeholder="New name..." maxlength="20" style="flex: 1; padding: 0.5rem 0.7rem; background: rgba(10, 26, 16, 0.9); border: 2px solid rgba(201, 168, 50, 0.25); border-radius: 20px; color: var(--text-primary); font-size: 0.9rem; font-family: 'Inter', sans-serif; outline: none;" onfocus="this.style.borderColor='rgba(201, 168, 50, 0.6)'" onblur="this.style.borderColor='rgba(201, 168, 50, 0.25)'">
+                        <button onclick="confirmRenamePlayer()" style="padding: 0.5rem 0.8rem; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); border: none; border-radius: 20px; color: #0A1A10; font-family: 'Orbitron', monospace; font-size: 0.7rem; font-weight: 700; cursor: pointer; white-space: nowrap;">OK</button>
                     </div>
                 </div>
 
-                <!-- Step 2: Enter new name -->
-                <div id="renamePlayerStep2" style="display: none;">
-                    <div style="display: flex; flex-direction: column; align-items: center; gap: var(--space-md); margin: var(--space-lg) 0; padding: var(--space-md); background: rgba(201, 168, 50, 0.06); border: 1px solid rgba(201, 168, 50, 0.15); border-radius: var(--radius-lg);">
-                        <div id="renamePlayerPreviewAvatar"></div>
-                        <p id="renamePlayerOldName" style="font-size: 0.9rem; color: var(--text-secondary);"></p>
-                    </div>
-                    <div style="margin: var(--space-md) 0;">
-                        <input type="text" id="renamePlayerNewName" placeholder="Enter new name..." maxlength="20" style="width: 100%; padding: var(--space-sm) var(--space-md); background: rgba(15, 38, 26, 0.85); border: 2px solid rgba(201, 168, 50, 0.25); border-radius: var(--radius-md); color: var(--text-primary); font-size: 1rem; font-family: 'Inter', sans-serif; outline: none; transition: border-color 0.3s;" onfocus="this.style.borderColor='rgba(201, 168, 50, 0.7)'" onblur="this.style.borderColor='rgba(201, 168, 50, 0.25)'">
-                    </div>
-                    <div class="modal-buttons">
-                        <button class="modal-btn modal-btn-cancel" onclick="backToRenameStep1()">Back</button>
-                        <button class="modal-btn modal-btn-primary" onclick="confirmRenamePlayer()">Confirm Rename</button>
-                    </div>
+                <div class="modal-buttons">
+                    <button class="modal-btn modal-btn-cancel" onclick="closeRenamePlayerModal()" style="flex: none; width: 100%;">Cancel</button>
                 </div>
             </div>
         </div>
@@ -5072,58 +5046,29 @@
                 const idx = gameState.players.indexOf(player);
                 const card = document.createElement('div');
                 card.className = 'player-select-card';
-                card.setAttribute('data-player-idx', idx);
                 card.innerHTML = `
                     ${createAvatarHTML(player.avatar, '', player.name)}
-                    <div style="flex: 1;">
+                    <div style="flex: 1; min-width: 0;">
                         <div style="font-weight: 700; color: var(--text-primary);">${player.name}</div>
-                        <div style="font-size: 0.8rem; color: var(--text-secondary);">Score: ${player.totalScore}</div>
+                        <div style="font-size: 0.75rem; color: var(--text-tertiary);">${player.totalScore} pts · Round ${gameState.currentRound}</div>
                     </div>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--danger)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; opacity: 0.5;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                 `;
                 card.onclick = function() {
-                    document.querySelectorAll('.player-select-card').forEach(c => c.classList.remove('selected'));
-                    card.classList.add('selected');
-                    selectedPlayerToRemove = idx;
-                    const btn = document.getElementById('confirmRemoveBtn');
-                    btn.style.opacity = '1';
-                    btn.style.pointerEvents = 'auto';
-                    playSound('click');
+                    if (confirm(`Remove ${player.name} from the tournament?`)) {
+                        selectedPlayerToRemove = idx;
+                        confirmRemovePlayer();
+                    }
                 };
                 list.appendChild(card);
             });
 
-            const btn = document.getElementById('confirmRemoveBtn');
-            btn.style.opacity = '0.4';
-            btn.style.pointerEvents = 'none';
-
-            // Reset to step 1
-            document.getElementById('removePlayerStep1').style.display = '';
-            document.getElementById('removePlayerStep2').style.display = 'none';
             document.getElementById('removePlayerModal').classList.add('active');
         }
 
         function closeRemovePlayerModal() {
             document.getElementById('removePlayerModal').classList.remove('active');
             selectedPlayerToRemove = null;
-        }
-
-        function backToRemoveStep1() {
-            document.getElementById('removePlayerStep2').style.display = 'none';
-            document.getElementById('removePlayerStep1').style.display = '';
-        }
-
-        function showRemovePlayerConfirm() {
-            if (selectedPlayerToRemove === null) return;
-
-            const player = gameState.players[selectedPlayerToRemove];
-
-            document.getElementById('removePlayerPreviewAvatar').innerHTML = createAvatarHTML(player.avatar, 'avatar-large', player.name);
-            document.getElementById('removePlayerPreviewName').textContent = player.name;
-            document.getElementById('removePlayerPreviewScore').textContent = `Score: ${player.totalScore} points · Round ${gameState.currentRound}`;
-
-            playSound('click');
-            document.getElementById('removePlayerStep1').style.display = 'none';
-            document.getElementById('removePlayerStep2').style.display = '';
         }
 
         function confirmRemovePlayer() {
@@ -5166,46 +5111,42 @@
             selectedPlayerToRename = null;
             const list = document.getElementById('renamePlayerList');
             list.innerHTML = '';
+            document.getElementById('renameInlineEdit').style.display = 'none';
 
-            // Show ALL players (active + eliminated) for renaming
+            // Show ALL players — tap to select and rename inline
             gameState.players.forEach((player, idx) => {
                 const card = document.createElement('div');
                 card.className = 'player-select-card';
-                card.setAttribute('data-player-idx', idx);
-                card.style.cssText = '';
                 card.innerHTML = `
                     ${createAvatarHTML(player.avatar, '', player.name)}
-                    <div style="flex: 1;">
+                    <div style="flex: 1; min-width: 0;">
                         <div style="font-weight: 700; color: var(--text-primary);">${player.name}</div>
-                        <div style="font-size: 0.8rem; color: var(--text-secondary);">Score: ${player.totalScore}${player.eliminated ? ' · Eliminated R' + player.eliminatedOnRound : ''}</div>
+                        <div style="font-size: 0.75rem; color: var(--text-tertiary);">${player.totalScore} pts${player.eliminated ? ' · Out R' + player.eliminatedOnRound : ''}</div>
                     </div>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--primary-light)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; opacity: 0.4;"><path d="M17 3a2.828 2.828 0 114 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
                 `;
                 card.onclick = function() {
+                    // Highlight selected
                     document.querySelectorAll('#renamePlayerList .player-select-card').forEach(c => {
-                        c.classList.remove('selected');
-                        c.style.borderColor = '';
-                        c.style.background = '';
-                        c.style.boxShadow = '';
+                        c.style.borderColor = ''; c.style.background = '';
                     });
-                    card.classList.add('selected');
-                    card.style.borderColor = '#C9A832';
-                    card.style.background = 'rgba(201, 168, 50, 0.12)';
-                    card.style.boxShadow = '0 0 20px rgba(201, 168, 50, 0.25)';
+                    card.style.borderColor = 'rgba(201, 168, 50, 0.4)';
+                    card.style.background = 'rgba(201, 168, 50, 0.08)';
                     selectedPlayerToRename = idx;
-                    const btn = document.getElementById('confirmRenameSelectBtn');
-                    btn.style.opacity = '1';
-                    btn.style.pointerEvents = 'auto';
+
+                    // Show inline edit
+                    const editDiv = document.getElementById('renameInlineEdit');
+                    document.getElementById('renamePlayerPreviewAvatar').innerHTML = createAvatarHTML(player.avatar, '', player.name);
+                    document.getElementById('renamePlayerOldName').textContent = player.name;
+                    document.getElementById('renamePlayerNewName').value = '';
+                    document.getElementById('renamePlayerNewName').placeholder = 'New name...';
+                    editDiv.style.display = '';
                     playSound('click');
+                    setTimeout(() => document.getElementById('renamePlayerNewName').focus(), 100);
                 };
                 list.appendChild(card);
             });
 
-            const btn = document.getElementById('confirmRenameSelectBtn');
-            btn.style.opacity = '0.4';
-            btn.style.pointerEvents = 'none';
-
-            document.getElementById('renamePlayerStep1').style.display = '';
-            document.getElementById('renamePlayerStep2').style.display = 'none';
             document.getElementById('renamePlayerModal').classList.add('active');
         }
 
@@ -5476,28 +5417,6 @@
 
             document.getElementById('historyStep1').style.display = 'none';
             document.getElementById('historyStep2').style.display = '';
-        }
-
-        function backToRenameStep1() {
-            document.getElementById('renamePlayerStep2').style.display = 'none';
-            document.getElementById('renamePlayerStep1').style.display = '';
-        }
-
-        function showRenameStep2() {
-            if (selectedPlayerToRename === null) return;
-
-            const player = gameState.players[selectedPlayerToRename];
-            document.getElementById('renamePlayerPreviewAvatar').innerHTML = createAvatarHTML(player.avatar, 'avatar-large', player.name);
-            document.getElementById('renamePlayerOldName').textContent = player.name;
-            document.getElementById('renamePlayerNewName').value = '';
-            document.getElementById('renamePlayerNewName').placeholder = 'Enter new name...';
-
-            playSound('click');
-            document.getElementById('renamePlayerStep1').style.display = 'none';
-            document.getElementById('renamePlayerStep2').style.display = '';
-            setTimeout(() => {
-                document.getElementById('renamePlayerNewName').focus();
-            }, 100);
         }
 
         function confirmRenamePlayer() {
@@ -6086,24 +6005,24 @@
 
         // ===== SPLASH SCREEN DISMISS =====
         window.addEventListener('load', () => {
-            // Minimum display time for splash: 1.8s for the animations to play
+            // Display splash for 8 seconds to enjoy the animation
             setTimeout(() => {
                 const splash = document.getElementById('splashScreen');
                 if (splash) {
                     splash.classList.add('fade-out');
                     setTimeout(() => splash.remove(), 600);
                 }
-            }, 1800);
+            }, 8000);
         });
 
-        // Fallback: remove splash after 4s even if load event didn't fire
+        // Fallback: remove splash after 12s even if load event didn't fire
         setTimeout(() => {
             const splash = document.getElementById('splashScreen');
             if (splash) {
                 splash.classList.add('fade-out');
                 setTimeout(() => splash.remove(), 600);
             }
-        }, 4000);
+        }, 12000);
     </script>
 </body>
 </html>
