@@ -1,11 +1,12 @@
-const CACHE_NAME = 'wizard-game-online-v4.2.0';
+const CACHE_NAME = 'wizard-game-v5.0.0';
 const urlsToCache = [
+  './wizard_app.html',
   './wizard_game.html',
   './manifest.json',
+  './manifest_app.json',
   './icons/icon-192x192.png',
   './icons/icon-512x512.png',
-  'https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;900&family=Inter:wght@300;400;500;600;700;800&display=swap',
-  'https://cdn.socket.io/4.6.1/socket.io.min.js'
+  'https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;900&family=Inter:wght@300;400;500;600;700;800&display=swap'
 ];
 
 // Install event - cache resources

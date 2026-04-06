@@ -4,9 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#0A1A10">
+    <meta name="theme-color" content="#0A1A10" media="(prefers-color-scheme: dark)">
+    <meta name="theme-color" content="#0A1A10" media="(prefers-color-scheme: light)">
     <meta name="color-scheme" content="dark">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="format-detection" content="telephone=no">
     <title>Wizard Tournament • Professional Score Tracker</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='grad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' style='stop-color:%23C9A832;stop-opacity:1' /><stop offset='100%25' style='stop-color:%231B6B3A;stop-opacity:1' /></linearGradient></defs><circle cx='50' cy='50' r='45' fill='url(%23grad)'/><text x='50' y='70' font-size='60' font-family='Arial' font-weight='bold' fill='white' text-anchor='middle'>W</text></svg>">
 
@@ -5485,16 +5488,15 @@
 
             const player = gameState.players[selectedPlayerToRename];
             document.getElementById('renamePlayerPreviewAvatar').innerHTML = createAvatarHTML(player.avatar, 'avatar-large', player.name);
-            document.getElementById('renamePlayerOldName').textContent = `Current name: ${player.name}`;
-            document.getElementById('renamePlayerNewName').value = player.name;
+            document.getElementById('renamePlayerOldName').textContent = player.name;
+            document.getElementById('renamePlayerNewName').value = '';
+            document.getElementById('renamePlayerNewName').placeholder = 'Enter new name...';
 
             playSound('click');
             document.getElementById('renamePlayerStep1').style.display = 'none';
             document.getElementById('renamePlayerStep2').style.display = '';
             setTimeout(() => {
-                const input = document.getElementById('renamePlayerNewName');
-                input.focus();
-                input.select();
+                document.getElementById('renamePlayerNewName').focus();
             }, 100);
         }
 

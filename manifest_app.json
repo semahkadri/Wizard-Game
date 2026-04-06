@@ -1,13 +1,18 @@
 {
+  "id": "/wizard_app",
   "name": "Wizard Score Tracker",
   "short_name": "Wizard Score",
-  "description": "Score tracker and tournament manager for Wizard card game. Track bids, tricks, and eliminations.",
+  "description": "Professional score tracker and tournament manager for Wizard card game. Track bids, tricks, eliminations, and duels.",
   "start_url": "./wizard_app.html",
   "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
   "background_color": "#0A1A10",
   "theme_color": "#0A1A10",
   "orientation": "any",
   "scope": "./",
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  },
   "icons": [
     {
       "src": "./icons/icon-72x72.png",
@@ -28,8 +33,26 @@
       "purpose": "any"
     },
     {
+      "src": "./icons/icon-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icons/icon-152x152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
       "src": "./icons/icon-192x192.png",
       "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icons/icon-384x384.png",
+      "sizes": "384x384",
       "type": "image/png",
       "purpose": "any"
     },
