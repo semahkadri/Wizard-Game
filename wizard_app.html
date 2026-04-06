@@ -2233,6 +2233,10 @@
                 <button class="btn btn-primary" id="nextRoundBtn" onclick="nextRound()" disabled>
                     Next Round
                 </button>
+                <button class="btn" id="undoBtn" onclick="undoLastAction()" disabled style="background: linear-gradient(135deg, #64748B 0%, #475569 100%); color: white; box-shadow: var(--shadow-md);">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
+                    Undo
+                </button>
                 <button class="btn btn-danger" onclick="resetGame()">
                     New Game
                 </button>
@@ -2246,6 +2250,10 @@
                 <button class="btn btn-warning" onclick="showRemovePlayerModal()">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4-4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
                     Remove Player
+                </button>
+                <button class="btn btn-primary" onclick="showRenamePlayerModal()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;"><path d="M17 3a2.828 2.828 0 114 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+                    Rename
                 </button>
             </div>
         </section>
@@ -2613,6 +2621,41 @@
                 </div>
             </div>
         </div>
+        <!-- Rename Player Modal -->
+        <div class="modal-overlay" id="renamePlayerModal">
+            <div class="modal" style="max-width: 500px;">
+                <div class="modal-icon" style="background: rgba(139, 92, 246, 0.15); border-color: rgba(139, 92, 246, 0.3);">
+                    <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 114 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+                </div>
+                <h3 class="modal-title" style="background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">RENAME PLAYER</h3>
+
+                <!-- Step 1: Select player -->
+                <div id="renamePlayerStep1">
+                    <p class="modal-text" style="margin-bottom: var(--space-md);">Select a player to rename</p>
+                    <div id="renamePlayerList" style="display: flex; flex-direction: column; gap: var(--space-sm); max-height: 300px; overflow-y: auto; margin-bottom: var(--space-lg);"></div>
+                    <div class="modal-buttons">
+                        <button class="modal-btn modal-btn-cancel" onclick="closeRenamePlayerModal()">Cancel</button>
+                        <button class="modal-btn modal-btn-primary" id="confirmRenameSelectBtn" onclick="showRenameStep2()" style="opacity: 0.4; pointer-events: none;">Continue</button>
+                    </div>
+                </div>
+
+                <!-- Step 2: Enter new name -->
+                <div id="renamePlayerStep2" style="display: none;">
+                    <div style="display: flex; flex-direction: column; align-items: center; gap: var(--space-md); margin: var(--space-lg) 0; padding: var(--space-md); background: rgba(139, 92, 246, 0.08); border: 1px solid rgba(139, 92, 246, 0.2); border-radius: var(--radius-lg);">
+                        <div id="renamePlayerPreviewAvatar"></div>
+                        <p id="renamePlayerOldName" style="font-size: 0.9rem; color: var(--text-secondary);"></p>
+                    </div>
+                    <div style="margin: var(--space-md) 0;">
+                        <input type="text" id="renamePlayerNewName" placeholder="Enter new name..." maxlength="20" style="width: 100%; padding: var(--space-sm) var(--space-md); background: rgba(30, 41, 59, 0.8); border: 2px solid rgba(139, 92, 246, 0.3); border-radius: var(--radius-md); color: var(--text-primary); font-size: 1rem; font-family: 'Inter', sans-serif; outline: none; transition: border-color 0.3s;" onfocus="this.style.borderColor='rgba(139, 92, 246, 0.8)'" onblur="this.style.borderColor='rgba(139, 92, 246, 0.3)'">
+                    </div>
+                    <div class="modal-buttons">
+                        <button class="modal-btn modal-btn-cancel" onclick="backToRenameStep1()">Back</button>
+                        <button class="modal-btn modal-btn-primary" onclick="confirmRenamePlayer()">Confirm Rename</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <script>
@@ -3086,6 +3129,10 @@
             document.getElementById('calculateBtn').disabled = gameState.roundCalculated;
             document.getElementById('nextRoundBtn').disabled = !gameState.roundCalculated;
 
+            // Undo stack is session-only, not persisted
+            undoStack = [];
+            updateUndoButton();
+
             updateStatistics();
             updateNextElimination();
             renderTable();
@@ -3180,6 +3227,10 @@
 
         // Mid-game player management state
         let selectedPlayerToRemove = null;
+        let selectedPlayerToRename = null;
+
+        // Undo system — snapshot stack
+        let undoStack = [];
 
         // FIXED Round Elimination Schedule (Tournament Style)
         // ALL players play all 20 rounds
@@ -3581,6 +3632,9 @@
                 return;
             }
 
+            // Save undo snapshot BEFORE modifying state
+            saveUndoSnapshot();
+
             // Play score ticks as we calculate
             active.forEach((player, index) => {
                 const idx = gameState.players.indexOf(player);
@@ -3614,6 +3668,9 @@
         }
 
         function nextRound() {
+            // Save undo snapshot BEFORE any elimination or round advance
+            saveUndoSnapshot();
+
             if (gameState.eliminationSchedule.includes(gameState.currentRound)) {
                 const duelStarted = eliminatePlayer();
                 if (duelStarted) {
@@ -4278,6 +4335,187 @@
             }
         }
 
+        // ===== RENAME PLAYER MID-GAME =====
+        function showRenamePlayerModal() {
+            if (duelState.inProgress) {
+                showAlert('Cannot rename players during a duel', 'warning');
+                return;
+            }
+
+            selectedPlayerToRename = null;
+            const list = document.getElementById('renamePlayerList');
+            list.innerHTML = '';
+
+            // Show ALL players (active + eliminated) for renaming
+            gameState.players.forEach((player, idx) => {
+                const card = document.createElement('div');
+                card.className = 'player-select-card';
+                card.setAttribute('data-player-idx', idx);
+                // Override hover color to purple for rename
+                card.style.cssText = '';
+                card.innerHTML = `
+                    ${createAvatarHTML(player.avatar)}
+                    <div style="flex: 1;">
+                        <div style="font-weight: 700; color: var(--text-primary);">${player.name}</div>
+                        <div style="font-size: 0.8rem; color: var(--text-secondary);">Score: ${player.totalScore}${player.eliminated ? ' · Eliminated R' + player.eliminatedOnRound : ''}</div>
+                    </div>
+                `;
+                card.onclick = function() {
+                    document.querySelectorAll('#renamePlayerList .player-select-card').forEach(c => {
+                        c.classList.remove('selected');
+                        c.style.borderColor = '';
+                        c.style.background = '';
+                        c.style.boxShadow = '';
+                    });
+                    card.classList.add('selected');
+                    card.style.borderColor = '#8B5CF6';
+                    card.style.background = 'rgba(139, 92, 246, 0.15)';
+                    card.style.boxShadow = '0 0 20px rgba(139, 92, 246, 0.3)';
+                    selectedPlayerToRename = idx;
+                    const btn = document.getElementById('confirmRenameSelectBtn');
+                    btn.style.opacity = '1';
+                    btn.style.pointerEvents = 'auto';
+                    playSound('click');
+                };
+                list.appendChild(card);
+            });
+
+            const btn = document.getElementById('confirmRenameSelectBtn');
+            btn.style.opacity = '0.4';
+            btn.style.pointerEvents = 'none';
+
+            document.getElementById('renamePlayerStep1').style.display = '';
+            document.getElementById('renamePlayerStep2').style.display = 'none';
+            document.getElementById('renamePlayerModal').classList.add('active');
+        }
+
+        function closeRenamePlayerModal() {
+            document.getElementById('renamePlayerModal').classList.remove('active');
+            selectedPlayerToRename = null;
+        }
+
+        function backToRenameStep1() {
+            document.getElementById('renamePlayerStep2').style.display = 'none';
+            document.getElementById('renamePlayerStep1').style.display = '';
+        }
+
+        function showRenameStep2() {
+            if (selectedPlayerToRename === null) return;
+
+            const player = gameState.players[selectedPlayerToRename];
+            document.getElementById('renamePlayerPreviewAvatar').innerHTML = createAvatarHTML(player.avatar, 'avatar-large');
+            document.getElementById('renamePlayerOldName').textContent = `Current name: ${player.name}`;
+            document.getElementById('renamePlayerNewName').value = player.name;
+
+            playSound('click');
+            document.getElementById('renamePlayerStep1').style.display = 'none';
+            document.getElementById('renamePlayerStep2').style.display = '';
+            setTimeout(() => {
+                const input = document.getElementById('renamePlayerNewName');
+                input.focus();
+                input.select();
+            }, 100);
+        }
+
+        function confirmRenamePlayer() {
+            if (selectedPlayerToRename === null) return;
+
+            const newName = document.getElementById('renamePlayerNewName').value.trim();
+            if (!newName) {
+                showAlert('Please enter a name', 'warning');
+                return;
+            }
+
+            // Check for duplicate names
+            const duplicate = gameState.players.some((p, i) => i !== selectedPlayerToRename && p.name.toLowerCase() === newName.toLowerCase());
+            if (duplicate) {
+                showAlert('A player with this name already exists', 'warning');
+                return;
+            }
+
+            const player = gameState.players[selectedPlayerToRename];
+            const oldName = player.name;
+
+            // Update player name
+            player.name = newName;
+
+            // Regenerate avatar with new initials
+            player.avatar = generateAvatar(newName, selectedPlayerToRename);
+
+            // If duel cards reference old name, update the key
+            if (duelState.cards && duelState.cards[oldName]) {
+                duelState.cards[newName] = duelState.cards[oldName];
+                delete duelState.cards[oldName];
+            }
+
+            closeRenamePlayerModal();
+            saveGameState();
+
+            renderTable();
+            updateStatistics();
+            updateRoundTotals();
+
+            playSound('chime');
+            showAlert(`"${oldName}" renamed to "${newName}"`, 'success');
+        }
+
+        // ===== UNDO SYSTEM =====
+        function saveUndoSnapshot() {
+            // Deep clone gameState (avatars will be regenerated on restore)
+            const snapshot = JSON.parse(JSON.stringify(gameState));
+            undoStack.push(snapshot);
+            // Keep max 10 snapshots
+            if (undoStack.length > 10) undoStack.shift();
+            updateUndoButton();
+        }
+
+        function updateUndoButton() {
+            const btn = document.getElementById('undoBtn');
+            if (btn) {
+                btn.disabled = undoStack.length === 0;
+            }
+        }
+
+        function undoLastAction() {
+            if (undoStack.length === 0) {
+                showAlert('Nothing to undo', 'warning');
+                return;
+            }
+
+            if (duelState.inProgress) {
+                showAlert('Cannot undo during a duel', 'warning');
+                return;
+            }
+
+            const snapshot = undoStack.pop();
+
+            // Restore gameState from snapshot
+            gameState = snapshot;
+
+            // Clean up any stale duel flags
+            delete gameState._pendingDuelContinue;
+            delete gameState._pendingDuelRound;
+
+            // Rebuild avatar objects (not serializable)
+            gameState.players.forEach((player, i) => {
+                player.avatar = generateAvatar(player.name, i);
+            });
+
+            // Restore UI state
+            document.getElementById('calculateBtn').disabled = gameState.roundCalculated;
+            document.getElementById('nextRoundBtn').disabled = !gameState.roundCalculated;
+
+            updateStatistics();
+            updateNextElimination();
+            renderTable();
+            updateRoundTotals();
+            updateUndoButton();
+            saveGameState();
+
+            playSound('click');
+            showAlert(`Undo successful — back to Round ${gameState.currentRound}`, 'success');
+        }
+
         function isWinner(player) {
             const active = gameState.players.filter(p => !p.eliminated);
             if (active.length === 1 && active[0] === player) return true;
@@ -4458,6 +4696,10 @@
                 roundCalculated: false
             };
 
+            // Clear undo stack
+            undoStack = [];
+            updateUndoButton();
+
             // Clear saved game from storage
             clearSavedGame();
 
@@ -4497,6 +4739,7 @@
                 closeEliminationModal();
                 closeAddPlayerModal();
                 closeRemovePlayerModal();
+                closeRenamePlayerModal();
             }
         });
 
