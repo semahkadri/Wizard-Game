@@ -3065,6 +3065,10 @@
         function restoreGame(saved) {
             gameState = saved.gameState;
 
+            // Clean up any stale duel flags from a save that happened mid-duel
+            delete gameState._pendingDuelContinue;
+            delete gameState._pendingDuelRound;
+
             // Rebuild avatar objects (not serialized with style function)
             gameState.players.forEach((player, i) => {
                 player.avatar = generateAvatar(player.name, i);
@@ -3611,9 +3615,18 @@
 
         function nextRound() {
             if (gameState.eliminationSchedule.includes(gameState.currentRound)) {
-                eliminatePlayer();
+                const duelStarted = eliminatePlayer();
+                if (duelStarted) {
+                    // Duel in progress — round will advance after duel + elimination modal close
+                    return;
+                }
             }
 
+            continueToNextRound();
+        }
+
+        // Separated so the duel flow can call this after the duel resolves and elimination modal closes
+        function continueToNextRound() {
             const active = gameState.players.filter(p => !p.eliminated);
 
             // Check if game should end - ALWAYS play 20 rounds OR only 1 player left
@@ -3915,29 +3928,35 @@
 
             duelState.inProgress = false;
 
-            // Eliminate the loser
+            // Eliminate the loser — use the saved round from when the duel was triggered
             const eliminated = gameState.players[loserIndex];
             eliminated.eliminated = true;
-            eliminated.eliminatedOnRound = gameState.currentRound;
+            eliminated.eliminatedOnRound = gameState._pendingDuelRound || gameState.currentRound;
 
-            // Clear tied players
+            // Clear tied players and pending duel state
             duelState.tiedPlayers = [];
+            gameState._pendingDuelContinue = true; // Flag: closeEliminationModal must advance the round
             saveGameState();
+
+            // Update table immediately so eliminated player is visually removed
+            renderTable();
+            updateStatistics();
+            updateNextElimination();
 
             // Show standard elimination modal
             setTimeout(() => {
                 showEliminationAnimation(eliminated);
-                updateStatistics();
             }, 500);
         }
 
+        // Returns true if a duel was started (async flow), false if elimination was immediate
         function eliminatePlayer() {
             const active = gameState.players.filter(p => !p.eliminated);
 
             // Always end with 3 final players
             if (active.length <= 3) {
                 showAlert('Final 3 players reached! Play to round 20!', 'info');
-                return;
+                return false;
             }
 
             const lowest = Math.min(...active.map(p => p.totalScore));
@@ -3945,8 +3964,9 @@
 
             // TIE-BREAKER: If multiple players tied (even if ALL tied), trigger DUEL!
             if (toEliminate.length > 1) {
+                gameState._pendingDuelRound = gameState.currentRound;
                 initiateDuel(toEliminate);
-                return;
+                return true; // Duel started — caller must stop and wait
             }
 
             // Single player elimination (no tie)
@@ -3958,6 +3978,7 @@
             // Show elimination modal with animations
             showEliminationAnimation(eliminated);
             updateStatistics();
+            return false; // Elimination done synchronously
         }
 
         function showEliminationAnimation(player) {
@@ -4025,6 +4046,14 @@
 
         function closeEliminationModal() {
             document.getElementById('eliminationModal').classList.remove('active');
+
+            // If this elimination came from a duel, we need to resume the nextRound flow
+            // (nextRound was paused when the duel started)
+            if (gameState._pendingDuelContinue) {
+                gameState._pendingDuelContinue = false;
+                delete gameState._pendingDuelRound;
+                continueToNextRound();
+            }
         }
 
         // ===== ADD PLAYER MID-GAME =====
@@ -4461,6 +4490,8 @@
         // Close modal on overlay click
         document.addEventListener('click', function(e) {
             if (e.target.classList.contains('modal-overlay')) {
+                // Never dismiss duel or elimination modals by clicking overlay during a duel
+                if (duelState.inProgress) return;
                 closeModal();
                 closeWinnerModal();
                 closeEliminationModal();
