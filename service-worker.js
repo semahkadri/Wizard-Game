@@ -1,4 +1,4 @@
-const CACHE_NAME = 'wizard-game-online-v4.0.0';
+const CACHE_NAME = 'wizard-game-online-v4.1.0';
 const urlsToCache = [
   './wizard_game.html',
   './manifest.json',
