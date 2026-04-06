@@ -1391,34 +1391,6 @@
             animation: iconPulse 2s ease-in-out infinite;
         }
 
-        @keyframes skullBounce {
-            0%, 100% { transform: scale(1) rotate(0deg); }
-            25% { transform: scale(1.2) rotate(-15deg); }
-            75% { transform: scale(1.2) rotate(15deg); }
-        }
-
-        @keyframes glitchEffect {
-            0%, 100% {
-                transform: translate(0, 0);
-                filter: hue-rotate(0deg);
-            }
-            20% {
-                transform: translate(-2px, 2px);
-                filter: hue-rotate(90deg);
-            }
-            40% {
-                transform: translate(2px, -2px);
-                filter: hue-rotate(180deg);
-            }
-            60% {
-                transform: translate(-2px, -2px);
-                filter: hue-rotate(270deg);
-            }
-            80% {
-                transform: translate(2px, 2px);
-                filter: hue-rotate(360deg);
-            }
-        }
 
         .eliminated-avatar {
             animation: avatarElimination 1s ease-out;
@@ -1450,12 +1422,6 @@
             background-clip: text;
             filter: drop-shadow(0 0 10px rgba(220, 38, 38, 0.3));
             animation: none;
-        }
-
-        @keyframes dangerShake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-10px); }
-            75% { transform: translateX(10px); }
         }
 
         /* Elimination Particles */
@@ -1498,20 +1464,6 @@
             }
         }
 
-        /* Glitch Text Effect */
-        .glitch-text {
-            position: relative;
-            animation: textGlitch 0.3s ease-in-out infinite;
-        }
-
-        @keyframes textGlitch {
-            0% { transform: translate(0); }
-            20% { transform: translate(-2px, 2px); }
-            40% { transform: translate(2px, -2px); }
-            60% { transform: translate(-2px, -2px); }
-            80% { transform: translate(2px, 2px); }
-            100% { transform: translate(0); }
-        }
 
         /* Hidden Utility */
         .hidden {
@@ -2559,9 +2511,131 @@
                 font-size: 1.4rem;
             }
         }
+        /* ===== SPLASH SCREEN ===== */
+        .splash-screen {
+            position: fixed;
+            inset: 0;
+            z-index: 99999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #0A1A10;
+            transition: opacity 0.6s ease, visibility 0.6s ease;
+        }
+
+        .splash-screen.fade-out {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .splash-logo {
+            position: relative;
+            animation: splashEntry 1s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .splash-logo svg {
+            width: 120px;
+            height: 120px;
+            filter: drop-shadow(0 0 30px rgba(201, 168, 50, 0.4));
+            animation: splashFloat 2s ease-in-out infinite;
+        }
+
+        .splash-title {
+            font-family: 'Orbitron', monospace;
+            font-size: clamp(2rem, 8vw, 3rem);
+            font-weight: 900;
+            background: linear-gradient(135deg, #FFD700 0%, #E2C547 40%, #C9A832 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 6px;
+            margin-top: 1.25rem;
+            animation: splashEntry 1s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both;
+        }
+
+        .splash-subtitle {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.8rem;
+            color: var(--text-tertiary);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-top: 0.5rem;
+            animation: splashEntry 0.8s ease-out 0.5s both;
+        }
+
+        .splash-loader {
+            margin-top: 2rem;
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(201, 168, 50, 0.15);
+            border-top-color: #C9A832;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite, splashEntry 0.6s ease-out 0.7s both;
+        }
+
+        .splash-suits {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            animation: splashEntry 0.8s ease-out 0.4s both;
+        }
+
+        .splash-suits span {
+            font-size: 1.2rem;
+            opacity: 0.3;
+            animation: splashSuitPulse 1.5s ease-in-out infinite;
+        }
+
+        .splash-suits span:nth-child(2) { animation-delay: 0.2s; }
+        .splash-suits span:nth-child(3) { animation-delay: 0.4s; }
+        .splash-suits span:nth-child(4) { animation-delay: 0.6s; }
+
+        @keyframes splashEntry {
+            from { opacity: 0; transform: translateY(20px) scale(0.9); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        @keyframes splashFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        @keyframes splashSuitPulse {
+            0%, 100% { opacity: 0.2; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(1.15); }
+        }
     </style>
 </head>
 <body>
+    <!-- Splash / Loading Screen -->
+    <div class="splash-screen" id="splashScreen">
+        <div class="splash-logo">
+            <svg viewBox="0 0 120 120" fill="none">
+                <circle cx="60" cy="60" r="55" stroke="#C9A832" stroke-width="3" fill="none" opacity="0.3"/>
+                <circle cx="60" cy="60" r="45" stroke="rgba(201,168,50,0.15)" stroke-width="1" fill="none"/>
+                <text x="60" y="72" font-family="Arial Black, sans-serif" font-size="52" font-weight="900" text-anchor="middle" fill="url(#splashGold)">W</text>
+                <text x="60" y="100" font-family="serif" font-size="10" text-anchor="middle" fill="rgba(201,168,50,0.3)">♠</text>
+                <defs>
+                    <linearGradient id="splashGold" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="0%" stop-color="#FFD700"/>
+                        <stop offset="50%" stop-color="#E2C547"/>
+                        <stop offset="100%" stop-color="#C9A832"/>
+                    </linearGradient>
+                </defs>
+            </svg>
+        </div>
+        <div class="splash-title">WIZARD</div>
+        <div class="splash-subtitle">Tournament Score Tracker</div>
+        <div class="splash-suits">
+            <span style="color: #E2C547;">♠</span>
+            <span style="color: #DC2626;">♥</span>
+            <span style="color: #E2C547;">♦</span>
+            <span style="color: #22D36B;">♣</span>
+        </div>
+        <div class="splash-loader"></div>
+    </div>
+
     <div class="container">
         <!-- Professional Header -->
         <header class="header">
@@ -2902,13 +2976,13 @@
 
         <!-- Resume Game Modal -->
         <div class="modal-overlay" id="resumeModal">
-            <div class="modal">
-                <div class="modal-icon" style="background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.3);">
-                    <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 11-6.22-8.56"/><polyline points="21 3 21 9 15 9"/><polygon points="10 8 16 12 10 16 10 8" fill="#10B981" stroke="none"/></svg>
+            <div class="modal" style="text-align: center;">
+                <div class="modal-icon" style="background: rgba(16, 185, 129, 0.12); border: 2px solid rgba(16, 185, 129, 0.25); margin: 0 auto var(--space-md);">
+                    <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 11-6.22-8.56"/><polyline points="21 3 21 9 15 9"/><polygon points="10 8 16 12 10 16 10 8" fill="#10B981" stroke="none"/></svg>
                 </div>
                 <h3 class="modal-title" style="background: linear-gradient(135deg, var(--success) 0%, #059669 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">GAME IN PROGRESS</h3>
-                <p class="modal-text">A saved game was found. Would you like to continue where you left off?</p>
-                <div id="resumeGameInfo" style="display: flex; flex-direction: column; gap: var(--space-xs); padding: var(--space-md); background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: var(--radius-lg); margin: var(--space-md) 0;"></div>
+                <p class="modal-text" style="font-size: 0.9rem;">A saved game was found. Resume where you left off?</p>
+                <div id="resumeGameInfo" style="padding: 0.75rem; background: rgba(16, 185, 129, 0.06); border: 1px solid rgba(16, 185, 129, 0.15); border-radius: var(--radius-md); margin: var(--space-sm) 0; text-align: left;"></div>
                 <div class="modal-buttons">
                     <button class="modal-btn modal-btn-cancel" onclick="dismissResume()">New Game</button>
                     <button class="modal-btn modal-btn-primary" onclick="acceptResume()" style="background: linear-gradient(135deg, var(--success) 0%, #059669 100%);">Resume Game</button>
@@ -4618,7 +4692,11 @@
             // Create array of all players with their card values and index
             const results = duelState.players.map((player, index) => {
                 const card = duelState.cards[player.name];
-                console.log(`${player.name} (index ${index}): card =`, card, `display = ${card.display}, value = ${card.value}`);
+                if (!card) {
+                    console.error(`Missing card for ${player.name}`);
+                    return { player, index, card: { display: '?', value: 0 }, cardValue: 0 };
+                }
+                console.log(`${player.name} (index ${index}): ${card.display} (${card.value})`);
                 return {
                     player: player,
                     index: index,
@@ -4626,6 +4704,13 @@
                     cardValue: card.value
                 };
             });
+
+            if (results.length === 0) {
+                console.error('No duel results — closing duel');
+                document.getElementById('duelModal').classList.remove('active');
+                duelState.inProgress = false;
+                return;
+            }
 
             // Sort by card value (highest to lowest)
             results.sort((a, b) => b.cardValue - a.cardValue);
@@ -5784,21 +5869,18 @@
 
             const info = document.getElementById('resumeGameInfo');
             info.innerHTML = `
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <span style="color: var(--text-secondary); font-size: 0.85rem;">Round</span>
-                    <span style="font-family: 'Orbitron', monospace; font-weight: 700; color: var(--text-primary);">${gs.currentRound} / 20</span>
+                <div style="display: grid; grid-template-columns: auto 1fr; gap: 0.4rem 1rem; align-items: center;">
+                    <span style="color: var(--text-tertiary); font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Round</span>
+                    <span style="font-family: 'Orbitron', monospace; font-weight: 700; color: var(--primary-light); text-align: right;">${gs.currentRound} / 20</span>
+
+                    <span style="color: var(--text-tertiary); font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Players</span>
+                    <span style="font-family: 'Orbitron', monospace; font-weight: 700; color: var(--success); text-align: right;">${active.length} / ${gs.players.length}</span>
+
+                    <span style="color: var(--text-tertiary); font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Saved</span>
+                    <span style="color: var(--text-secondary); font-size: 0.8rem; text-align: right;">${timeText}</span>
                 </div>
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <span style="color: var(--text-secondary); font-size: 0.85rem;">Active</span>
-                    <span style="font-family: 'Orbitron', monospace; font-weight: 700; color: var(--text-primary);">${active.length} / ${gs.players.length} players</span>
-                </div>
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <span style="color: var(--text-secondary); font-size: 0.85rem;">Names</span>
-                    <span style="color: var(--text-primary); font-weight: 600;">${active.map(p => p.name).join(', ')}</span>
-                </div>
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <span style="color: var(--text-secondary); font-size: 0.85rem;">Saved</span>
-                    <span style="color: var(--text-muted); font-size: 0.85rem;">${timeText}</span>
+                <div style="margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px solid rgba(16, 185, 129, 0.1); display: flex; flex-wrap: wrap; gap: 0.3rem; justify-content: center;">
+                    ${active.map(p => `<span style="padding: 0.15rem 0.5rem; background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.15); border-radius: 12px; font-size: 0.7rem; font-weight: 600; color: var(--text-secondary);">${p.name}</span>`).join('')}
                 </div>
             `;
 
@@ -5999,6 +6081,27 @@
         window.addEventListener('offline', () => {
             showAlert('You are offline. Some features may be limited.', 'warning');
         });
+
+        // ===== SPLASH SCREEN DISMISS =====
+        window.addEventListener('load', () => {
+            // Minimum display time for splash: 1.8s for the animations to play
+            setTimeout(() => {
+                const splash = document.getElementById('splashScreen');
+                if (splash) {
+                    splash.classList.add('fade-out');
+                    setTimeout(() => splash.remove(), 600);
+                }
+            }, 1800);
+        });
+
+        // Fallback: remove splash after 4s even if load event didn't fire
+        setTimeout(() => {
+            const splash = document.getElementById('splashScreen');
+            if (splash) {
+                splash.classList.add('fade-out');
+                setTimeout(() => splash.remove(), 600);
+            }
+        }, 4000);
     </script>
 </body>
 </html>
