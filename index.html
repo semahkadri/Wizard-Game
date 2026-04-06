@@ -3,58 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="refresh" content="0; url=./wizard_game.html">
-    <title>Redirecting to Wizard Tournament...</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #0F172A 0%, #1a1a3e 50%, #0F172A 100%);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            text-align: center;
-        }
-        .loader {
-            display: inline-block;
-            width: 50px;
-            height: 50px;
-            border: 5px solid rgba(139, 92, 246, 0.3);
-            border-top-color: #8B5CF6;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-bottom: 1rem;
-        }
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        h1 {
-            font-size: 2rem;
-            background: linear-gradient(135deg, #8B5CF6, #06B6D4);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin: 1rem 0;
-        }
-        p {
-            color: #CBD5E1;
-        }
-    </style>
+    <meta http-equiv="refresh" content="0; url=./wizard_app.html">
+    <title>Wizard Tournament</title>
 </head>
 <body>
-    <div>
-        <div class="loader"></div>
-        <h1>🎴 Wizard Tournament</h1>
-        <p>Redirecting to app...</p>
-    </div>
-    <script>
-        // Fallback redirect in case meta refresh doesn't work
-        setTimeout(() => {
-            window.location.href = './wizard_game.html';
-        }, 100);
-    </script>
+    <script>window.location.href = './wizard_app.html';</script>
 </body>
 </html>
