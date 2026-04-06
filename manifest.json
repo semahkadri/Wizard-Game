@@ -4,8 +4,8 @@
   "description": "Play Wizard card game online with friends or locally. Professional multiplayer experience with rooms, real-time sync, and PWA support.",
   "start_url": "./wizard_game.html",
   "display": "standalone",
-  "background_color": "#0F172A",
-  "theme_color": "#8B5CF6",
+  "background_color": "#0A1A10",
+  "theme_color": "#0A1A10",
   "orientation": "any",
   "scope": "./",
   "icons": [

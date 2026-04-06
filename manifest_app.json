@@ -4,8 +4,8 @@
   "description": "Score tracker and tournament manager for Wizard card game. Track bids, tricks, and eliminations.",
   "start_url": "./wizard_app.html",
   "display": "standalone",
-  "background_color": "#0F172A",
-  "theme_color": "#8B5CF6",
+  "background_color": "#0A1A10",
+  "theme_color": "#0A1A10",
   "orientation": "any",
   "scope": "./",
   "icons": [

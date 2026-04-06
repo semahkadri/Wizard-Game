@@ -313,16 +313,16 @@
         }
 
         .spinner-btn {
-            width: 28px;
-            height: 28px;
+            width: 32px;
+            height: 32px;
             display: flex;
             align-items: center;
             justify-content: center;
             background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
             border: none;
             border-radius: var(--radius-sm);
-            color: white;
-            font-size: 0.875rem;
+            color: #0A1A10;
+            font-size: 0.95rem;
             font-weight: 700;
             cursor: pointer;
             transition: all var(--transition-fast);
@@ -1741,6 +1741,27 @@
             .stat-value {
                 font-size: 1.1rem;
             }
+
+            .modal-title {
+                font-size: 1.2rem;
+            }
+
+            .elimination-title {
+                font-size: 1.3rem;
+            }
+
+            .winner-score-display {
+                font-size: 1.5rem;
+            }
+
+            .modal {
+                padding: var(--space-sm);
+            }
+
+            .modal-icon {
+                width: 56px;
+                height: 56px;
+            }
         }
 
         /* Loading Animation */
@@ -1941,29 +1962,62 @@
 
         .card-rank {
             font-family: 'Georgia', 'Times New Roman', serif;
-            font-size: 1.5rem;
+            font-size: 1.2rem;
             font-weight: 900;
             line-height: 1;
             letter-spacing: -0.05em;
         }
 
         .card-suit {
-            font-size: 1.1rem;
+            font-size: 0.85rem;
             line-height: 1;
         }
 
         .card-center {
+            position: relative;
+            flex: 1;
+            filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+        }
+
+        /* Real card pip system — absolute positioned like real playing cards */
+        .card-pips-grid {
+            position: absolute;
+            inset: 0;
+        }
+
+        .card-pip {
+            position: absolute;
+            font-size: 1rem;
+            line-height: 1;
+            transform: translate(-50%, -50%);
+        }
+
+        .card-pip.pip-flip {
+            transform: translate(-50%, -50%) rotate(180deg);
+        }
+
+        /* Ace — single large centered pip */
+        .card-ace-center {
             display: flex;
             align-items: center;
             justify-content: center;
-            flex: 1;
-            filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.15));
+            height: 100%;
         }
 
-        .card-suit-large {
-            font-size: 3.5rem;
-            line-height: 1;
-            opacity: 1;
+        .card-ace-center .card-pip {
+            position: static;
+            transform: none;
+            font-size: 2.6rem;
+        }
+
+        @media (max-width: 768px) {
+            .card-pip { font-size: 0.8rem; }
+            .card-ace-center .card-pip { font-size: 2rem; }
+        }
+
+        @media (max-width: 420px) {
+            .card-pip { font-size: 0.65rem; }
+            .card-ace-center .card-pip { font-size: 1.6rem; }
         }
 
         .card-back-design {
@@ -2077,11 +2131,11 @@
             }
 
             .card-rank {
-                font-size: 1.25rem;
+                font-size: 1rem;
             }
 
             .card-suit {
-                font-size: 0.9rem;
+                font-size: 0.7rem;
             }
 
             .card-suit-large {
@@ -2268,9 +2322,9 @@
         }
 
         .tn-section h4 {
-            font-size: 1.15rem;
+            font-size: 1.1rem;
             margin-bottom: 0.8rem;
-            color: var(--secondary-light);
+            color: var(--primary-light);
         }
 
         .tn-section p, .tn-section li {
@@ -2379,7 +2433,7 @@
     <div class="container">
         <!-- Professional Header -->
         <header class="header">
-            <button id="muteBtn" onclick="toggleMute()" style="position: fixed; top: 20px; right: 20px; z-index: 10000; width: 44px; height: 44px; border-radius: 50%; border: 2px solid rgba(201, 168, 50, 0.3); background: rgba(12, 32, 22, 0.95); backdrop-filter: blur(15px); color: #E2C547; font-size: 1.25rem; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);" onmouseover="this.style.transform='scale(1.1)'; this.style.boxShadow='0 8px 32px rgba(201, 168, 50, 0.5)'" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 16px rgba(0, 0, 0, 0.5)'" title="Mute/Unmute"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/></svg></button>
+            <button id="muteBtn" onclick="toggleMute()" style="position: fixed; top: 20px; right: 20px; z-index: 10000; width: 44px; height: 44px; border-radius: 50%; border: 2px solid rgba(201, 168, 50, 0.3); background: rgba(12, 32, 22, 0.95); backdrop-filter: blur(15px); color: #E2C547; font-size: 1.25rem; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);" onmouseover="this.style.transform='scale(1.1)'; this.style.boxShadow='0 8px 32px rgba(201, 168, 50, 0.5)'" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 16px rgba(0, 0, 0, 0.5)'" title="Mute/Unmute"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#E2C547" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/></svg></button>
             <h1 class="logo">WIZARD</h1>
             <p class="tagline">Tournament Score Tracker</p>
         </header>
@@ -2557,163 +2611,161 @@
 
                 <div class="rules-modal-header">
                     <h2>🇹🇳 كيفاش تلعب Wizard</h2>
-                    <p>شرح بسيط بالتونسي لأي واحد يحب يتعلّم</p>
+                    <p style="color: var(--text-tertiary);">شرح بسيط بالتونسي لأي واحد يحب يتعلّم</p>
                 </div>
 
-                <div class="tn-section" style="border-right-color: #FFD700;">
-                    <h4>🎯 شنو الهدف؟</h4>
-                    <p style="font-size: 1.1rem;">
-                        اللعبة فكرتها ساهلة: <strong style="color: #FFD700;">توقّع قدّاش من "تريك" باش تربح</strong> في كل جولة.
+                <div class="tn-section" style="border-right-color: var(--primary);">
+                    <h4 style="color: var(--primary-light);">🎯 شنو الهدف؟</h4>
+                    <p>
+                        اللعبة فكرتها ساهلة: <strong style="color: var(--primary-light);">توقّع قدّاش من "تريك" باش تربح</strong> في كل جولة.
                         <br>التريك يعني = لمّة وحدة (كل واحد يحط كارطة، واحد يربحهم الكل).
-                        <br><br>كي تقول مثلا <strong>"باش نربح 2"</strong> و بالفعل تربح 2 بالضبط ← <span style="color: #10B981;">تاخو نقاط!</span>
-                        <br>كي تغلط ← <span style="color: #EF4444;">تخسر نقاط.</span>
-                        <br><br><strong>اللي يجمّع أكثر نقاط في آخر البطولة = الرابح! 🏆</strong>
+                        <br><br>كي تقول مثلا <strong>"باش نربح 2"</strong> و بالفعل تربح 2 بالضبط — <span style="color: var(--success);">تاخو نقاط!</span>
+                        <br>كي تغلط — <span style="color: var(--danger);">تخسر نقاط.</span>
+                        <br><br><strong style="color: var(--primary-light);">اللي يجمّع أكثر نقاط في آخر البطولة = الرابح! 🏆</strong>
                     </p>
                 </div>
 
-                <div class="tn-section" style="border-right-color: #C9A832;">
-                    <h4>🎴 الكوارط</h4>
+                <div class="tn-section" style="border-right-color: var(--primary);">
+                    <h4 style="color: var(--primary-light);">🎴 الكوارط</h4>
                     <p>الجو فيه <strong>60 كارطة</strong>، مش 52 كيما العادي:</p>
                     <ul style="margin-top: 0.5rem;">
-                        <li style="margin-bottom: 0.4rem;">🪨 <strong style="color: #CD853F;">القزم (Dwarf)</strong> — أصفر، 13 كارطة (من 1 لـ 13)</li>
-                        <li style="margin-bottom: 0.4rem;">🌿 <strong style="color: #90EE90;">الإلف (Elf)</strong> — أخضر، 13 كارطة</li>
-                        <li style="margin-bottom: 0.4rem;">⚔️ <strong style="color: #FF6347;">العملاق (Giant)</strong> — أحمر، 13 كارطة</li>
-                        <li style="margin-bottom: 0.4rem;">💧 <strong style="color: #87CEEB;">الإنسان (Human)</strong> — أزرق، 13 كارطة</li>
+                        <li style="margin-bottom: 0.4rem;"><strong style="color: #CD853F;">♦ القزم (Dwarf)</strong> — أصفر، 13 كارطة (من 1 لـ 13)</li>
+                        <li style="margin-bottom: 0.4rem;"><strong style="color: #90EE90;">♣ الإلف (Elf)</strong> — أخضر، 13 كارطة</li>
+                        <li style="margin-bottom: 0.4rem;"><strong style="color: #FF6347;">♥ العملاق (Giant)</strong> — أحمر، 13 كارطة</li>
+                        <li style="margin-bottom: 0.4rem;"><strong style="color: #87CEEB;">♠ الإنسان (Human)</strong> — أزرق، 13 كارطة</li>
                     </ul>
-                    <p style="margin-top: 1rem; margin-bottom: 0.5rem; color: var(--text-tertiary); font-size: 0.9rem;">✨ كوارط خاصّة (ما عندهمش لون، يتلعبو وقتاش ما تحب):</p>
+                    <p style="margin-top: 1rem; margin-bottom: 0.5rem; color: var(--text-tertiary); font-size: 0.9rem;">كوارط خاصّة (ما عندهمش لون):</p>
                     <div style="display: flex; flex-direction: column; gap: 0.6rem;">
-                        <div style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(255, 140, 0, 0.08)); border: 1px solid rgba(255, 215, 0, 0.35); border-radius: 12px; padding: 0.8rem 1rem; display: flex; align-items: center; gap: 0.6rem;">
-                            <span style="font-size: 1.8rem;">⭐</span>
+                        <div style="background: rgba(201, 168, 50, 0.1); border: 1px solid rgba(201, 168, 50, 0.25); border-radius: 12px; padding: 0.8rem 1rem; display: flex; align-items: center; gap: 0.6rem;">
+                            <span style="font-size: 1.6rem;">⭐</span>
                             <div>
-                                <strong style="color: #FFD700; font-size: 1.05rem;">الساحر (Wizard)</strong><span style="color: var(--text-tertiary);"> — 4 كوارط</span>
-                                <br><span style="color: #FFD700;">ديما يربح! 💪 ما يغلبو حتى حاجة</span>
+                                <strong style="color: var(--primary-light); font-size: 1rem;">الساحر (Wizard)</strong><span style="color: var(--text-tertiary);"> — 4 كوارط</span>
+                                <br><span style="color: var(--primary-light);">ديما يربح! ما يغلبو حتى حاجة</span>
                             </div>
                         </div>
-                        <div style="background: linear-gradient(135deg, rgba(255, 105, 180, 0.15), rgba(236, 72, 153, 0.08)); border: 1px solid rgba(255, 105, 180, 0.35); border-radius: 12px; padding: 0.8rem 1rem; display: flex; align-items: center; gap: 0.6rem;">
-                            <span style="font-size: 1.8rem;">🃏</span>
+                        <div style="background: rgba(27, 107, 58, 0.1); border: 1px solid rgba(27, 107, 58, 0.25); border-radius: 12px; padding: 0.8rem 1rem; display: flex; align-items: center; gap: 0.6rem;">
+                            <span style="font-size: 1.6rem;">🃏</span>
                             <div>
-                                <strong style="color: #E2C547; font-size: 1.05rem;">المهرّج (Jester)</strong><span style="color: var(--text-tertiary);"> — 4 كوارط</span>
-                                <br><span style="color: #EF4444;">ديما يخسر 😅 ما يربح أبدا</span>
+                                <strong style="color: var(--secondary-light); font-size: 1rem;">المهرّج (Jester)</strong><span style="color: var(--text-tertiary);"> — 4 كوارط</span>
+                                <br><span style="color: var(--text-tertiary);">ديما يخسر، ما يربح أبدا</span>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="tn-section" style="border-right-color: #10B981;">
-                    <h4>🎮 اللعبة كيفاش تمشي؟</h4>
+                <div class="tn-section" style="border-right-color: var(--secondary);">
+                    <h4 style="color: var(--secondary-light);">🎮 اللعبة كيفاش تمشي؟</h4>
                     <ol style="padding-right: 1.5rem;">
                         <li style="margin-bottom: 1rem;">
-                            <strong style="color: #E2C547;">🃏 التوزيع</strong><br>
-                            الجولة 1 ← كارطة وحدة لكل لعّاب<br>
-                            الجولة 2 ← كارطتين<br>
-                            الجولة 5 ← 5 كوارط... وهكّا لحد الجولة 20!
+                            <strong style="color: var(--primary-light);">🎴 التوزيع</strong><br>
+                            الجولة 1 — كارطة وحدة لكل لعّاب<br>
+                            الجولة 2 — كارطتين<br>
+                            الجولة 5 — 5 كوارط... وهكّا لحد الجولة 20
                         </li>
                         <li style="margin-bottom: 1rem;">
-                            <strong style="color: #E2C547;">🎺 الأتو (Trump)</strong><br>
+                            <strong style="color: var(--primary-light);">♠ الأتو (Trump)</strong><br>
                             بعد التوزيع، نقلبو كارطة من الباقي. اللون متاعها هو <strong>"الأتو"</strong> = اللون اللي يغلب الكل.
-                            <br><span style="color: var(--text-tertiary);">⭐ كان طلع ساحر ← الموزّع يختار الأتو</span>
-                            <br><span style="color: var(--text-tertiary);">🃏 كان طلع مهرّج ← ما فمّاش أتو هالجولة</span>
+                            <br><span style="color: var(--text-tertiary);">⭐ كان طلع ساحر — الموزّع يختار الأتو</span>
+                            <br><span style="color: var(--text-tertiary);">🃏 كان طلع مهرّج — ما فمّاش أتو هالجولة</span>
                         </li>
                         <li style="margin-bottom: 1rem;">
-                            <strong style="color: #E2C547;">📢 المزايدة (Bid)</strong><br>
+                            <strong style="color: var(--primary-light);">📢 المزايدة (Bid)</strong><br>
                             كل واحد يشوف كوارطو و يقول قدّاش من تريك باش يربح.<br>
-                            <strong style="color: #F59E0B;">اللي يوزّع (Dealer) هو اللي يبدا يزايد الأول</strong>، و بعد يمشي عكس عقارب الساعة.<br>
-                            <em style="color: var(--text-tertiary);">مثال: عندك ساحر + 13 أتو ← قول 2</em>
+                            <strong style="color: var(--primary-light);">اللي يوزّع (Dealer) هو اللي يبدا يزايد الأول</strong>، و بعد يمشي عكس عقارب الساعة.
                         </li>
                         <li style="margin-bottom: 1rem;">
-                            <strong style="color: #E2C547;">🎴 اللعب</strong><br>
-                            <strong style="color: #F59E0B;">اللي على يسار الموزّع هو اللي يلعب الأول</strong> (يحط أول كارطة).<br>
+                            <strong style="color: var(--primary-light);">🎴 اللعب</strong><br>
+                            <strong style="color: var(--primary-light);">اللي على يسار الموزّع هو اللي يلعب الأول</strong> (يحط أول كارطة).<br>
                             الباقي يتبّعو <strong>نفس اللون</strong>، عكس عقارب الساعة.<br>
-                            ما عندكش نفس اللون؟ ← حط أي حاجة (تنجّم تضرب بالأتو!)<br>
-                            الساحر ⭐ و المهرّج 🃏 ← تلعبهم وقتاش ما تحب.<br>
-                            <span style="color: var(--text-tertiary);">اللي يربح التريك هو اللي يبدا يلعب في التريك الجاي.</span>
+                            ما عندكش نفس اللون؟ — حط أي حاجة (تنجّم تضرب بالأتو)<br>
+                            الساحر ⭐ و المهرّج 🃏 تلعبهم وقتاش ما تحب.
                         </li>
                         <li style="margin-bottom: 0.5rem;">
-                            <strong style="color: #E2C547;">🏆 شكون يربح التريك؟</strong><br>
+                            <strong style="color: var(--primary-light);">🏆 شكون يربح التريك؟</strong><br>
                             <table class="tn-table tn-priority-table" style="margin-top: 0.5rem;">
                                 <tr>
-                                    <td style="color: #FFD700;">1. ⭐ الساحر</td>
-                                    <td>ديما يربح! (كان زوز ← الأول يربح)</td>
+                                    <td style="color: var(--primary-light);">1. ⭐ الساحر</td>
+                                    <td>ديما يربح (كان زوز — الأول يربح)</td>
                                 </tr>
                                 <tr>
-                                    <td style="color: #F59E0B;">2. 🎺 الأتو</td>
+                                    <td style="color: var(--primary-light);">2. ♠ الأتو</td>
                                     <td>يغلب كل شي ماعدا الساحر</td>
                                 </tr>
                                 <tr>
-                                    <td style="color: #E2C547;">3. 🎴 لون البداية</td>
+                                    <td style="color: var(--text-secondary);">3. 🎴 لون البداية</td>
                                     <td>الأكبر في نفس اللون يربح</td>
                                 </tr>
                                 <tr>
-                                    <td style="color: #EF4444;">4. 🃏 المهرّج</td>
-                                    <td>ديما يخسر!</td>
+                                    <td style="color: var(--text-tertiary);">4. 🃏 المهرّج</td>
+                                    <td>ديما يخسر</td>
                                 </tr>
                             </table>
                         </li>
                     </ol>
                 </div>
 
-                <div class="tn-section" style="border-right-color: #F59E0B;">
-                    <h4>💰 حساب النقاط</h4>
+                <div class="tn-section" style="border-right-color: var(--primary);">
+                    <h4 style="color: var(--primary-light);">💰 حساب النقاط</h4>
                     <div class="tn-score-box tn-score-good">
-                        <strong style="color: #10B981; font-size: 1.1rem;">✅ كي تصيب التوقّع بالضبط:</strong><br>
-                        <span style="font-size: 1.4rem; color: #FFD700; font-weight: 800;">20 + (10 × عدد التريكات)</span><br>
-                        <span style="color: var(--text-tertiary);">مثال: قلت 3 و ربحت 3 ← 20 + 30 = <strong style="color: #10B981;">+50 نقطة</strong></span><br>
-                        <span style="color: var(--text-tertiary);">مثال: قلت 0 و ما ربحت حتى حاجة ← <strong style="color: #10B981;">+20 نقطة</strong> 🎉</span>
+                        <strong style="color: var(--success);">كي تصيب التوقّع بالضبط:</strong><br>
+                        <span style="font-size: 1.2rem; color: var(--primary-light); font-weight: 800;">20 + (10 × عدد التريكات)</span><br>
+                        <span style="color: var(--text-tertiary);">مثال: قلت 3 و ربحت 3 — 20 + 30 = <strong style="color: var(--success);">+50 نقطة</strong></span><br>
+                        <span style="color: var(--text-tertiary);">مثال: قلت 0 و ما ربحت حتى حاجة — <strong style="color: var(--success);">+20 نقطة</strong></span>
                     </div>
                     <div class="tn-score-box tn-score-bad">
-                        <strong style="color: #EF4444; font-size: 1.1rem;">❌ كي تغلط:</strong><br>
-                        <span style="font-size: 1.4rem; color: #EF4444; font-weight: 800;">-10 × الفرق</span><br>
-                        <span style="color: var(--text-tertiary);">مثال: قلت 2 و ربحت 5 ← فرق 3 ← <strong style="color: #EF4444;">-30 نقطة</strong></span><br>
-                        <span style="color: var(--text-tertiary);">مثال: قلت 4 و ربحت 1 ← فرق 3 ← <strong style="color: #EF4444;">-30 نقطة</strong></span>
+                        <strong style="color: var(--danger);">كي تغلط:</strong><br>
+                        <span style="font-size: 1.2rem; color: var(--danger); font-weight: 800;">-10 × الفرق</span><br>
+                        <span style="color: var(--text-tertiary);">مثال: قلت 2 و ربحت 5 — فرق 3 — <strong style="color: var(--danger);">-30 نقطة</strong></span><br>
+                        <span style="color: var(--text-tertiary);">مثال: قلت 4 و ربحت 1 — فرق 3 — <strong style="color: var(--danger);">-30 نقطة</strong></span>
                     </div>
                 </div>
 
-                <div class="tn-section" style="border-right-color: #EF4444;">
-                    <h4>💀 نظام الإقصاء</h4>
+                <div class="tn-section" style="border-right-color: var(--primary);">
+                    <h4 style="color: var(--primary-light);">⚔️ نظام الإقصاء</h4>
                     <p>اللعبة فيها إقصاء! في جولات معيّنة، اللي عنده <strong>أقل نقاط يطيح</strong>:</p>
                     <table class="tn-table" style="margin-top: 0.5rem;">
                         <tr style="background: rgba(201, 168, 50, 0.08);">
-                            <th style="color: var(--text-primary);">عدد اللعّابة</th>
-                            <th style="color: var(--text-primary);">الإقصاء في الجولة</th>
+                            <th style="color: var(--primary-light);">عدد اللعّابة</th>
+                            <th style="color: var(--primary-light);">الإقصاء في الجولة</th>
                         </tr>
                         <tr><td>6 لعّابة</td><td>10، 12، 15</td></tr>
                         <tr><td>5 لعّابة</td><td>12، 15</td></tr>
                         <tr><td>4 لعّابة</td><td>15</td></tr>
-                        <tr><td>3 لعّابة</td><td>ما فمّاش إقصاء ✌️</td></tr>
+                        <tr><td>3 لعّابة</td><td>ما فمّاش إقصاء</td></tr>
                     </table>
-                    <p style="margin-top: 0.7rem; color: var(--text-tertiary);">في الآخر يبقاو 3 لعّابة يتنافسو على البطولة! 🏆</p>
+                    <p style="margin-top: 0.7rem; color: var(--text-tertiary);">في الآخر يبقاو 3 لعّابة يتنافسو على البطولة 🏆</p>
                 </div>
 
-                <div class="tn-section" style="border-right-color: #C9A832;">
-                    <h4>🧠 نصائح ذهبية</h4>
+                <div class="tn-section" style="border-right-color: var(--primary);">
+                    <h4 style="color: var(--primary-light);">🧠 نصائح ذهبية</h4>
                     <ul>
-                        <li style="margin-bottom: 0.5rem;">💡 <strong>الساحر ⭐ = تريك مضمون</strong> — ديما حسبو في المزايدة</li>
-                        <li style="margin-bottom: 0.5rem;">💡 <strong>الـ13 في الأتو = شبه مضمون</strong> (أكبر كارطة في اللون)</li>
-                        <li style="margin-bottom: 0.5rem;">💡 <strong>ما عندكش لون معيّن؟</strong> فرصة باش تضرب بالأتو!</li>
-                        <li style="margin-bottom: 0.5rem;">💡 <strong>كان مش متأكد ← قول 0</strong> واربح 20 نقطة سهلة</li>
-                        <li style="margin-bottom: 0.5rem;">💡 <strong>المهرّج 🃏</strong> استعملو كي ما تحبش تربح التريك</li>
-                        <li style="margin-bottom: 0.5rem;">💡 <strong>خبّي الساحر ⭐</strong> للوقت الحساس، ما تلعبوش من الأول!</li>
-                        <li style="margin-bottom: 0.5rem;">💡 <strong>الدقة &gt; الطمع!</strong> أحسنلك تقول 1 و تصيب (+30) خير ما تقول 4 و تغلط (-30)</li>
-                        <li style="margin-bottom: 0.5rem;">💡 <strong>راقب الآخرين:</strong> شوف شكون حاب يربح وشكون لا، وألعب على حسابهم</li>
+                        <li style="margin-bottom: 0.5rem;"><strong style="color: var(--primary-light);">الساحر ⭐ = تريك مضمون</strong> — ديما حسبو في المزايدة</li>
+                        <li style="margin-bottom: 0.5rem;"><strong style="color: var(--primary-light);">الـ13 في الأتو = شبه مضمون</strong> (أكبر كارطة في اللون)</li>
+                        <li style="margin-bottom: 0.5rem;"><strong>ما عندكش لون معيّن؟</strong> فرصة باش تضرب بالأتو</li>
+                        <li style="margin-bottom: 0.5rem;"><strong>كان مش متأكد — قول 0</strong> واربح 20 نقطة سهلة</li>
+                        <li style="margin-bottom: 0.5rem;"><strong>المهرّج 🃏</strong> استعملو كي ما تحبش تربح التريك</li>
+                        <li style="margin-bottom: 0.5rem;"><strong>خبّي الساحر ⭐</strong> للوقت الحساس</li>
+                        <li style="margin-bottom: 0.5rem;"><strong>الدقة أهم من الطمع</strong> — أحسنلك تقول 1 و تصيب (+30) خير ما تقول 4 و تغلط (-30)</li>
+                        <li style="margin-bottom: 0.5rem;"><strong>راقب الآخرين</strong> — شوف شكون حاب يربح وشكون لا</li>
                     </ul>
                 </div>
 
-                <div class="tn-section tn-summary" style="border-right-color: #1B6B3A;">
-                    <h4 style="color: #FFD700;">⚡ ملخّص سريع — إبدا تو!</h4>
+                <div class="tn-section tn-summary" style="border-right-color: var(--secondary);">
+                    <h4 style="color: var(--primary-light);">ملخّص سريع</h4>
                     <ol style="padding-right: 1.5rem;">
                         <li>كل جولة تتوزّع كوارط (جولة 1 = كارطة، جولة 2 = 2...)</li>
                         <li>نحددو الأتو (اللون اللي يغلب)</li>
                         <li>كل واحد يقول قدّاش من تريك باش يربح</li>
                         <li>نلعبو — لازم تتبّع اللون</li>
                         <li>⭐ الساحر يغلب الكل، 🃏 المهرّج يخسر ديما</li>
-                        <li>صبت التوقّع ← تربح نقاط 🎉</li>
-                        <li>غلطت ← تخسر نقاط 😅</li>
-                        <li>أكثر نقاط في الآخر = البطل! 🏆</li>
+                        <li>صبت التوقّع — تربح نقاط</li>
+                        <li>غلطت — تخسر نقاط</li>
+                        <li>أكثر نقاط في الآخر = البطل 🏆</li>
                     </ol>
                 </div>
 
                 <button class="tn-got-it" onclick="closeTunisianRules()">
-                    ✅ فهمت، يلّا نلعبو!
+                    فهمت، يلّا نلعبو!
                 </button>
               </div>
             </div>
@@ -2724,7 +2776,7 @@
             <div class="designer-signature">
                 <span class="designer-label">Made with ❤️ by</span>
                 <span class="designer-name">S3MAH</span>
-                <span class="designer-title" style="direction: rtl;">كي يحط كارطة… الطاولة تسكت. 🖤🧙‍♂️</span>
+                <span class="designer-title" style="direction: rtl;">كي يحط كارطة… الطاولة تسكت. 🧙‍♂️</span>
             </div>
         </footer>
 
@@ -4089,6 +4141,152 @@
             return card;
         }
 
+        // Generate real playing card center — exact pip positions like real rami/poker cards
+        function generateCardCenter(card) {
+            const s = card.symbol;
+            const c = card.color;
+            const v = card.value;
+
+            // Helper: create a pip at absolute x%, y% position
+            function pip(x, y, flip) {
+                return `<span class="card-pip${flip ? ' pip-flip' : ''}" style="left:${x}%;top:${y}%;color:${c}">${s}</span>`;
+            }
+
+            // Column positions: left=28%, center=50%, right=72%
+            const L = 28, C = 50, R = 72;
+
+            // Face cards (J=11, Q=12, K=13) — SVG illustrated figures like real cards
+            if (v >= 11 && v <= 13) {
+                const faceColor = c;
+                const bgTint = c === '#EF4444' ? 'rgba(239,68,68,0.06)' : 'rgba(30,41,59,0.06)';
+                let figureSvg = '';
+
+                if (v === 13) {
+                    // KING — Crown, beard, robe, scepter
+                    figureSvg = `<svg viewBox="0 0 50 72" style="width:100%;height:100%;" fill="none" stroke="${faceColor}" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="1" y="1" width="48" height="70" rx="3" fill="${bgTint}" stroke="${faceColor}" stroke-width="0.5" opacity="0.3"/>
+                        <polygon points="17,18 20,10 25,16 30,8 35,16 38,10 41,18" fill="${faceColor}" opacity="0.7"/>
+                        <circle cx="29" cy="26" r="6.5" stroke-width="1.3"/>
+                        <circle cx="27" cy="25" r="0.8" fill="${faceColor}"/>
+                        <circle cx="31" cy="25" r="0.8" fill="${faceColor}"/>
+                        <path d="M27,28.5 Q29,30 31,28.5" stroke-width="0.8"/>
+                        <path d="M23,33 L22,50 L36,50 L35,33" stroke-width="1"/>
+                        <line x1="29" y1="33" x2="29" y2="44" stroke-width="0.7" opacity="0.4"/>
+                        <path d="M22,37 L36,37" stroke-width="0.7" opacity="0.4"/>
+                        <line x1="14" y1="22" x2="14" y2="48" stroke-width="1.5"/>
+                        <line x1="11" y1="25" x2="17" y2="25" stroke-width="1.2"/>
+                        <circle cx="14" cy="22" r="1.5" fill="${faceColor}"/>
+                        <text x="7" y="62" font-size="7" fill="${faceColor}" opacity="0.35" font-family="serif">${s}</text>
+                        <text x="36" y="62" font-size="7" fill="${faceColor}" opacity="0.35" font-family="serif">${s}</text>
+                    </svg>`;
+                } else if (v === 12) {
+                    // QUEEN — Tiara, long hair, dress, flower
+                    figureSvg = `<svg viewBox="0 0 50 72" style="width:100%;height:100%;" fill="none" stroke="${faceColor}" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="1" y="1" width="48" height="70" rx="3" fill="${bgTint}" stroke="${faceColor}" stroke-width="0.5" opacity="0.3"/>
+                        <path d="M21,18 L23,12 L25,15 L27,11 L29,15 L31,12 L33,18" stroke-width="1" fill="${faceColor}" opacity="0.5"/>
+                        <circle cx="27" cy="26" r="6.5" stroke-width="1.3"/>
+                        <circle cx="25.5" cy="25" r="0.8" fill="${faceColor}"/>
+                        <circle cx="28.5" cy="25" r="0.8" fill="${faceColor}"/>
+                        <path d="M25.5,28 Q27,29.5 28.5,28" stroke-width="0.7"/>
+                        <path d="M20,22 Q18,30 19,36" stroke-width="1"/>
+                        <path d="M34,22 Q36,30 35,36" stroke-width="1"/>
+                        <path d="M19,34 Q20,38 22,40 L27,52 L32,40 Q34,38 35,34" stroke-width="1"/>
+                        <path d="M22,40 L32,40" stroke-width="0.6" opacity="0.4"/>
+                        <circle cx="39" cy="36" r="2.5" stroke-width="1"/>
+                        <circle cx="39" cy="36" r="0.8" fill="${faceColor}" opacity="0.5"/>
+                        <line x1="39" y1="39" x2="39" y2="48" stroke-width="1"/>
+                        <path d="M37,46 Q39,44 41,46" stroke-width="0.8" fill="${faceColor}" opacity="0.3"/>
+                        <text x="7" y="62" font-size="7" fill="${faceColor}" opacity="0.35" font-family="serif">${s}</text>
+                        <text x="36" y="62" font-size="7" fill="${faceColor}" opacity="0.35" font-family="serif">${s}</text>
+                    </svg>`;
+                } else {
+                    // JACK — Feathered hat, young face, tunic, axe
+                    figureSvg = `<svg viewBox="0 0 50 72" style="width:100%;height:100%;" fill="none" stroke="${faceColor}" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="1" y="1" width="48" height="70" rx="3" fill="${bgTint}" stroke="${faceColor}" stroke-width="0.5" opacity="0.3"/>
+                        <path d="M20,20 Q22,10 32,14 L34,11 Q36,13 34,15" stroke-width="1" fill="${faceColor}" opacity="0.3"/>
+                        <path d="M20,20 Q25,18 32,20" stroke-width="0.8"/>
+                        <circle cx="27" cy="27" r="6.5" stroke-width="1.3"/>
+                        <circle cx="25.5" cy="26" r="0.8" fill="${faceColor}"/>
+                        <circle cx="28.5" cy="26" r="0.8" fill="${faceColor}"/>
+                        <path d="M26,29 Q27,30 28,29" stroke-width="0.7"/>
+                        <path d="M22,34 L21,50 L33,50 L32,34" stroke-width="1"/>
+                        <line x1="27" y1="34" x2="27" y2="42" stroke-width="0.6" opacity="0.4"/>
+                        <path d="M21,38 L33,38" stroke-width="0.6" opacity="0.4"/>
+                        <line x1="38" y1="24" x2="38" y2="48" stroke-width="1.3"/>
+                        <path d="M35,26 L41,24 L41,30 L35,28" fill="${faceColor}" opacity="0.4" stroke-width="0.8"/>
+                        <text x="7" y="62" font-size="7" fill="${faceColor}" opacity="0.35" font-family="serif">${s}</text>
+                        <text x="36" y="62" font-size="7" fill="${faceColor}" opacity="0.35" font-family="serif">${s}</text>
+                    </svg>`;
+                }
+
+                return `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;">${figureSvg}</div>`;
+            }
+
+            // Ace (14) — single large pip
+            if (v === 14) {
+                return `<div class="card-ace-center"><span class="card-pip" style="color:${c}">${s}</span></div>`;
+            }
+
+            // Number cards (2-10) — exact real card pip positions
+            // Top half pips are upright, bottom half are flipped (rotated 180)
+            let pips = '';
+
+            switch(v) {
+                case 2:
+                    pips = pip(C,16,false) + pip(C,84,true);
+                    break;
+                case 3:
+                    pips = pip(C,16,false) + pip(C,50,false) + pip(C,84,true);
+                    break;
+                case 4:
+                    // Four corners — like real rami
+                    pips = pip(L,16,false) + pip(R,16,false)
+                         + pip(L,84,true)  + pip(R,84,true);
+                    break;
+                case 5:
+                    pips = pip(L,16,false) + pip(R,16,false)
+                         + pip(C,50,false)
+                         + pip(L,84,true)  + pip(R,84,true);
+                    break;
+                case 6:
+                    // Two columns of three
+                    pips = pip(L,16,false) + pip(R,16,false)
+                         + pip(L,50,false) + pip(R,50,false)
+                         + pip(L,84,true)  + pip(R,84,true);
+                    break;
+                case 7:
+                    pips = pip(L,16,false) + pip(R,16,false)
+                         + pip(C,33,false)
+                         + pip(L,50,false) + pip(R,50,false)
+                         + pip(L,84,true)  + pip(R,84,true);
+                    break;
+                case 8:
+                    pips = pip(L,16,false) + pip(R,16,false)
+                         + pip(C,33,false)
+                         + pip(L,50,false) + pip(R,50,false)
+                         + pip(C,67,true)
+                         + pip(L,84,true)  + pip(R,84,true);
+                    break;
+                case 9:
+                    pips = pip(L,14,false) + pip(R,14,false)
+                         + pip(L,37,false) + pip(R,37,false)
+                         + pip(C,50,false)
+                         + pip(L,63,true)  + pip(R,63,true)
+                         + pip(L,86,true)  + pip(R,86,true);
+                    break;
+                case 10:
+                    pips = pip(L,14,false) + pip(R,14,false)
+                         + pip(C,27,false)
+                         + pip(L,37,false) + pip(R,37,false)
+                         + pip(L,63,true)  + pip(R,63,true)
+                         + pip(C,73,true)
+                         + pip(L,86,true)  + pip(R,86,true);
+                    break;
+            }
+
+            return `<div class="card-pips-grid">${pips}</div>`;
+        }
+
         function initiateDuel(tiedPlayers) {
             duelState.players = tiedPlayers;
             duelState.cards = {};
@@ -4162,7 +4360,7 @@
                                     <div class="card-suit" style="color: ${card.color}">${card.symbol}</div>
                                 </div>
                                 <div class="card-center">
-                                    <div class="card-suit-large" style="color: ${card.color}">${card.symbol}</div>
+                                    ${generateCardCenter(card)}
                                 </div>
                                 <div class="card-corner card-corner-bottom">
                                     <div class="card-rank" style="color: ${card.color}">${card.rankDisplay}</div>
@@ -4372,7 +4570,7 @@
         }
 
         function showEliminationAnimation(player) {
-            // 💀 DRAMATIC ELIMINATION SOUND
+            // DRAMATIC ELIMINATION SOUND
             playSound('elimination');
 
             // Set elimination details
@@ -5212,7 +5410,7 @@
             if (!installButton && !window.matchMedia('(display-mode: standalone)').matches) {
                 installButton = document.createElement('button');
                 installButton.className = 'btn btn-primary';
-                installButton.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Install';
+                installButton.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#E2C547" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Install';
                 installButton.style.cssText = 'position: fixed; bottom: 20px; right: 20px; z-index: 10000; box-shadow: 0 8px 32px rgba(201, 168, 50, 0.5); animation: pulse 2s ease-in-out infinite;';
                 installButton.onclick = async () => {
                     if (deferredPrompt) {
