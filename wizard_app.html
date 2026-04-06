@@ -4671,10 +4671,29 @@
                 return;
             }
 
-            const snapshot = undoStack.pop();
+            let snapshot = undoStack.pop();
+
+            // KEY FIX: If the restored state has roundCalculated=true, the user wants
+            // to go back and RE-ENTER scores, not just see the locked calculated state.
+            // Chain the undo: also pop the matching calculate-snapshot to get to pre-calc state.
+            if (snapshot.roundCalculated && undoStack.length > 0) {
+                snapshot = undoStack.pop();
+            }
 
             // Restore gameState from snapshot
             gameState = snapshot;
+
+            // Safety fallback: if still roundCalculated (edge case — no matching calc snapshot),
+            // force-revert the round scores so the user can re-enter them
+            if (gameState.roundCalculated) {
+                gameState.players.forEach(player => {
+                    if (!player.eliminated && player.rounds.length > 0) {
+                        const lastRound = player.rounds.pop();
+                        player.totalScore -= lastRound.score;
+                    }
+                });
+                gameState.roundCalculated = false;
+            }
 
             // Clean up any stale duel flags
             delete gameState._pendingDuelContinue;
@@ -4685,9 +4704,9 @@
                 player.avatar = generateAvatar(player.name, i);
             });
 
-            // Restore UI state
-            document.getElementById('calculateBtn').disabled = gameState.roundCalculated;
-            document.getElementById('nextRoundBtn').disabled = !gameState.roundCalculated;
+            // Restore UI state — always editable after undo
+            document.getElementById('calculateBtn').disabled = false;
+            document.getElementById('nextRoundBtn').disabled = true;
 
             updateStatistics();
             updateNextElimination();
@@ -4697,7 +4716,7 @@
             saveGameState();
 
             playSound('click');
-            showAlert(`Undo successful — back to Round ${gameState.currentRound}`, 'success');
+            showAlert(`Undo successful — Round ${gameState.currentRound} ready to edit`, 'success');
         }
 
         function isWinner(player) {
