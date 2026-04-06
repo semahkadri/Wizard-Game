@@ -3151,6 +3151,34 @@
             </div>
         </div>
 
+        <!-- Player History Modal -->
+        <div class="modal-overlay" id="historyModal">
+            <div class="modal" style="max-width: 520px;">
+                <div class="modal-icon" style="background: rgba(201, 168, 50, 0.1); border: 2px solid rgba(201, 168, 50, 0.25);">
+                    <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#E2C547" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                </div>
+                <h3 class="modal-title" style="background: linear-gradient(135deg, #E2C547 0%, #C9A832 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-size: 1.4rem;">PLAYER HISTORY</h3>
+
+                <!-- Step 1: Select player -->
+                <div id="historyStep1">
+                    <p class="modal-text" style="margin-bottom: var(--space-sm); font-size: 0.85rem;">Select a player to view their history</p>
+                    <div id="historyPlayerList" style="display: flex; flex-direction: column; gap: var(--space-sm); max-height: 300px; overflow-y: auto; margin-bottom: var(--space-md);"></div>
+                    <div class="modal-buttons">
+                        <button class="modal-btn modal-btn-cancel" onclick="closeHistoryModal()" style="flex: none; width: 100%;">Close</button>
+                    </div>
+                </div>
+
+                <!-- Step 2: Player detail -->
+                <div id="historyStep2" style="display: none;">
+                    <div id="historyPlayerDetail"></div>
+                    <div class="modal-buttons" style="margin-top: var(--space-md);">
+                        <button class="modal-btn modal-btn-cancel" onclick="backToHistoryList()">Back</button>
+                        <button class="modal-btn modal-btn-primary" onclick="closeHistoryModal()">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Player Management Modal -->
         <div class="modal-overlay" id="playerManageModal">
             <div class="modal" style="max-width: 420px;">
@@ -5225,6 +5253,142 @@
             showAlert(`${player.name} penalized: -${PENALTY_AMOUNT} points`, 'warning');
         }
 
+        // ===== PLAYER HISTORY =====
+        function showHistoryModal() {
+            const list = document.getElementById('historyPlayerList');
+            list.innerHTML = '';
+
+            gameState.players.forEach((player, idx) => {
+                const roundsPlayed = player.rounds.length;
+                const bestRound = player.rounds.length > 0 ? Math.max(...player.rounds.map(r => r.score)) : 0;
+                const penaltyCount = (player.penalties || []).length;
+
+                const card = document.createElement('div');
+                card.className = 'player-select-card';
+                card.style.cursor = 'pointer';
+                card.innerHTML = `
+                    ${createAvatarHTML(player.avatar, '', player.name)}
+                    <div style="flex: 1; min-width: 0;">
+                        <div style="font-weight: 700; color: var(--text-primary); display: flex; align-items: center; gap: 0.4rem;">
+                            ${player.name}
+                            ${player.eliminated ? '<span style="font-size: 0.6rem; color: var(--danger); font-weight: 600;">OUT</span>' : ''}
+                        </div>
+                        <div style="font-size: 0.75rem; color: var(--text-tertiary); display: flex; gap: 0.6rem; flex-wrap: wrap;">
+                            <span>${roundsPlayed} rounds</span>
+                            <span style="color: ${player.totalScore >= 0 ? 'var(--success)' : 'var(--danger)'};">${player.totalScore} pts</span>
+                            ${penaltyCount > 0 ? `<span style="color: #F59E0B;">${penaltyCount} penalty</span>` : ''}
+                        </div>
+                    </div>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                `;
+                card.onclick = () => showPlayerDetail(idx);
+                list.appendChild(card);
+            });
+
+            document.getElementById('historyStep1').style.display = '';
+            document.getElementById('historyStep2').style.display = 'none';
+            document.getElementById('historyModal').classList.add('active');
+        }
+
+        function closeHistoryModal() {
+            document.getElementById('historyModal').classList.remove('active');
+        }
+
+        function backToHistoryList() {
+            document.getElementById('historyStep2').style.display = 'none';
+            document.getElementById('historyStep1').style.display = '';
+        }
+
+        function showPlayerDetail(playerIdx) {
+            const player = gameState.players[playerIdx];
+            const detail = document.getElementById('historyPlayerDetail');
+            playSound('click');
+
+            // Calculate stats
+            const rounds = player.rounds;
+            const totalRounds = rounds.length;
+            const correctBids = rounds.filter(r => r.bid === r.actual).length;
+            const accuracy = totalRounds > 0 ? Math.round((correctBids / totalRounds) * 100) : 0;
+            const bestRound = totalRounds > 0 ? Math.max(...rounds.map(r => r.score)) : 0;
+            const worstRound = totalRounds > 0 ? Math.min(...rounds.map(r => r.score)) : 0;
+            const penalties = player.penalties || [];
+
+            let html = `
+                <div style="text-align: center; margin-bottom: var(--space-md);">
+                    ${createAvatarHTML(player.avatar, 'avatar-large', player.name)}
+                    <p style="font-family: 'Orbitron', monospace; font-size: 1.25rem; font-weight: 800; color: var(--text-primary); margin-top: var(--space-sm);">${player.name}</p>
+                    <p style="font-family: 'Orbitron', monospace; font-size: 1.5rem; font-weight: 900; color: ${player.totalScore >= 0 ? 'var(--success)' : 'var(--danger)'}; margin-top: 0.25rem;">${player.totalScore >= 0 ? '+' : ''}${player.totalScore}</p>
+                    ${player.eliminated ? `<span style="display: inline-block; margin-top: 0.3rem; padding: 0.2rem 0.6rem; background: rgba(220,38,38,0.1); border: 1px solid rgba(220,38,38,0.3); border-radius: 20px; font-size: 0.7rem; font-weight: 600; color: var(--danger);">Eliminated R${player.eliminatedOnRound}</span>` : '<span style="display: inline-block; margin-top: 0.3rem; padding: 0.2rem 0.6rem; background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.3); border-radius: 20px; font-size: 0.7rem; font-weight: 600; color: var(--success);">Active</span>'}
+                </div>
+
+                <!-- Stats row -->
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.4rem; margin-bottom: var(--space-md);">
+                    <div style="text-align: center; padding: 0.5rem; background: rgba(15,38,26,0.6); border-radius: var(--radius-sm); border: 1px solid rgba(201,168,50,0.1);">
+                        <div style="font-family: 'Orbitron', monospace; font-size: 1.1rem; font-weight: 800; color: var(--primary-light);">${accuracy}%</div>
+                        <div style="font-size: 0.6rem; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.5px;">Accuracy</div>
+                    </div>
+                    <div style="text-align: center; padding: 0.5rem; background: rgba(15,38,26,0.6); border-radius: var(--radius-sm); border: 1px solid rgba(201,168,50,0.1);">
+                        <div style="font-family: 'Orbitron', monospace; font-size: 1.1rem; font-weight: 800; color: var(--success);">${bestRound >= 0 ? '+' : ''}${bestRound}</div>
+                        <div style="font-size: 0.6rem; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.5px;">Best</div>
+                    </div>
+                    <div style="text-align: center; padding: 0.5rem; background: rgba(15,38,26,0.6); border-radius: var(--radius-sm); border: 1px solid rgba(201,168,50,0.1);">
+                        <div style="font-family: 'Orbitron', monospace; font-size: 1.1rem; font-weight: 800; color: var(--danger);">${worstRound >= 0 ? '+' : ''}${worstRound}</div>
+                        <div style="font-size: 0.6rem; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.5px;">Worst</div>
+                    </div>
+                </div>
+
+                <!-- Round-by-round history -->
+                <div style="max-height: 220px; overflow-y: auto; border: 1px solid rgba(201,168,50,0.1); border-radius: var(--radius-md);">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 0.8rem;">
+                        <thead>
+                            <tr style="background: rgba(201,168,50,0.08); position: sticky; top: 0;">
+                                <th style="padding: 0.4rem 0.5rem; text-align: center; font-family: 'Orbitron', monospace; font-size: 0.6rem; color: var(--primary-light); font-weight: 700; letter-spacing: 0.5px;">R</th>
+                                <th style="padding: 0.4rem 0.5rem; text-align: center; font-family: 'Orbitron', monospace; font-size: 0.6rem; color: var(--primary-light); font-weight: 700; letter-spacing: 0.5px;">BID</th>
+                                <th style="padding: 0.4rem 0.5rem; text-align: center; font-family: 'Orbitron', monospace; font-size: 0.6rem; color: var(--primary-light); font-weight: 700; letter-spacing: 0.5px;">ACT</th>
+                                <th style="padding: 0.4rem 0.5rem; text-align: center; font-family: 'Orbitron', monospace; font-size: 0.6rem; color: var(--primary-light); font-weight: 700; letter-spacing: 0.5px;">PTS</th>
+                                <th style="padding: 0.4rem 0.5rem; text-align: center; font-family: 'Orbitron', monospace; font-size: 0.6rem; color: var(--primary-light); font-weight: 700; letter-spacing: 0.5px;">TOTAL</th>
+                            </tr>
+                        </thead>
+                        <tbody>`;
+
+            let runningTotal = 0;
+            if (totalRounds === 0) {
+                html += `<tr><td colspan="5" style="padding: 1.5rem; text-align: center; color: var(--text-muted); font-style: italic;">No rounds played yet</td></tr>`;
+            } else {
+                rounds.forEach((round, i) => {
+                    runningTotal += round.score;
+                    const isCorrect = round.bid === round.actual;
+                    const scoreColor = round.score > 0 ? 'var(--success)' : round.score < 0 ? 'var(--danger)' : 'var(--text-muted)';
+                    const rowBg = isCorrect ? 'rgba(16,185,129,0.04)' : 'transparent';
+
+                    html += `
+                        <tr style="background: ${rowBg}; border-bottom: 1px solid rgba(201,168,50,0.06);">
+                            <td style="padding: 0.35rem 0.5rem; text-align: center; color: var(--text-tertiary); font-family: 'Orbitron', monospace; font-weight: 600;">${i + 1}</td>
+                            <td style="padding: 0.35rem 0.5rem; text-align: center; color: var(--text-secondary);">${round.bid}</td>
+                            <td style="padding: 0.35rem 0.5rem; text-align: center; color: var(--text-secondary);">${round.actual}</td>
+                            <td style="padding: 0.35rem 0.5rem; text-align: center; font-weight: 700; color: ${scoreColor}; font-family: 'Orbitron', monospace;">${round.score >= 0 ? '+' : ''}${round.score}</td>
+                            <td style="padding: 0.35rem 0.5rem; text-align: center; color: var(--text-tertiary); font-family: 'Orbitron', monospace; font-size: 0.75rem;">${runningTotal}</td>
+                        </tr>`;
+                });
+            }
+
+            html += `</tbody></table></div>`;
+
+            // Penalties section
+            if (penalties.length > 0) {
+                html += `
+                    <div style="margin-top: var(--space-sm); padding: 0.5rem 0.7rem; background: rgba(245,158,11,0.06); border: 1px solid rgba(245,158,11,0.15); border-radius: var(--radius-sm);">
+                        <div style="font-size: 0.7rem; font-weight: 700; color: #F59E0B; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.3rem;">Penalties (${penalties.length})</div>
+                        ${penalties.map(p => `<div style="font-size: 0.75rem; color: var(--text-secondary);">Round ${p.round} · <span style="color: var(--danger); font-weight: 700;">-${p.amount} pts</span></div>`).join('')}
+                    </div>`;
+            }
+
+            detail.innerHTML = html;
+
+            document.getElementById('historyStep1').style.display = 'none';
+            document.getElementById('historyStep2').style.display = '';
+        }
+
         function backToRenameStep1() {
             document.getElementById('renamePlayerStep2').style.display = 'none';
             document.getElementById('renamePlayerStep1').style.display = '';
@@ -5601,6 +5765,7 @@
                 closeRenamePlayerModal();
                 closePlayerManageModal();
                 closePenaltyModal();
+                closeHistoryModal();
             }
         });
 
