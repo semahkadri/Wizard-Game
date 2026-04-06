@@ -371,23 +371,24 @@
             margin: 0;
         }
 
-        /* Large Spinner for Setup — centered pill */
-        .number-spinner-large {
-            width: 200px;
-            height: 56px;
-            padding: 4px;
-            border-radius: 28px;
+        /* Large Spinner for Setup — centered pill (use !important to survive media queries) */
+        .number-spinner.number-spinner-large {
+            width: 220px !important;
+            height: 60px !important;
+            padding: 5px !important;
+            border-radius: 30px !important;
             margin: 0 auto;
         }
 
         .number-spinner-large .spinner-btn {
-            width: 48px;
-            height: 48px;
-            font-size: 1.5rem;
+            width: 50px !important;
+            height: 50px !important;
+            font-size: 1.3rem !important;
         }
 
         .number-spinner-large .spinner-input {
-            font-size: 1.75rem;
+            font-size: 2rem !important;
+            min-width: 50px !important;
         }
 
         /* Grid System */
@@ -3045,6 +3046,45 @@
             </div>
         </div>
 
+        <!-- Penalty Modal -->
+        <div class="modal-overlay" id="penaltyModal">
+            <div class="modal" style="max-width: 500px;">
+                <div class="modal-icon" style="background: rgba(245, 158, 11, 0.12); border: 2px solid rgba(245, 158, 11, 0.3);">
+                    <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4"/><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><path d="M12 17h.01"/></svg>
+                </div>
+                <h3 class="modal-title" style="background: linear-gradient(135deg, #F59E0B 0%, #E2C547 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-size: 1.4rem;">PENALTY</h3>
+
+                <!-- Step 1: Select player -->
+                <div id="penaltyStep1">
+                    <p class="modal-text" style="margin-bottom: var(--space-sm); font-size: 0.85rem;">Select a player to penalize <span style="color: #F59E0B; font-weight: 700;">(-20 points)</span></p>
+                    <div id="penaltyPlayerList" style="display: flex; flex-direction: column; gap: var(--space-sm); max-height: 280px; overflow-y: auto; margin-bottom: var(--space-md);"></div>
+                    <div class="modal-buttons">
+                        <button class="modal-btn modal-btn-cancel" onclick="closePenaltyModal()">Cancel</button>
+                        <button class="modal-btn modal-btn-primary" id="penaltySelectBtn" onclick="showPenaltyConfirm()" style="background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%); opacity: 0.4; pointer-events: none;">Continue</button>
+                    </div>
+                </div>
+
+                <!-- Step 2: Confirm -->
+                <div id="penaltyStep2" style="display: none;">
+                    <div style="display: flex; flex-direction: column; align-items: center; gap: var(--space-sm); margin: var(--space-md) 0; padding: var(--space-md); background: rgba(245, 158, 11, 0.06); border: 1px solid rgba(245, 158, 11, 0.2); border-radius: var(--radius-lg);">
+                        <div id="penaltyPreviewAvatar"></div>
+                        <p id="penaltyPreviewName" style="font-family: 'Orbitron', monospace; font-size: 1.25rem; font-weight: 700; color: var(--text-primary);"></p>
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <span id="penaltyPreviewScore" style="font-family: 'Orbitron', monospace; font-size: 0.9rem; color: var(--text-tertiary);"></span>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2.5" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                            <span style="font-family: 'Orbitron', monospace; font-size: 1.1rem; font-weight: 800; color: #DC2626;" id="penaltyPreviewNewScore"></span>
+                        </div>
+                        <span style="font-family: 'Orbitron', monospace; font-size: 1.5rem; font-weight: 900; color: #DC2626;">-20</span>
+                    </div>
+                    <p style="color: var(--text-tertiary); font-size: 0.8rem; text-align: center; margin-bottom: var(--space-md);">Penalty for cheating, wrong card distribution, or rule violation.</p>
+                    <div class="modal-buttons">
+                        <button class="modal-btn modal-btn-cancel" onclick="backToPenaltyStep1()">Back</button>
+                        <button class="modal-btn" onclick="confirmPenalty()" style="flex: 1; min-width: 140px; background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%); color: #0A1A10; font-family: 'Orbitron', monospace; font-size: 0.875rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; border: none; border-radius: var(--radius-md); padding: 1rem 1.5rem; cursor: pointer;">Apply Penalty</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Player Management Modal -->
         <div class="modal-overlay" id="playerManageModal">
             <div class="modal" style="max-width: 420px;">
@@ -3065,6 +3105,11 @@
                     <button onclick="closePlayerManageModal(); showRenamePlayerModal();" style="display: flex; align-items: center; gap: 0.75rem; width: 100%; padding: 0.9rem 1rem; background: rgba(201, 168, 50, 0.08); border: 2px solid rgba(201, 168, 50, 0.2); border-radius: var(--radius-md); color: var(--text-primary); font-family: 'Inter', sans-serif; font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='rgba(201, 168, 50, 0.4)'; this.style.background='rgba(201, 168, 50, 0.15)'" onmouseout="this.style.borderColor='rgba(201, 168, 50, 0.2)'; this.style.background='rgba(201, 168, 50, 0.08)'">
                         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#E2C547" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 114 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
                         <div style="text-align: left;"><div>Rename Player</div><div style="font-size: 0.75rem; color: var(--text-tertiary); font-weight: 400;">Change a player's display name</div></div>
+                    </button>
+                    <div style="height: 1px; background: rgba(201, 168, 50, 0.1); margin: 0.2rem 0;"></div>
+                    <button onclick="closePlayerManageModal(); showPenaltyModal();" style="display: flex; align-items: center; gap: 0.75rem; width: 100%; padding: 0.9rem 1rem; background: rgba(245, 158, 11, 0.08); border: 2px solid rgba(245, 158, 11, 0.2); border-radius: var(--radius-md); color: var(--text-primary); font-family: 'Inter', sans-serif; font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='rgba(245, 158, 11, 0.4)'; this.style.background='rgba(245, 158, 11, 0.15)'" onmouseout="this.style.borderColor='rgba(245, 158, 11, 0.2)'; this.style.background='rgba(245, 158, 11, 0.08)'">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4"/><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
+                        <div style="text-align: left;"><div>Penalty <span style="font-size: 0.7rem; color: #F59E0B; font-weight: 700;">-20 pts</span></div><div style="font-size: 0.75rem; color: var(--text-tertiary); font-weight: 400;">Penalize for cheating or wrong cards</div></div>
                     </button>
                 </div>
 
@@ -3535,9 +3580,10 @@
                 player.avatar = generateAvatar(player.name, i);
             });
 
-            // Show game section, hide setup
+            // Show game section, hide setup + hide rules FAB
             document.getElementById('setupSection').classList.add('hidden');
             document.getElementById('gameSection').classList.remove('hidden');
+            document.querySelector('.rules-fab').style.display = 'none';
             document.getElementById('maxRounds').textContent = 20;
 
             const activeCount = gameState.players.filter(p => !p.eliminated).length;
@@ -3869,6 +3915,7 @@
 
             document.getElementById('setupSection').classList.add('hidden');
             document.getElementById('gameSection').classList.remove('hidden');
+            document.querySelector('.rules-fab').style.display = 'none';
             document.getElementById('maxRounds').textContent = 20;  // Always 20 rounds
             document.getElementById('gameScheduleDesc').textContent = getScheduleDescription(numPlayers);
 
@@ -4991,6 +5038,121 @@
             document.getElementById('playerManageModal').classList.remove('active');
         }
 
+        // ===== PENALTY SYSTEM =====
+        let selectedPlayerToPenalize = null;
+        const PENALTY_AMOUNT = 20;
+
+        function showPenaltyModal() {
+            if (duelState.inProgress) {
+                showAlert('Cannot penalize during a duel', 'warning');
+                return;
+            }
+
+            const active = gameState.players.filter(p => !p.eliminated);
+            if (active.length === 0) {
+                showAlert('No active players to penalize', 'warning');
+                return;
+            }
+
+            selectedPlayerToPenalize = null;
+            const list = document.getElementById('penaltyPlayerList');
+            list.innerHTML = '';
+
+            active.forEach(player => {
+                const idx = gameState.players.indexOf(player);
+                const card = document.createElement('div');
+                card.className = 'player-select-card';
+                card.innerHTML = `
+                    ${createAvatarHTML(player.avatar, '', player.name)}
+                    <div style="flex: 1;">
+                        <div style="font-weight: 700; color: var(--text-primary);">${player.name}</div>
+                        <div style="font-size: 0.8rem; color: var(--text-secondary);">Score: ${player.totalScore}</div>
+                    </div>
+                `;
+                card.onclick = function() {
+                    document.querySelectorAll('#penaltyPlayerList .player-select-card').forEach(c => {
+                        c.classList.remove('selected');
+                        c.style.borderColor = '';
+                        c.style.background = '';
+                        c.style.boxShadow = '';
+                    });
+                    card.classList.add('selected');
+                    card.style.borderColor = '#F59E0B';
+                    card.style.background = 'rgba(245, 158, 11, 0.12)';
+                    card.style.boxShadow = '0 0 15px rgba(245, 158, 11, 0.2)';
+                    selectedPlayerToPenalize = idx;
+                    const btn = document.getElementById('penaltySelectBtn');
+                    btn.style.opacity = '1';
+                    btn.style.pointerEvents = 'auto';
+                    playSound('click');
+                };
+                list.appendChild(card);
+            });
+
+            const btn = document.getElementById('penaltySelectBtn');
+            btn.style.opacity = '0.4';
+            btn.style.pointerEvents = 'none';
+
+            document.getElementById('penaltyStep1').style.display = '';
+            document.getElementById('penaltyStep2').style.display = 'none';
+            document.getElementById('penaltyModal').classList.add('active');
+        }
+
+        function closePenaltyModal() {
+            document.getElementById('penaltyModal').classList.remove('active');
+            selectedPlayerToPenalize = null;
+        }
+
+        function backToPenaltyStep1() {
+            document.getElementById('penaltyStep2').style.display = 'none';
+            document.getElementById('penaltyStep1').style.display = '';
+        }
+
+        function showPenaltyConfirm() {
+            if (selectedPlayerToPenalize === null) return;
+
+            const player = gameState.players[selectedPlayerToPenalize];
+            document.getElementById('penaltyPreviewAvatar').innerHTML = createAvatarHTML(player.avatar, 'avatar-large', player.name);
+            document.getElementById('penaltyPreviewName').textContent = player.name;
+            document.getElementById('penaltyPreviewScore').textContent = player.totalScore + ' pts';
+            document.getElementById('penaltyPreviewNewScore').textContent = (player.totalScore - PENALTY_AMOUNT) + ' pts';
+
+            playSound('click');
+            document.getElementById('penaltyStep1').style.display = 'none';
+            document.getElementById('penaltyStep2').style.display = '';
+        }
+
+        function confirmPenalty() {
+            if (selectedPlayerToPenalize === null) return;
+
+            const player = gameState.players[selectedPlayerToPenalize];
+
+            // Save undo snapshot before penalty
+            saveUndoSnapshot();
+
+            // Apply penalty
+            player.totalScore -= PENALTY_AMOUNT;
+
+            // Track penalty in rounds history
+            if (!player.penalties) player.penalties = [];
+            player.penalties.push({
+                round: gameState.currentRound,
+                amount: PENALTY_AMOUNT,
+                timestamp: Date.now()
+            });
+
+            closePenaltyModal();
+            saveGameState();
+
+            // Update UI
+            renderTable();
+            updateStatistics();
+            updateRoundTotals();
+
+            playSound('error');
+            showAlert(`${player.name} penalized: -${PENALTY_AMOUNT} points`, 'warning');
+        }
+
         function backToRenameStep1() {
             document.getElementById('renamePlayerStep2').style.display = 'none';
             document.getElementById('renamePlayerStep1').style.display = '';
@@ -5326,9 +5488,10 @@
             // Clear saved game from storage
             clearSavedGame();
 
-            // Show setup section, hide game section
+            // Show setup section, hide game section, show rules FAB
             document.getElementById('setupSection').classList.remove('hidden');
             document.getElementById('gameSection').classList.add('hidden');
+            document.querySelector('.rules-fab').style.display = '';
         }
 
         // Lock body scroll when any modal is open (fixes landscape scroll-through)
@@ -5364,6 +5527,7 @@
                 closeRemovePlayerModal();
                 closeRenamePlayerModal();
                 closePlayerManageModal();
+                closePenaltyModal();
             }
         });
 
