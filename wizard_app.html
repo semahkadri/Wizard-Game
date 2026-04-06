@@ -7,7 +7,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Wizard Tournament • Professional Score Tracker</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='grad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' style='stop-color:%238B5CF6;stop-opacity:1' /><stop offset='100%25' style='stop-color:%2306B6D4;stop-opacity:1' /></linearGradient></defs><circle cx='50' cy='50' r='45' fill='url(%23grad)'/><text x='50' y='70' font-size='60' font-family='Arial' font-weight='bold' fill='white' text-anchor='middle'>W</text></svg>">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='grad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' style='stop-color:%23C9A832;stop-opacity:1' /><stop offset='100%25' style='stop-color:%231B6B3A;stop-opacity:1' /></linearGradient></defs><circle cx='50' cy='50' r='45' fill='url(%23grad)'/><text x='50' y='70' font-size='60' font-family='Arial' font-weight='bold' fill='white' text-anchor='middle'>W</text></svg>">
 
     <!-- PWA Manifest -->
     <link rel="manifest" href="./manifest_app.json">
@@ -25,7 +25,7 @@
     <link rel="shortcut icon" href="./icons/icon-192x192.png">
 
     <!-- Microsoft Tiles -->
-    <meta name="msapplication-TileColor" content="#C9A832">
+    <meta name="msapplication-TileColor" content="#0A1A10">
     <meta name="msapplication-TileImage" content="./icons/icon-192x192.png">
     <meta name="msapplication-config" content="none">
 
@@ -2034,12 +2034,12 @@
 
         .duel-result-item {
             font-family: 'Orbitron', monospace;
-            font-size: 0.875rem;
+            font-size: 0.85rem;
             font-weight: 600;
             text-align: center;
-            padding: 0.75rem;
+            padding: 0.6rem 0.8rem;
             border-radius: var(--radius-md);
-            border: 2px solid;
+            border: 1px solid;
         }
 
         .duel-result-item.survivor {
@@ -2205,13 +2205,13 @@
         }
 
         .rules-modal-box::-webkit-scrollbar-thumb {
-            background: linear-gradient(180deg, #FFD700, #FF8C00);
+            background: linear-gradient(180deg, #E2C547, #C9A832);
             border-radius: 4px;
             border: 1px solid rgba(255, 206, 49, 0.3);
         }
 
         .rules-modal-box::-webkit-scrollbar-thumb:hover {
-            background: linear-gradient(180deg, #FFE44D, #FFD700);
+            background: linear-gradient(180deg, #E2C547, #FFD700);
         }
 
         .rules-close {
@@ -2341,8 +2341,8 @@
             padding: 1rem;
             border: none;
             border-radius: 14px;
-            background: linear-gradient(135deg, #FFD700, #FF8C00);
-            color: #1a1a2e;
+            background: linear-gradient(135deg, #E2C547, #C9A832);
+            color: #0A1A10;
             font-family: 'Inter', sans-serif;
             font-size: 1.15rem;
             font-weight: 800;
@@ -2592,7 +2592,7 @@
                         <div style="background: linear-gradient(135deg, rgba(255, 105, 180, 0.15), rgba(236, 72, 153, 0.08)); border: 1px solid rgba(255, 105, 180, 0.35); border-radius: 12px; padding: 0.8rem 1rem; display: flex; align-items: center; gap: 0.6rem;">
                             <span style="font-size: 1.8rem;">🃏</span>
                             <div>
-                                <strong style="color: #FF69B4; font-size: 1.05rem;">المهرّج (Jester)</strong><span style="color: var(--text-tertiary);"> — 4 كوارط</span>
+                                <strong style="color: #E2C547; font-size: 1.05rem;">المهرّج (Jester)</strong><span style="color: var(--text-tertiary);"> — 4 كوارط</span>
                                 <br><span style="color: #EF4444;">ديما يخسر 😅 ما يربح أبدا</span>
                             </div>
                         </div>
@@ -2897,10 +2897,10 @@
                             <p id="removePlayerPreviewScore" style="font-size: 0.9rem; color: var(--text-secondary); margin-top: var(--space-xs);"></p>
                         </div>
                     </div>
-                    <p style="color: var(--danger); font-size: 0.9rem; text-align: center; font-weight: 600; margin-bottom: var(--space-md);">Are you sure? This player will be permanently eliminated from the tournament.</p>
+                    <p style="color: var(--text-tertiary); font-size: 0.85rem; text-align: center; font-weight: 500; margin-bottom: var(--space-md);">This player will be removed from the tournament.</p>
                     <div class="modal-buttons">
                         <button class="modal-btn modal-btn-cancel" onclick="backToRemoveStep1()">Back</button>
-                        <button class="modal-btn modal-btn-confirm" onclick="confirmRemovePlayer()">Confirm Eliminate</button>
+                        <button class="modal-btn modal-btn-confirm" onclick="confirmRemovePlayer()">Remove Player</button>
                     </div>
                 </div>
             </div>
@@ -3481,28 +3481,28 @@
 
         // Funny Elimination Messages
         const eliminationMessages = [
-            "يا حسرة... الكوارط ما حبّوكش 💀",
-            "روّح يا صاحبي، الطاولة ما عادش تستحملك 🚪",
-            "كنت ساحر... أما من نوع المهرّج 🃏",
-            "طحت كيما كارطة 2 في آخر تريك 📉",
-            "قولّهم في الدار إلّي خسرت بالعدل 😂",
+            "يا حسرة... الكوارط ما حبّوكش 🃏",
+            "روّح يا صاحبي، الطاولة ما عادش تستحملك",
+            "كنت ساحر... أما من نوع المهرّج 🎭",
+            "طحت كيما كارطة 2 في آخر تريك 🎴",
+            "قولّهم في الدار إلّي خسرت بالعدل",
             "الساحر يقلّك: ما نعرفكش 🧙‍♂️",
-            "كان عندك حظ كان ولّيت مهرّج... أما حتى هذا لا 💀",
-            "خلّي بلاصتك لواحد يعرف يلعب 😏",
-            "إقصاء بالفخر... أما إقصاء برك 🖤",
-            "يلعنبو هالكوارط... مش من عندي أنا 🤷‍♂️",
-            "تو تتفرّج و تبكي من بعيد 👋😂",
+            "كان عندك حظ كان ولّيت مهرّج... أما حتى هذا لا",
+            "خلّي بلاصتك لواحد يعرف يلعب",
+            "إقصاء بالفخر... أما إقصاء برك 🎴",
+            "يلعنبو هالكوارط... مش من عندي أنا",
+            "تو تتفرّج من بعيد 👋",
             "ربّي يعطيك الصبر... و كوارط خير المرة الجاية 🤲",
         ];
 
         // Winner celebration messages
         const winnerMessages = [
-            "يا سلام عليك... الساحر الكبير! 🧙‍♂️🖤",
+            "يا سلام عليك... الساحر الكبير! 🧙‍♂️",
             "الكوارط تحكي عليك... و الباقي يبكيو 👑",
-            "كنت تلعب و هوما كانو يتفرّجو برك 💀",
-            "ما فمّاش كلام... فمّا غير هيبة 🖤",
+            "كنت تلعب و هوما كانو يتفرّجو برك 🎴",
+            "ما فمّاش كلام... فمّا غير هيبة 🏆",
             "الطاولة ليك و الباقي ضيوف 🏆",
-            "ملك الكوارط... بلا منازع 👑🖤",
+            "ملك الكوارط... بلا منازع 👑",
         ];
 
         // Professional Duel Messages
@@ -3522,11 +3522,11 @@
             ],
             survivor: [],
             eliminated: [
-                "طاح... الكارطة خانتو 💀",
-                "أقل كارطة = أقل حظ = باي باي 👋",
-                "الكوارط قالت كلمتها 🖤",
-                "ما كانش عندو حظ حتى في السحب 😂",
-                "حتى الكوارط ما حبّتوش 💀",
+                "طاح... الكارطة خانتو 🃏",
+                "أقل كارطة = أقل حظ = باي باي",
+                "الكوارط قالت كلمتها",
+                "ما كانش عندو حظ حتى في السحب",
+                "حتى الكوارط ما حبّتوش 🎴",
             ]
         };
 
@@ -4248,12 +4248,12 @@
 
                 // Show tie message
                 const resultDiv = document.getElementById('duelResults');
-                let tieHTML = '<div style="font-size: 1rem; color: var(--warning); margin-bottom: 0.5rem; text-align: center; font-weight: 700;">تعادل! لازم نعاودو السحب 🔄</div>';
+                let tieHTML = '<div style="font-size: 0.9rem; color: var(--primary-light); margin-bottom: 0.5rem; text-align: center; font-weight: 700;">Draw! Cards must be redrawn</div>';
 
                 tiedForLowest.forEach(tied => {
                     tieHTML += `
-                        <div class="duel-result-item" style="border-color: var(--warning); color: var(--warning); background: rgba(245, 158, 11, 0.15);">
-                            ${tied.player.name} سحب ${tied.card.display} (${tied.cardValue}) | تعادل — نعاودو
+                        <div class="duel-result-item" style="border-color: rgba(201, 168, 50, 0.3); color: var(--text-secondary); background: rgba(201, 168, 50, 0.06); font-size: 0.85rem;">
+                            <strong style="color: var(--text-primary);">${tied.player.name}</strong> · ${tied.card.display} <span style="color: var(--text-tertiary);">(${tied.cardValue})</span> — Tied
                         </div>
                     `;
                 });
@@ -4286,8 +4286,8 @@
                 const eliminatedMsg = duelMessages.eliminated[Math.floor(Math.random() * duelMessages.eliminated.length)];
 
                 resultDiv.innerHTML = `
-                    <div class="duel-result-item eliminated" style="font-size: 1.05rem; padding: 1rem;">
-                        <strong>${loser.player.name}</strong> drew ${loser.card.display} (Value: ${loser.cardValue}) | ${eliminatedMsg}
+                    <div class="duel-result-item" style="font-size: 0.9rem; padding: 0.8rem 1rem; border-color: rgba(201, 168, 50, 0.3); color: var(--text-secondary); background: rgba(201, 168, 50, 0.06);">
+                        <strong style="color: var(--text-primary);">${loser.player.name}</strong> · ${loser.card.display} <span style="color: var(--text-tertiary);">(${loser.cardValue})</span><br><span style="font-family: 'Inter', sans-serif; font-style: italic; font-size: 0.85rem; opacity: 0.8;">${eliminatedMsg}</span>
                     </div>
                 `;
                 resultDiv.style.display = 'flex';
@@ -4394,7 +4394,7 @@
 
         function launchEliminationParticles() {
             // Emoji explosion particles
-            const emojis = ['💀', '⚡', '💥', '🔥', '☠️', '❌'];
+            const emojis = ['🃏', '🎴', '⚔️', '♠', '♣', '♦'];
 
             for (let i = 0; i < 20; i++) {
                 setTimeout(() => {
