@@ -4173,7 +4173,7 @@
         }
 
         function isNextRoundElimination() {
-            return gameState.eliminationSchedule.includes(gameState.currentRound + 1);
+            return gameState.eliminationSchedule.includes(gameState.currentRound);
         }
 
         // Create Professional Number Spinner
@@ -5582,20 +5582,39 @@
             }
 
             let snapshot = undoStack.pop();
+            let previousBids = null;
 
-            // KEY FIX: If the restored state has roundCalculated=true, the user wants
-            // to go back and RE-ENTER scores, not just see the locked calculated state.
-            // Chain the undo: also pop the matching calculate-snapshot to get to pre-calc state.
-            if (snapshot.roundCalculated && undoStack.length > 0) {
-                snapshot = undoStack.pop();
+            // If the restored state has roundCalculated=true, capture the bid/actual
+            // values BEFORE discarding, so we can pre-fill the spinners
+            if (snapshot.roundCalculated) {
+                previousBids = {};
+                snapshot.players.forEach((player, i) => {
+                    if (!player.eliminated && player.rounds.length > 0) {
+                        const lastRound = player.rounds[player.rounds.length - 1];
+                        previousBids[i] = { bid: lastRound.bid, actual: lastRound.actual };
+                    }
+                });
+
+                // Chain-undo: pop the matching pre-calc snapshot
+                if (undoStack.length > 0) {
+                    snapshot = undoStack.pop();
+                }
             }
 
             // Restore gameState from snapshot
             gameState = snapshot;
 
-            // Safety fallback: if still roundCalculated (edge case — no matching calc snapshot),
-            // force-revert the round scores so the user can re-enter them
+            // Safety fallback: if still roundCalculated, force-revert
             if (gameState.roundCalculated) {
+                if (!previousBids) {
+                    previousBids = {};
+                    gameState.players.forEach((player, i) => {
+                        if (!player.eliminated && player.rounds.length > 0) {
+                            const lastRound = player.rounds[player.rounds.length - 1];
+                            previousBids[i] = { bid: lastRound.bid, actual: lastRound.actual };
+                        }
+                    });
+                }
                 gameState.players.forEach(player => {
                     if (!player.eliminated && player.rounds.length > 0) {
                         const lastRound = player.rounds.pop();
@@ -5621,6 +5640,18 @@
             updateStatistics();
             updateNextElimination();
             renderTable();
+
+            // Restore previous bid/actual values in the spinners
+            // so the user can see what they entered and correct it
+            if (previousBids) {
+                Object.entries(previousBids).forEach(([idx, data]) => {
+                    const bidEl = document.getElementById(`bid${idx}`);
+                    const actualEl = document.getElementById(`actual${idx}`);
+                    if (bidEl) bidEl.value = data.bid;
+                    if (actualEl) actualEl.value = data.actual;
+                });
+            }
+
             updateRoundTotals();
             updateUndoButton();
             saveGameState();
@@ -5631,18 +5662,22 @@
 
         function isWinner(player) {
             const active = gameState.players.filter(p => !p.eliminated);
+
+            // Solo survivor — always the winner
             if (active.length === 1 && active[0] === player) return true;
 
-            // Game ends at round 20 - highest scorer wins
-            if (gameState.currentRound >= 20 && active.length > 1) {
-                return active.sort((a, b) => b.totalScore - a.totalScore)[0] === player;
+            // At round 20: only show winner AFTER final scores are calculated
+            // (not before — scores could change after calculation)
+            if (gameState.currentRound >= 20 && gameState.roundCalculated && active.length > 1) {
+                const sorted = [...active].sort((a, b) => b.totalScore - a.totalScore);
+                return sorted[0] === player;
             }
             return false;
         }
 
         function showWinnerCelebration() {
             const active = gameState.players.filter(p => !p.eliminated);
-            const winner = active.sort((a, b) => b.totalScore - a.totalScore)[0];
+            const winner = [...active].sort((a, b) => b.totalScore - a.totalScore)[0];
 
             // Game is over - clear saved state
             clearSavedGame();
