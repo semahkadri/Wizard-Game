@@ -3930,7 +3930,11 @@
             return schedule;
         }
 
-        function recalculateEliminationSchedule() {
+        // preserveCurrentRound = true  → used when ADDING a player: keep the current
+        //   elimination round in the schedule so it still fires this round.
+        // preserveCurrentRound = false → used when REMOVING a player: skip the current
+        //   round to avoid a second automatic elimination right after the manual one.
+        function recalculateEliminationSchedule(preserveCurrentRound = false) {
             const activeCount = gameState.players.filter(p => !p.eliminated).length;
             const eliminationsNeeded = Math.max(0, activeCount - 3);
 
@@ -3939,21 +3943,19 @@
                 return;
             }
 
-            // Try the standard schedule, keep only strictly future rounds
-            // (r > currentRound so no double-elimination in the same round as add/remove)
             const standardSchedule = generateEliminationSchedule(activeCount);
-            const futureRounds = standardSchedule.filter(r => r > gameState.currentRound);
+            const futureRounds = standardSchedule.filter(r =>
+                preserveCurrentRound ? r >= gameState.currentRound : r > gameState.currentRound
+            );
 
             if (futureRounds.length >= eliminationsNeeded) {
                 gameState.eliminationSchedule = futureRounds;
                 return;
             }
 
-            // Fallback: standard schedule doesn't have enough future rounds
-            // (e.g. player added late in the game after round 15)
-            // Evenly distribute eliminations across remaining rounds
+            // Fallback: not enough rounds in the standard schedule — evenly distribute
             const schedule = [];
-            const firstEligible = gameState.currentRound + 1;
+            const firstEligible = preserveCurrentRound ? gameState.currentRound : gameState.currentRound + 1;
             const lastRound = 20;
             const availableRounds = lastRound - firstEligible + 1;
 
@@ -3969,7 +3971,8 @@
                 schedule.push(Math.round(firstEligible + gap * i));
             }
 
-            gameState.eliminationSchedule = schedule;
+            // De-duplicate (rounding can collapse adjacent slots at tight boundaries)
+            gameState.eliminationSchedule = [...new Set(schedule)];
         }
 
         // All games play 20 rounds (standard Wizard)
@@ -4151,9 +4154,11 @@
             const activePlayers = gameState.players.filter(p => !p.eliminated).length;
 
             if (next) {
-                const rounds = next - gameState.currentRound + 1;
+                // rounds = 0 → this round; 1 → next round; N → N rounds away
+                const rounds = next - gameState.currentRound;
+                const roundsLabel = rounds === 0 ? 'this round!' : rounds === 1 ? 'next round' : `${rounds} rounds`;
                 // Sword icon — elegant elimination warning
-                el.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;"><path d="M14.5 17.5L3 6V3h3l11.5 11.5"/><path d="M13 19l6-6"/></svg>Elim. R${next} <span style="opacity: 0.6;">(${rounds === 1 ? 'next' : rounds + ' rounds'})</span>`;
+                el.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;"><path d="M14.5 17.5L3 6V3h3l11.5 11.5"/><path d="M13 19l6-6"/></svg>Elim. R${next} <span style="opacity: 0.6;">(${roundsLabel})</span>`;
                 el.style.borderColor = 'rgba(201, 168, 50, 0.4)';
                 el.style.color = '#E2C547';
                 el.style.background = 'rgba(201, 168, 50, 0.08)';
@@ -4172,7 +4177,9 @@
             }
         }
 
-        function isNextRoundElimination() {
+        // Checks whether the CURRENT round is a scheduled elimination round
+        // (was formerly misnamed "isNextRoundElimination")
+        function isCurrentRoundElimination() {
             return gameState.eliminationSchedule.includes(gameState.currentRound);
         }
 
@@ -4191,8 +4198,13 @@
         function incrementValue(id) {
             const input = document.getElementById(id);
             if (!input.disabled) {
-                playSound('click');
                 const currentValue = parseInt(input.value) || 0;
+                // Cap at the number of cards dealt this round
+                if (currentValue >= gameState.currentRound) {
+                    playSound('error');
+                    return;
+                }
+                playSound('click');
                 input.value = currentValue + 1;
                 updateRoundTotals();
             }
@@ -4245,7 +4257,7 @@
 
             const active = gameState.players.filter(p => !p.eliminated);
             const lowest = active.length > 0 ? Math.min(...active.map(p => p.totalScore)) : 0;
-            const isElimNext = isNextRoundElimination();
+            const isElimNext = isCurrentRoundElimination();
 
             sorted.forEach((player, displayIdx) => {
                 const originalIdx = gameState.players.indexOf(player);
@@ -4308,6 +4320,11 @@
                 const actual = parseInt(document.getElementById(`actual${idx}`).value);
 
                 if (isNaN(bid) || isNaN(actual) || bid < 0 || actual < 0) {
+                    valid = false;
+                    return;
+                }
+                // Cannot bid or win more tricks than cards dealt this round
+                if (bid > gameState.currentRound || actual > gameState.currentRound) {
                     valid = false;
                     return;
                 }
@@ -5030,20 +5047,23 @@
         }
 
         function confirmAddPlayer() {
+            // BUG-FIX: save undo snapshot so the add can be reversed
+            saveUndoSnapshot();
+
             const name = document.getElementById('newPlayerName').value.trim();
             const active = gameState.players.filter(p => !p.eliminated);
             const lowestScore = Math.min(...active.map(p => p.totalScore));
             const playerIndex = gameState.players.length;
 
-            // Build round history to stay consistent with totalScore
+            // Build round history to stay consistent with totalScore.
+            // isDummy:true marks synthetic entries so accuracy stats ignore them.
             const rounds = [];
             const pastRounds = gameState.currentRound - 1;
             for (let i = 0; i < pastRounds; i++) {
                 if (i === pastRounds - 1) {
-                    // Last past round carries the score adjustment
-                    rounds.push({ bid: 0, actual: 0, score: lowestScore });
+                    rounds.push({ bid: 0, actual: 0, score: lowestScore, isDummy: true });
                 } else {
-                    rounds.push({ bid: 0, actual: 0, score: 0 });
+                    rounds.push({ bid: 0, actual: 0, score: 0, isDummy: true });
                 }
             }
 
@@ -5057,15 +5077,19 @@
             };
 
             gameState.players.push(newPlayer);
-            recalculateEliminationSchedule();
+            // BUG-FIX: pass true so the current elimination round (if any) is preserved
+            recalculateEliminationSchedule(true);
 
             closeAddPlayerModal();
             playSound('success');
 
+            // BUG-FIX: capture spinner values before renderTable wipes them, then restore
+            const savedSpinners = captureSpinnerValues();
             renderTable();
+            restoreSpinnerValues(savedSpinners);
+
             updateStatistics();
             updateNextElimination();
-            updateRoundTotals();
             saveGameState();
             document.getElementById('gameScheduleDesc').textContent = getScheduleDescription(active.length + 1);
             showAlert(`${name} joined the game with ${lowestScore} points!`, 'success');
@@ -5119,8 +5143,10 @@
         function showRemoveDetail(player) {
             const detail = document.getElementById('removePlayerDetail');
             const rounds = player.rounds;
-            const correctBids = rounds.filter(r => r.bid === r.actual).length;
-            const accuracy = rounds.length > 0 ? Math.round((correctBids / rounds.length) * 100) : 0;
+            // BUG-FIX: exclude isDummy synthetic rounds so they don't inflate accuracy
+            const realRounds = rounds.filter(r => !r.isDummy);
+            const correctBids = realRounds.filter(r => r.bid === r.actual).length;
+            const accuracy = realRounds.length > 0 ? Math.round((correctBids / realRounds.length) * 100) : 0;
 
             detail.innerHTML = `
                 <div style="text-align: center;">
@@ -5163,31 +5189,34 @@
         function confirmRemovePlayer() {
             if (selectedPlayerToRemove === null) return;
 
+            // BUG-FIX: save undo snapshot so the removal can be reversed
+            saveUndoSnapshot();
+
             const player = gameState.players[selectedPlayerToRemove];
             player.eliminated = true;
             player.eliminatedOnRound = gameState.currentRound;
 
-            recalculateEliminationSchedule();
+            // BUG-FIX: pass false — skip the current round's scheduled elimination since
+            // we just manually eliminated someone on this round already.
+            recalculateEliminationSchedule(false);
             closeRemovePlayerModal();
             saveGameState();
 
             // Reuse existing elimination animation
             showEliminationAnimation(player);
 
+            // BUG-FIX: capture spinner values before renderTable wipes them, then restore
+            const savedSpinners = captureSpinnerValues();
             renderTable();
+            restoreSpinnerValues(savedSpinners);
+
             updateStatistics();
             updateNextElimination();
-            updateRoundTotals();
 
             const active = gameState.players.filter(p => !p.eliminated);
             document.getElementById('gameScheduleDesc').textContent = getScheduleDescription(active.length);
-
-            if (active.length === 1) {
-                setTimeout(() => {
-                    closeEliminationModal();
-                    showWinnerCelebration();
-                }, 2000);
-            }
+            // NOTE: active.length === 1 cannot be reached here because showRemovePlayerModal
+            // blocks removal when active.length <= 2 (guard at L5085). No dead-code handler needed.
         }
 
         // ===== RENAME PLAYER MID-GAME =====
@@ -5366,10 +5395,12 @@
             closePenaltyModal();
             saveGameState();
 
-            // Update UI
+            // BUG-FIX: preserve any bid/actual values the host already typed this round
+            const savedSpinners = captureSpinnerValues();
             renderTable();
+            restoreSpinnerValues(savedSpinners);
+
             updateStatistics();
-            updateRoundTotals();
 
             playSound('error');
             showAlert(`${player.name} penalized: -${PENALTY_AMOUNT} points`, 'warning');
@@ -5381,8 +5412,10 @@
             list.innerHTML = '';
 
             gameState.players.forEach((player, idx) => {
-                const roundsPlayed = player.rounds.length;
-                const bestRound = player.rounds.length > 0 ? Math.max(...player.rounds.map(r => r.score)) : 0;
+                // BUG-FIX: count only real rounds played (exclude isDummy catch-up entries)
+                const realRounds = player.rounds.filter(r => !r.isDummy);
+                const roundsPlayed = realRounds.length;
+                const bestRound = realRounds.length > 0 ? Math.max(...realRounds.map(r => r.score)) : 0;
                 const penaltyCount = (player.penalties || []).length;
 
                 const card = document.createElement('div');
@@ -5426,13 +5459,15 @@
             const detail = document.getElementById('historyPlayerDetail');
             playSound('click');
 
-            // Calculate stats
+            // Calculate stats — exclude isDummy synthetic rounds (created when a player
+            // joins mid-game) so they don't inflate accuracy or distort best/worst scores.
             const rounds = player.rounds;
             const totalRounds = rounds.length;
-            const correctBids = rounds.filter(r => r.bid === r.actual).length;
-            const accuracy = totalRounds > 0 ? Math.round((correctBids / totalRounds) * 100) : 0;
-            const bestRound = totalRounds > 0 ? Math.max(...rounds.map(r => r.score)) : 0;
-            const worstRound = totalRounds > 0 ? Math.min(...rounds.map(r => r.score)) : 0;
+            const realRounds = rounds.filter(r => !r.isDummy);
+            const correctBids = realRounds.filter(r => r.bid === r.actual).length;
+            const accuracy = realRounds.length > 0 ? Math.round((correctBids / realRounds.length) * 100) : 0;
+            const bestRound = realRounds.length > 0 ? Math.max(...realRounds.map(r => r.score)) : 0;
+            const worstRound = realRounds.length > 0 ? Math.min(...realRounds.map(r => r.score)) : 0;
             const penalties = player.penalties || [];
 
             let html = `
@@ -5479,6 +5514,19 @@
             } else {
                 rounds.forEach((round, i) => {
                     runningTotal += round.score;
+                    // BUG-FIX: dummy rounds (isDummy:true) are synthetic catch-up entries
+                    // for players who joined mid-game — render them greyed-out with a dash
+                    if (round.isDummy) {
+                        html += `
+                        <tr style="background: transparent; border-bottom: 1px solid rgba(201,168,50,0.06); opacity: 0.35;">
+                            <td style="padding: 0.35rem 0.5rem; text-align: center; color: var(--text-muted); font-family: 'Orbitron', monospace; font-weight: 600;">${i + 1}</td>
+                            <td style="padding: 0.35rem 0.5rem; text-align: center; color: var(--text-muted);">—</td>
+                            <td style="padding: 0.35rem 0.5rem; text-align: center; color: var(--text-muted);">—</td>
+                            <td style="padding: 0.35rem 0.5rem; text-align: center; color: var(--text-muted); font-family: 'Orbitron', monospace;">${round.score !== 0 ? (round.score >= 0 ? '+' : '') + round.score : '—'}</td>
+                            <td style="padding: 0.35rem 0.5rem; text-align: center; color: var(--text-muted); font-family: 'Orbitron', monospace; font-size: 0.75rem;">${runningTotal}</td>
+                        </tr>`;
+                        return;
+                    }
                     const isCorrect = round.bid === round.actual;
                     const scoreColor = round.score > 0 ? 'var(--success)' : round.score < 0 ? 'var(--danger)' : 'var(--text-muted)';
                     const rowBg = isCorrect ? 'rgba(16,185,129,0.04)' : 'transparent';
@@ -5545,12 +5593,40 @@
             closeRenamePlayerModal();
             saveGameState();
 
+            // BUG-FIX: preserve any bid/actual values already entered this round
+            const savedSpinners = captureSpinnerValues();
             renderTable();
+            restoreSpinnerValues(savedSpinners);
+
             updateStatistics();
-            updateRoundTotals();
 
             playSound('chime');
             showAlert(`"${oldName}" renamed to "${newName}"`, 'success');
+        }
+
+        // ===== SPINNER VALUE PRESERVATION =====
+        // Saves bid/actual values before a renderTable() call that would reset them to 0,
+        // and restores them afterward — prevents data loss during mid-round player/penalty actions.
+        function captureSpinnerValues() {
+            const vals = {};
+            if (!gameState || !gameState.players) return vals;
+            gameState.players.forEach((p, i) => {
+                const b = document.getElementById(`bid${i}`);
+                const a = document.getElementById(`actual${i}`);
+                if (b && !b.disabled) vals[i] = { bid: b.value, actual: a.value };
+            });
+            return vals;
+        }
+
+        function restoreSpinnerValues(vals) {
+            if (!vals) return;
+            Object.entries(vals).forEach(([i, v]) => {
+                const b = document.getElementById(`bid${i}`);
+                const a = document.getElementById(`actual${i}`);
+                if (b) b.value = v.bid;
+                if (a) a.value = v.actual;
+            });
+            updateRoundTotals();
         }
 
         // ===== UNDO SYSTEM =====
@@ -6179,25 +6255,22 @@
         });
 
         // ===== SPLASH SCREEN DISMISS =====
-        window.addEventListener('load', () => {
-            // Display splash for 5 seconds
-            setTimeout(() => {
-                const splash = document.getElementById('splashScreen');
-                if (splash) {
-                    splash.classList.add('fade-out');
-                    setTimeout(() => splash.remove(), 600);
-                }
-            }, 5000);
-        });
-
-        // Fallback: remove splash after 8s even if load event didn't fire
-        setTimeout(() => {
+        function dismissSplash() {
             const splash = document.getElementById('splashScreen');
-            if (splash) {
+            if (splash && !splash.classList.contains('fade-out')) {
                 splash.classList.add('fade-out');
                 setTimeout(() => splash.remove(), 600);
             }
-        }, 8000);
+        }
+
+        window.addEventListener('load', () => {
+            // BUG-FIX: reduced from 5 s to 2 s; also tap/click anywhere to skip
+            setTimeout(dismissSplash, 2000);
+            document.getElementById('splashScreen')?.addEventListener('click', dismissSplash, { once: true });
+        });
+
+        // Fallback: remove splash after 4s even if load event didn't fire
+        setTimeout(dismissSplash, 4000);
     </script>
 </body>
 </html>
