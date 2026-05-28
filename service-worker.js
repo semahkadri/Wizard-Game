@@ -1,12 +1,13 @@
-const CACHE_NAME = 'wizard-game-v5.0.0';
+const CACHE_NAME = 'wizzara-v6.0.0';
 const urlsToCache = [
   './wizard_app.html',
+  './guide.html',
   './wizard_game.html',
   './manifest.json',
   './manifest_app.json',
   './icons/icon-192x192.png',
   './icons/icon-512x512.png',
-  'https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;900&family=Inter:wght@300;400;500;600;700;800&display=swap'
+  'https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800;900&family=Raleway:wght@300;400;500;600;700;800&family=Amiri:wght@400;700&display=swap'
 ];
 
 // Install event - cache resources

@@ -1,7 +1,7 @@
 {
   "id": "/wizard_app",
-  "name": "Wizard Score Tracker",
-  "short_name": "Wizard Score",
+  "name": "WIZZARA · Score Tracker",
+  "short_name": "WIZZARA",
   "description": "Professional score tracker and tournament manager for Wizard card game. Track bids, tricks, eliminations, and duels.",
   "start_url": "./wizard_app.html",
   "display": "standalone",
