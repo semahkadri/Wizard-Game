@@ -3,10 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#0a0700">
-    <meta name="theme-color" content="#0a0700" media="(prefers-color-scheme: dark)">
-    <meta name="theme-color" content="#0a0700" media="(prefers-color-scheme: light)">
-    <meta name="color-scheme" content="dark">
+    <meta name="theme-color" content="#c9a832">
+    <meta name="color-scheme" content="only dark">
+    <!-- WIZZARA Color Lock — inline sync script runs before CSS parsing begins -->
+    <!-- Tells Chrome Android: DO NOT run Force Dark algorithm, DO NOT adapt colors -->
+    <script>
+    (function(){
+      'use strict';
+      var r = document.documentElement;
+      // Lock color-scheme immediately — before any style sheet is parsed
+      r.style.colorScheme = 'only dark';
+      r.style.backgroundColor = '#0a0700';
+      // Re-lock whenever OS toggles dark/light — keeps WIZZARA palette intact
+      if (window.matchMedia) {
+        window.matchMedia('(prefers-color-scheme: light)')
+          .addEventListener('change', function() {
+            r.style.colorScheme = 'only dark';
+            if (document.body) {
+              document.body.style.background    = '#0a0700';
+              document.body.style.backgroundColor = '#0a0700';
+              document.body.style.color         = '#f5f0e4';
+            }
+          });
+      }
+    })();
+    </script>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="format-detection" content="telephone=no">
@@ -40,9 +61,18 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800;900&family=Raleway:wght@300;400;500;600;700;800&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        /* Force dark color scheme — prevent OS light/dark mode from changing our colors */
+        /* ── WIZZARA Color Lock ─────────────────────────────────────────────────
+           color-scheme: only dark  →  tells every browser engine:
+             • "This page supports ONLY dark mode — never adapt it."
+             • Chrome Android: suppress Force Dark algorithm entirely.
+             • Safari iOS: suppress automatic light-mode UA adjustments.
+             • Firefox: disable automatic color inversion.
+           forced-color-adjust: none  →  prevents Windows/Android High Contrast
+             forced-color mode from overriding our gold/brown palette.
+        ──────────────────────────────────────────────────────────────────── */
         :root {
-            color-scheme: dark !important;
+            color-scheme: only dark !important;
+            forced-color-adjust: none !important;
         }
 
         * {
@@ -52,17 +82,59 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* Override any prefers-color-scheme light mode interference */
+        /* ── OS Light Mode Defence — belt-and-suspenders ───────────────────────
+           Even with color-scheme:only dark, this block ensures every CSS
+           custom property stays at its WIZZARA value if the browser still
+           fires the media query (older Chromium builds, Samsung WebView, etc.)
+        ──────────────────────────────────────────────────────────────────── */
         @media (prefers-color-scheme: light) {
             :root {
-                color-scheme: dark !important;
+                color-scheme: only dark !important;
+                forced-color-adjust: none !important;
+                /* ── Backgrounds ── */
+                --bg-primary:    #0a0700 !important;
+                --bg-secondary:  #1a1100 !important;
+                --bg-tertiary:   #2a1a04 !important;
+                --surface:       rgba(26, 17, 0, 0.85) !important;
+                --surface-glass: rgba(201, 168, 50, 0.08) !important;
+                /* ── Text ── */
+                --text-primary:   #f5f0e4 !important;
+                --text-secondary: #c8c1b0 !important;
+                --text-tertiary:  #8c8676 !important;
+                --text-muted:     #5c5849 !important;
+                /* ── Gold palette ── */
+                --primary:        #c9a832 !important;
+                --gold-deep:      #6a4a10 !important;
+                --gold-mid:       #9a7d1c !important;
+                --gold-main:      #c9a832 !important;
+                --gold-hi:        #d4aa55 !important;
+                --gold-bright:    #e0c060 !important;
+                --gold-peak:      #f5d975 !important;
+                --primary-light:  #e2c547 !important;
+                --primary-dark:   #a68b1b !important;
+                --secondary:      #6a4a10 !important;
+                --secondary-light:#d4aa55 !important;
+                --accent:         #c9a832 !important;
+                --accent-light:   #e2c547 !important;
+                --success:        #c9a832 !important;
+                --danger:         #c23030 !important;
+                /* ── Score colours ── */
+                --score-positive: #3a8c3a !important;
+                --score-negative: #c23030 !important;
             }
-            body {
-                background: #0a0700 !important;
+            /* Re-lock html + body backgrounds explicitly */
+            html, body {
+                background-color: #0a0700 !important;
                 color: #f5f0e4 !important;
             }
+            /* Form controls: prevent browser from applying light-mode UA styling */
             input, select, textarea, button {
-                color-scheme: dark !important;
+                color-scheme: only dark !important;
+                forced-color-adjust: none !important;
+            }
+            /* Prevent any child element from getting browser light-mode UA colors */
+            *, *::before, *::after {
+                forced-color-adjust: none !important;
             }
         }
 
@@ -163,7 +235,8 @@
             min-height: 100vh;
             overflow-x: hidden;
             position: relative;
-            color-scheme: dark;
+            color-scheme: only dark;
+            forced-color-adjust: none;
         }
 
         /* Casino Felt Background with card suit watermarks */
