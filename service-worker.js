@@ -1,127 +1,130 @@
-const CACHE_NAME = 'wizzara-v6.0.0';
-const urlsToCache = [
+'use strict';
+
+// ─── WIZZARA Service Worker v7.0.0 ───────────────────────────────────────────
+// Cache version — bump this whenever static assets change
+const CACHE_NAME = 'wizzara-v7.0.0';
+const FONT_CACHE = 'wizzara-fonts-v1';
+
+// Same-origin static assets to precache at install time.
+// IMPORTANT: Only list files that definitely exist.
+// Cross-origin URLs (fonts) are handled separately in the fetch handler.
+const STATIC_ASSETS = [
   './wizard_app.html',
-  './guide.html',
-  './wizard_game.html',
-  './manifest.json',
   './manifest_app.json',
   './icons/icon-192x192.png',
   './icons/icon-512x512.png',
-  'https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800;900&family=Raleway:wght@300;400;500;600;700;800&family=Amiri:wght@400;700&display=swap'
+  './icons/icon-144x144.png',
 ];
 
-// Install event - cache resources
+// Hosts whose responses should be served from the font cache
+const FONT_HOSTS = new Set(['fonts.googleapis.com', 'fonts.gstatic.com']);
+
+// ─── INSTALL ─────────────────────────────────────────────────────────────────
 self.addEventListener('install', (event) => {
-  console.log('[Service Worker] Installing...');
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then((cache) => {
-        console.log('[Service Worker] Caching app shell');
-        return cache.addAll(urlsToCache);
-      })
-      .then(() => {
-        console.log('[Service Worker] Installation complete');
+      .then((cache) => cache.addAll(STATIC_ASSETS))
+      .then(() => self.skipWaiting())
+      .catch((err) => {
+        // Log but don't block install — the app is still usable online
+        console.warn('[WIZZARA SW] Precache partial failure (non-fatal):', err.message);
         return self.skipWaiting();
       })
-      .catch((error) => {
-        console.error('[Service Worker] Installation failed:', error);
-      })
   );
 });
 
-// Activate event - clean up old caches
+// ─── ACTIVATE ────────────────────────────────────────────────────────────────
 self.addEventListener('activate', (event) => {
-  console.log('[Service Worker] Activating...');
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames.map((cacheName) => {
-          if (cacheName !== CACHE_NAME) {
-            console.log('[Service Worker] Deleting old cache:', cacheName);
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    }).then(() => {
-      console.log('[Service Worker] Activation complete');
-      return self.clients.claim();
-    })
+    caches.keys()
+      .then((keys) => Promise.all(
+        keys
+          .filter((k) => k !== CACHE_NAME && k !== FONT_CACHE)
+          .map((k) => caches.delete(k))
+      ))
+      .then(() => self.clients.claim())
   );
 });
 
-// Fetch event - serve from cache, fallback to network
+// ─── FETCH ───────────────────────────────────────────────────────────────────
 self.addEventListener('fetch', (event) => {
-  // Skip caching for Socket.io and API requests
-  if (event.request.url.includes('/socket.io/') ||
-      event.request.url.includes('sockjs') ||
-      event.request.method !== 'GET') {
+  const req = event.request;
+
+  // Only handle GET requests
+  if (req.method !== 'GET') return;
+
+  let url;
+  try {
+    url = new URL(req.url);
+  } catch (_) {
     return;
   }
 
-  event.respondWith(
-    caches.match(event.request)
-      .then((response) => {
-        // Cache hit - return response
-        if (response) {
-          console.log('[Service Worker] Serving from cache:', event.request.url);
-          return response;
-        }
+  // Skip WebSocket upgrade requests and socket.io polling
+  if (url.pathname.includes('/socket.io')) return;
+  if (req.headers.get('upgrade') === 'websocket') return;
 
-        // Clone the request
-        const fetchRequest = event.request.clone();
-
-        return fetch(fetchRequest).then((response) => {
-          // Check if valid response
-          if (!response || response.status !== 200 || response.type !== 'basic') {
+  // ── Font resources: stale-while-revalidate ────────────────────────────────
+  // Serve cached fonts instantly; refresh in background.
+  // This is separate from STATIC_ASSETS — fonts are never in cache.addAll().
+  if (FONT_HOSTS.has(url.hostname)) {
+    event.respondWith(
+      caches.open(FONT_CACHE).then((cache) =>
+        cache.match(req).then((cached) => {
+          const networkRequest = fetch(req).then((response) => {
+            if (response && response.status === 200) {
+              cache.put(req, response.clone());
+            }
             return response;
+          }).catch(() => cached || new Response('', { status: 503 }));
+          // Return cached immediately if available; update in background
+          return cached || networkRequest;
+        })
+      )
+    );
+    return;
+  }
+
+  // ── Same-origin resources: cache-first with network fallback ─────────────
+  if (url.origin === self.location.origin) {
+    event.respondWith(
+      caches.match(req).then((cached) => {
+        // Serve from cache instantly
+        if (cached) return cached;
+
+        // Not in cache → fetch from network, cache the result
+        return fetch(req).then((response) => {
+          if (response && response.status === 200) {
+            const toCache = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(req, toCache));
           }
-
-          // Clone the response
-          const responseToCache = response.clone();
-
-          caches.open(CACHE_NAME)
-            .then((cache) => {
-              cache.put(event.request, responseToCache);
-            });
-
           return response;
-        }).catch((error) => {
-          console.error('[Service Worker] Fetch failed:', error);
-          // Return offline page or fallback content
-          return caches.match('./wizard_game.html');
+        }).catch(() => {
+          // Offline: return app shell for navigation requests
+          if (req.mode === 'navigate') {
+            return caches.match('./wizard_app.html');
+          }
+          return new Response('', { status: 503, statusText: 'Offline' });
         });
       })
-  );
+    );
+    return;
+  }
 });
 
-// Message event - handle commands from main thread
+// ─── MESSAGE HANDLER ─────────────────────────────────────────────────────────
 self.addEventListener('message', (event) => {
-  if (event.data && event.data.type === 'SKIP_WAITING') {
+  if (!event.data) return;
+
+  if (event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();
   }
 
-  if (event.data && event.data.type === 'CLEAR_CACHE') {
+  if (event.data.type === 'CLEAR_CACHE') {
     event.waitUntil(
-      caches.keys().then((cacheNames) => {
-        return Promise.all(
-          cacheNames.map((cacheName) => {
-            return caches.delete(cacheName);
-          })
-        );
-      }).then(() => {
-        return self.registration.unregister();
-      })
+      caches.keys()
+        .then((keys) => Promise.all(keys.map((k) => caches.delete(k))))
+        .then(() => self.registration.unregister())
     );
   }
 });
-
-// Notification click handler
-self.addEventListener('notificationclick', (event) => {
-  event.notification.close();
-
-  event.waitUntil(
-    clients.openWindow('./wizard_game.html')
-  );
-});
-
-console.log('[Service Worker] Wizard Card Game Online - Loaded');

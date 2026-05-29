@@ -1,18 +1,22 @@
 {
-  "id": "/wizard_app",
+  "id": "./wizard_app.html",
   "name": "WIZZARA · Score Tracker",
   "short_name": "WIZZARA",
-  "description": "Professional score tracker and tournament manager for Wizard card game. Track bids, tricks, eliminations, and duels.",
+  "description": "Suivi de score officiel pour le jeu de cartes WIZZARA. Gérez vos paris, tours et tournois — jusqu'à 9 joueurs.",
   "start_url": "./wizard_app.html",
   "display": "standalone",
-  "display_override": ["standalone", "minimal-ui"],
-  "background_color": "#0A1A10",
-  "theme_color": "#0A1A10",
-  "orientation": "any",
+  "display_override": ["standalone", "minimal-ui", "browser"],
+  "background_color": "#0a0700",
+  "theme_color": "#c9a832",
+  "orientation": "portrait-primary",
   "scope": "./",
+  "lang": "fr",
+  "dir": "ltr",
   "launch_handler": {
     "client_mode": "navigate-existing"
   },
+  "prefer_related_applications": false,
+  "categories": ["games", "entertainment"],
   "icons": [
     {
       "src": "./icons/icon-72x72.png",
@@ -63,20 +67,31 @@
       "purpose": "any"
     },
     {
-      "src": "./icons/apple-touch-icon-192x192.png",
+      "src": "./icons/icon-192x192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "maskable"
     },
     {
-      "src": "./icons/apple-touch-icon-512x512.png",
+      "src": "./icons/icon-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
     }
   ],
-  "categories": ["games", "entertainment"],
-  "prefer_related_applications": false,
-  "lang": "en-US",
-  "dir": "ltr"
+  "shortcuts": [
+    {
+      "name": "Nouvelle partie",
+      "short_name": "Jouer",
+      "description": "Démarrer une nouvelle partie WIZZARA",
+      "url": "./wizard_app.html",
+      "icons": [
+        {
+          "src": "./icons/icon-96x96.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    }
+  ]
 }
